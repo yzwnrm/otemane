@@ -1,13 +1,20 @@
 from django.shortcuts import render
-from django.views import View
+from django.views.generic import(
+    TemplateView, CreateView, FormView, View
+)
+from django.urls import reverse_lazy
+from .forms import RegistForm
 
-class HomeView(View):
-    def get(self, request):
-        return render(request,
-                      'home.html')
+class HomeView(TemplateView):
+    template_name = 'home.html'
     
-class RegistUserView(View):
-    def get(self, request):
-        return render(request,
-                      'regist.html')
-    # Create your views here.
+class RegistUserView(CreateView):
+    template_name = 'regist.html'
+    form_class = RegistForm
+    success_url = reverse_lazy('app:home')
+    
+class UserLoginView(View):
+    template_name = 'user_login.html'
+
+class UserLogoutView(View):
+    pass
