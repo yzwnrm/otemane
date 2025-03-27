@@ -5,6 +5,7 @@ from django.views.generic import(
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login, logout
 from .forms import RegistForm, UserLoginForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 class HomeView(TemplateView):
     template_name = 'home.html'
@@ -26,6 +27,10 @@ class UserLoginView(FormView):
         if user:
             login(self.request, user)
         return super().form_valid(form)
+
+    def get_success_url(self):
+        next_url = self.request.GRT.get('next')
+        return next_url if next_url else self.success_url
     
 
 class UserLogoutView(View):
@@ -35,3 +40,6 @@ class UserLogoutView(View):
     def post(self, request, *args, **kwargs):
         logout(request)
         return redirect('app:home')
+
+class UserView(LoginRequiredMixin, TemplateView):
+    template_name = 'user.html'
