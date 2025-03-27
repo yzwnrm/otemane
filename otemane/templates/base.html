@@ -8,10 +8,13 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand" href="{% url 'app:home'%}">おてまね</a>
             {% if user.is_authenticated %}
+            {% comment %} <a class="navbar-brand" href="{% url 'app:help_select' %}">えらんだおてつだい</a>
+            <a class="navbar-brand" href="{% url 'app:calendar' %}">カレンダー</a>
+            <a class="navbar-brand" href="{% url 'app:help_make' %}">おてつだいをつくる</a> {% endcomment %}
             <a class="navbar-brand" href="{% url 'app:user_logout' %}">ログアウト</a>
             {% else %}
-                <a class="navbar-brand" href="{% url 'app:user_login' %}">ログイン</a>
-                <a class="navbar-brand" href="{% url 'app:regist' %}">ユーザー登録</a>
+            <a class="navbar-brand" href="{% url 'app:user_login' %}">ログイン</a>
+            <a class="navbar-brand" href="{% url 'app:regist' %}">ユーザー登録</a>
             {% endif %}
             <a class="navbar-brand" href="{% url 'app:user' %}">マイページ</a>
         </nav>

@@ -29,13 +29,13 @@ class UserLoginView(FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        next_url = self.request.GRT.get('next')
+        next_url = self.request.GET.get('next')
         return next_url if next_url else self.success_url
     
 
 class UserLogoutView(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'logout.html')
+        return render(request, 'user_logout.html')
     
     def post(self, request, *args, **kwargs):
         logout(request)
