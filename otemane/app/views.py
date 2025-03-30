@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login, logout
 from .forms import RegistForm, UserLoginForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView
 
 class HomeView(TemplateView):
     template_name = 'home.html'
@@ -43,3 +44,15 @@ class UserLogoutView(View):
 
 class UserView(LoginRequiredMixin, TemplateView):
     template_name = 'user.html'
+
+class PasswordChange(LoginRequiredMixin, PasswordChangeView):
+    success_url = reverse_lazy('app:password_change_done')
+    template_name = 'password_change.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) 
+        context["form_name"] = "password_change"
+        return context
+
+class PasswordChangeDone(LoginRequiredMixin,PasswordChangeDoneView):
+    template_name = 'password_change_done.html'
