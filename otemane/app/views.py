@@ -1,12 +1,18 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import(
     TemplateView, CreateView, FormView, View
 )
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login, logout
-from .forms import RegistForm, UserLoginForm
+from .forms import RegistForm, UserLoginForm, RequestPasswordResetForm, SetNewPasswordForm
+from .models import PasswordResetToken
+from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView
+from django.contrib.auth.views import(
+    PasswordChangeView, PasswordChangeDoneView, 
+)
+from django.contrib.auth.models import User
+import uuid
 
 class HomeView(TemplateView):
     template_name = 'home.html'
@@ -56,3 +62,49 @@ class PasswordChange(LoginRequiredMixin, PasswordChangeView):
 
 class PasswordChangeDone(LoginRequiredMixin,PasswordChangeDoneView):
     template_name = 'password_change_done.html'
+
+
+def request_password_reset(request):
+    form = RequestPasswordResetForm(request.POST or None)
+    if form.is_valid():
+        email = form.cleaned_data['email']
+        user = get_object_or_404(User, email=email)
+        password_reset_token, created = PasswordResetToken.objects.get_or_create(user=user)
+        if not created:
+            password_reset_token.token = uuid.uuid4()
+            password_reset_token.used = False
+            password_reset_token.save()
+        user.is_active = False
+        user.save()
+        token = password_reset_token.token
+        print(f"{request.scheme}://{request.get_host()}/user/reset_password/{token}")
+        message = 'パスワードリセットメールをお送りしました'
+    return render(request, 'user/password_reset_form.html', context={
+        'reset_form': form, 'message': message,
+    })
+
+def reset_password(request, token):
+    password_reset_token = get_object_or_404(
+        PasswordResetToken,
+        token=token,
+        used=False,
+    )
+    form = SetNewPasswordForm(request.POST or None)
+    massage = ''
+    if form.is_valid():
+        user = password_reset_token.user
+        password = form.cleaned_data['password1']
+        validate_password(password)
+        # パスワード更新
+        user.set_password(password)
+        user.is_active = True
+        user.save()
+
+        password_reset_token.used = True
+        password_reset_token.save()
+        massage = 'パスワードをリセットしました。'
+
+    return render(request,'app/password_reset_confirm.html', context={
+        'form': form, 'message': message,
+        })
+    

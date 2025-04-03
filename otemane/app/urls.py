@@ -3,8 +3,8 @@ from .views import (
     RegistUserView, HomeView, UserLoginView,
     UserLogoutView, UserView, PasswordChangeDone, 
     PasswordChange, 
-    
 )
+from . import views
 
 app_name = 'app'
 
@@ -15,6 +15,8 @@ urlpatterns = [
     path('user_logout/', UserLogoutView.as_view(), name='user_logout'),
     path('user/', UserView.as_view(), name='user'),
     path('password_change/', PasswordChange.as_view(), name='password_change'),
-    path('password_change/done/', PasswordChangeDone.as_view(), name='password_change_done'), 
+    path('password_change/done/', PasswordChangeDone.as_view(), name='password_change_done'),
+    path('password_reset_form/', views.request_password_reset, name='password_reset_form'),
+    path('reset_password<uuid:token>/', views.reset_password, name='reset_password'),
 
 ]
