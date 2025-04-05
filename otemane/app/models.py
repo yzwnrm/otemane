@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import(
     BaseUserManager, AbstractBaseUser, PermissionsMixin,
-    User
+    User, 
 )
 from django.urls import reverse_lazy
 import uuid
@@ -31,7 +31,14 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_absolute_url(self):
         return reverse_lazy("accounts:home")
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    relationship = models.CharField(max_length=50, blank=True, null=True)
     
+    def __str__(self):
+        return f'{self.user.username} のプロフィール'  
+
 class PasswordResetToken(models.Model):
     user = models.OneToOneField(
         User,

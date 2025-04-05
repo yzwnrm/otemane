@@ -1,8 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="ログイン">
-</form>
+<body>
+    <div class="container">
+        <h1>おてまね</h1>
+            <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <a href="/app/password_reset_form/">パスワードを忘れた方はこちら</a>
+            <br>
+                <input type="submit" value="ログイン">
+            </form>
+            <a href="/app/regist/">新規アカウント登録</a>
+    </div>
+</body>
 {% endblock  %}
