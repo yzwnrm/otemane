@@ -1,9 +1,9 @@
 from django import forms
-from .models import User
+from app.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from .models import UserProfile
 
 # class RegistForm(forms.ModelForm):
@@ -35,6 +35,7 @@ class UserLoginForm(forms.Form):
     password = forms.CharField(label='パスワード', widget=forms.PasswordInput())
 
 class UserRegistrationForm(UserCreationForm):
+    username = forms.CharField(label='名前/ニックネーム')
     email = forms.EmailField(required=True, label='メールアドレス')
     
     RELATIONSHIP_CHOICES = [

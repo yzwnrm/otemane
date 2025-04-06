@@ -9,12 +9,13 @@ from .forms import(
     UserLoginForm, RequestPasswordResetForm, SetNewPasswordForm, UserRegistrationForm
 )
 from .models import PasswordResetToken, UserProfile
+from app.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import(
     PasswordChangeView, PasswordChangeDoneView, 
 )
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 import uuid
 
 class HomeView(TemplateView):
@@ -23,7 +24,7 @@ class HomeView(TemplateView):
 class UserRegisterView(CreateView):
     form_class = UserRegistrationForm
     template_name = 'regist.html'
-    success_url = reverse_lazy('login')  # 登録後にログイン画面にリダイレクト
+    success_url = reverse_lazy('app:regist_done')  #登録後に登録完了画面へ
 
     def form_valid(self, form):
         # ここでユーザーを保存
@@ -32,6 +33,10 @@ class UserRegisterView(CreateView):
         relationship = form.cleaned_data['relationship']
         UserProfile.objects.create(user=user, relationship=relationship)
         return super().form_valid(form)
+    
+class RegistDone(TemplateView):
+    template_name = 'regist_done.html'
+
 
 class UserLoginView(FormView):
     template_name = 'user_login.html'

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import(
-    BaseUserManager, AbstractBaseUser, PermissionsMixin,
+    BaseUserManager, AbstractUser, PermissionsMixin,
     User, 
 )
 from django.urls import reverse_lazy
@@ -20,7 +20,7 @@ class UserManager(BaseUserManager):
         user.save()
         return user
     
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractUser, PermissionsMixin):
     username = models.CharField(max_length=64)
     email = models.EmailField(max_length=64, unique=True)
     
