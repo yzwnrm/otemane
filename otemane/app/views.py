@@ -125,3 +125,5 @@ def reset_password(request, token):
         'form': form, 'message': message,
         })
     
+class GuideView(LoginRequiredMixin, TemplateView):
+    template_name = 'guide.html'
