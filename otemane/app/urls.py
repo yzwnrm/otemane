@@ -20,5 +20,5 @@ urlpatterns = [
     path('password_reset_form/', views.password_reset_form, name='password_reset_form'),
     path('reset_password<uuid:token>/', views.reset_password, name='reset_password'),
     path('guide/', GuideView.as_view(), name='guide'),
-
+    path('user_change/', views.account_edit_view, name='user_change'),
 ]

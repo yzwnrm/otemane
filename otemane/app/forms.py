@@ -2,10 +2,12 @@ from django import forms
 from app.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 # from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from .models import UserProfile
 
+User = get_user_model()
 # class RegistForm(forms.ModelForm):
 
 #     class Meta:
@@ -49,9 +51,12 @@ class UserRegistrationForm(UserCreationForm):
     ]
     relationship = forms.ChoiceField(choices=RELATIONSHIP_CHOICES, required=True, label='続柄')
     
+    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Confirm Password', widget=forms.PasswordInput)
+
     class Meta:
         model = User
-        fields = ['username', 'email', 'relationship', 'password1', 'password2']
+        fields = ['username', 'email', 'relationship']
 
 class RequestPasswordResetForm(forms.Form):
     email = forms.EmailField(
@@ -88,3 +93,37 @@ class SetNewPasswordForm(forms.Form):
                 raise ValidationError('パスワードを設定してください')
             return cleaned_date
             
+# class UserChangeForm(UserChangeForm):
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email']
+        labels = {
+            'username': '名前',
+            'email': 'メールアドレス',
+        }
+
+
+class UserProfileForm(forms.ModelForm):
+
+    RELATIONSHIP_CHOICES = [
+        ('mother', '母'),
+        ('father', '父'),
+        ('sister', '姉'),
+        ('brother', '兄'),
+        ('grandmother', '祖母'),
+        ('grandfather', '祖父'),
+        ('other', 'その他'),
+    ]
+    
+    relationship = forms.ChoiceField(
+        choices=RELATIONSHIP_CHOICES,
+        required=True,
+        label='続柄',
+        initial='other',  # デフォルトで「その他」を選択
+    )
+
+    class Meta:
+        model = UserProfile
+        fields = ['relationship']

@@ -4,9 +4,12 @@ from django.views.generic import(
 )
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login, logout
+from .forms import UserUpdateForm, UserProfileForm
+from django.contrib.auth.decorators import login_required
 from .forms import(
     # RegistForm, 
-    UserLoginForm, RequestPasswordResetForm, SetNewPasswordForm, UserRegistrationForm
+    UserLoginForm, RequestPasswordResetForm, SetNewPasswordForm, 
+    UserRegistrationForm, UserChangeForm, UserProfileForm, 
 )
 from .models import PasswordResetToken, UserProfile
 from app.models import User
@@ -127,3 +130,26 @@ def reset_password(request, token):
     
 class GuideView(LoginRequiredMixin, TemplateView):
     template_name = 'guide.html'
+
+@login_required
+def account_edit_view(request):
+    user = request.user
+    profile = user.userprofile  # OneToOne なのでOK
+
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=user)
+        profile_form = UserProfileForm(request.POST, instance=profile)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            return redirect('app:user')  # 編集後の遷移先
+    else:
+        user_form = UserUpdateForm(instance=user)
+        profile_form = UserProfileForm(instance=profile)
+
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form,
+    }
+    return render(request, 'user_change.html', context)
