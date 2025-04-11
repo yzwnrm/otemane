@@ -65,7 +65,10 @@ class UserLogoutView(View):
     
     def post(self, request, *args, **kwargs):
         logout(request)
-        return redirect('app:home')
+        return redirect('app:logout_done')
+    
+class UserLogoutDone(TemplateView):
+    template_name = 'logout_done.html'
 
 class UserView(LoginRequiredMixin, TemplateView):
     template_name = 'user.html'

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<body>
+    <div class="container">
+        <p>ログアウトしました。</p>
+        <a class="btn btn-light" href="{% url 'app:user_login' %}" role="button">ログイン画面へ</a>
+    </div>
+</body>
+{% endblock %}
