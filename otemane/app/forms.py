@@ -51,8 +51,8 @@ class UserRegistrationForm(UserCreationForm):
     ]
     relationship = forms.ChoiceField(choices=RELATIONSHIP_CHOICES, required=True, label='続柄')
     
-    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Confirm Password', widget=forms.PasswordInput)
+    password1 = forms.CharField(label='パスワード', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='パスワード（再入力）', widget=forms.PasswordInput)
 
     class Meta:
         model = User
