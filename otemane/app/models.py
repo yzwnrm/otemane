@@ -47,4 +47,12 @@ class PasswordResetToken(models.Model):
     )
     token = models.UUIDField(default=uuid.uuid4, db_index=True)
     used = models.BooleanField(default=False)
-    
+
+class Family(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class Childmember(models.Model):
+    family = models.ForeignKey(Family, on_delete=models.CASCADE, related_name='children')
+    name = models.CharField(max_length=100),
+    birthday = models.DateField()
+
