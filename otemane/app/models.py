@@ -53,6 +53,6 @@ class Family(models.Model):
 
 class Childmember(models.Model):
     family = models.ForeignKey(Family, on_delete=models.CASCADE, related_name='children')
-    name = models.CharField(max_length=100),
+    name = models.CharField(max_length=100, default='No Name')
     birthday = models.DateField()
 

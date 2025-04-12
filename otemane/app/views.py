@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import(
-    TemplateView, CreateView, FormView, View
+    TemplateView, CreateView, FormView, View, ListView
 )
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login, logout
@@ -11,7 +11,7 @@ from .forms import(
     UserLoginForm, RequestPasswordResetForm, SetNewPasswordForm, 
     UserRegistrationForm, UserChangeForm, UserProfileForm, 
 )
-from .models import PasswordResetToken, UserProfile
+from .models import PasswordResetToken, UserProfile, Family, Childmember
 from app.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -156,3 +156,19 @@ def account_edit_view(request):
         'profile_form': profile_form,
     }
     return render(request, 'user_change.html', context)
+
+class FamilyInfoView(LoginRequiredMixin, ListView):
+    model = Childmember
+    template_name = 'family_info.html'
+    context_object_name = 'children'
+
+    def get_queryset(self):
+        family_id = self.kwargs['family_id']
+        self.family = get_object_or_404(Family, id=family_id)
+        return self.family.children.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['parent_user'] = self.request.user
+        context['family'] = self.family
+        return context
