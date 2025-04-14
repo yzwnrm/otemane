@@ -4,14 +4,14 @@ from django.views.generic import(
 )
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login, logout
-from .forms import UserUpdateForm, UserProfileForm
+from .forms import UserUpdateForm, UserProfileForm, ChildrenForm
 from django.contrib.auth.decorators import login_required
 from .forms import(
     # RegistForm, 
     UserLoginForm, RequestPasswordResetForm, SetNewPasswordForm, 
-    UserRegistrationForm, UserChangeForm, UserProfileForm, 
+    UserRegistrationForm, UserProfileForm, 
 )
-from .models import PasswordResetToken, UserProfile, Family, Childmember
+from .models import PasswordResetToken, UserProfile, Family, Children
 from app.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -27,15 +27,16 @@ class HomeView(TemplateView):
 class UserRegisterView(CreateView):
     form_class = UserRegistrationForm
     template_name = 'regist.html'
-    success_url = reverse_lazy('app:regist_done')  #登録後に登録完了画面へ
+    success_url = reverse_lazy('app:regist_done') 
 
     def form_valid(self, form):
-        # ここでユーザーを保存
-        user = form.save()  # ユーザーを保存
-        # 追加情報（続柄）を保存
+        user = form.save() 
         relationship = form.cleaned_data['relationship']
         UserProfile.objects.create(user=user, relationship=relationship)
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        # 登録後のユーザーにFamilyを紐づけ
+        Family.objects.create(user=self.object)
+        return response
     
 class RegistDone(TemplateView):
     template_name = 'regist_done.html'
@@ -158,7 +159,7 @@ def account_edit_view(request):
     return render(request, 'user_change.html', context)
 
 class FamilyInfoView(LoginRequiredMixin, ListView):
-    model = Childmember
+    model = Children
     template_name = 'family_info.html'
     context_object_name = 'children'
 
@@ -172,3 +173,14 @@ class FamilyInfoView(LoginRequiredMixin, ListView):
         context['parent_user'] = self.request.user
         context['family'] = self.family
         return context
+    
+class ChildCreateView(LoginRequiredMixin, CreateView):
+    model = Children
+    form_class = ChildrenForm
+    template_name = 'child_regist.html'
+    success_url = reverse_lazy('app:home')  
+
+    def form_valid(self, form):
+        family = get_object_or_404(Family, user=self.request.user)
+        form.instance.family = family 
+        return super().form_valid(form)

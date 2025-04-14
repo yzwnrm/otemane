@@ -49,10 +49,26 @@ class PasswordResetToken(models.Model):
     used = models.BooleanField(default=False)
 
 class Family(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
-class Childmember(models.Model):
+class Children(models.Model):
     family = models.ForeignKey(Family, on_delete=models.CASCADE, related_name='children')
-    name = models.CharField(max_length=100, default='No Name')
+    child_name = models.CharField(max_length=100, default='No Name')
     birthday = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return f"{self.child_name}({self.family})"
+
+class Helps(models.Model):
+    child = models.ForeignKey(Children, on_delete=models.CASCADE, related_name='helps')
+    help_name = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.help_name} ({self.child.name})"

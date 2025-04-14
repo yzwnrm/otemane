@@ -2,10 +2,10 @@ from django import forms
 from app.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm
 # from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
-from .models import UserProfile
+from .models import UserProfile, Children
 
 User = get_user_model()
 # class RegistForm(forms.ModelForm):
@@ -91,9 +91,7 @@ class SetNewPasswordForm(forms.Form):
                 raise ValidationError('パスワードが一致しません')
             else:
                 raise ValidationError('パスワードを設定してください')
-            return cleaned_date
-            
-# class UserChangeForm(UserChangeForm):
+        return cleaned_date
 
 class UserUpdateForm(forms.ModelForm):
     class Meta:
@@ -127,3 +125,15 @@ class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = ['relationship']
+
+class ChildrenForm(forms.ModelForm):
+    class Meta:
+        model = Children
+        fields = ['child_name', 'birthday']
+        widgets = {
+            'birthday': forms.DateInput(attrs={'type': 'date'}),
+        }
+        labels = {
+            'name': 'なまえ',
+            'birthday': 'たんじょうび',
+        }

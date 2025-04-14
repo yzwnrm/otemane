@@ -3,7 +3,7 @@ from .views import (
     UserRegisterView, HomeView, UserLoginView,
     UserLogoutView, UserView, PasswordChangeDone, 
     PasswordChange, RegistDone, GuideView, UserLogoutDone,
-    FamilyInfoView,
+    FamilyInfoView, ChildCreateView
 )
 from . import views
 
@@ -24,4 +24,5 @@ urlpatterns = [
     path('guide/', GuideView.as_view(), name='guide'),
     path('user_change/', views.account_edit_view, name='user_change'),
     path('family_info/<int:family_id>/', FamilyInfoView.as_view(), name='family_info'),
+    path('child_regist/', ChildCreateView.as_view(), name='child_regist'),
 ]
