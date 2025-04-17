@@ -13,6 +13,10 @@ from .forms import(
     UserRegistrationForm, UserUpdateForm, 
     ChildrenForm,
 )
+
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth import get_user_model
+
 from django.http import JsonResponse
 from .models import Family, Children
 from app.models import User, Invitation
@@ -23,6 +27,8 @@ from django.contrib.auth.views import(
 )
 # from django.contrib.auth.models import User
 import uuid
+
+UserModel = get_user_model()
 
 class HomeView(TemplateView):
     template_name = 'home.html'
@@ -157,3 +163,12 @@ class AjaxCreateInviteView(View):
             full_url = request.build_absolute_uri(invitation.get_invite_url())
             return JsonResponse({'url': full_url})
         return JsonResponse({'error': 'Invalid request'}, status=400)
+    
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'registration/password_reset.html'
+    email_template_name = 'registration/password_reset_email.txt'
+    # subject_template_name = 'registration/password_reset_subject.txt'  # これがないとエラー出る場合がある
+    success_url = reverse_lazy('app:password_reset_done')  # ハードコーディング避けると安心
+
+    def get_users(self, email):
+        return UserModel.objects.filter(email__iexact=email, is_active=True)
