@@ -12,8 +12,7 @@
         <h4>アカウント編集</h4>
         <form method="POST">
             {% csrf_token %}
-            {{ user_form.as_p }}
-            {{ profile_form.as_p }}
+            {{ form.as_p }}
             <input type="submit" value="登録">
             <a class="btn btn-light" href="{% url 'app:password_change' %}" role="button">パスワード変更</a>
             <a class="btn btn-light" href="{% url 'app:home' %}" role="button">キャンセル</a>

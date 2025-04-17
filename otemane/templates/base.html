@@ -12,7 +12,7 @@
         {% if user.is_authenticated %}
         {% comment %} <a class="navbar-brand" href="{% url 'app:help_select' %}">えらんだおてつだい</a>
         <a class="navbar-brand" href="{% url 'app:calendar' %}">カレンダー</a>
-        <a class="navbar-brand" href="{% url 'app:help_make' %}">おてつだいをつくる</a> {% endcomment %}
+        <a class="navbar-brand" href="{% url 'app:help_make' %}">おてつだいをつくる</a>
         {% comment %} <a class="navbar-brand" href="{% url 'app:user_logout' %}">ログアウト</a> {% endcomment %}
         {% else %}
         <a class="navbar-brand" href="{% url 'app:user_login' %}">ログイン</a>

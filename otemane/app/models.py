@@ -1,10 +1,22 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import(
-    BaseUserManager, AbstractUser, PermissionsMixin,
+    BaseUserManager, AbstractBaseUser, PermissionsMixin,
     User, 
 )
+from django.utils import timezone
 from django.urls import reverse_lazy
+
+
+RELATIONSHIP_CHOICES = [
+        (0, '母'),
+        (1, '父'),
+        (2, '祖母'),
+        (3, '祖父'),
+        (4, '兄'),
+        (5, '姉'),
+        (6, 'その他'),
+    ]
 
 
 class UserManager(BaseUserManager):
@@ -15,16 +27,33 @@ class UserManager(BaseUserManager):
             raise ValueError('パスワードを入力してください')
         user = self.model(
             username=username,
-            email=self.normalaze_email(email)
+            email=self.normalize_email(email)
+
         )
         user.set_password(password)
         user.save()
         return user
     
-class User(AbstractUser, PermissionsMixin):
-    username = models.CharField(max_length=64)
-    email = models.EmailField(max_length=64, unique=True)
+class User(AbstractBaseUser, PermissionsMixin):
     
+    family_id = models.IntegerField(null=True, blank=True)
+    
+    username = models.CharField(max_length=64)
+
+    relationship = models.IntegerField(choices=RELATIONSHIP_CHOICES)
+
+    is_active = models.BooleanField(default=True)
+
+    email = models.EmailField(max_length=64, unique=True)
+
+    password = models.CharField(max_length=100)  
+
+    password_token = models.CharField(max_length=100, blank=True, null=True)
+    password_expiry = models.DateTimeField(blank=True, null=True)
+
+    created_at = models.DateTimeField(default=timezone.now)
+    update_at = models.DateTimeField(auto_now=True)
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
@@ -32,22 +61,6 @@ class User(AbstractUser, PermissionsMixin):
 
     def get_absolute_url(self):
         return reverse_lazy("accounts:home")
-
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    relationship = models.CharField(max_length=50, blank=True, null=True)
-    
-    def __str__(self):
-        return f'{self.user.username} のプロフィール'  
-
-class PasswordResetToken(models.Model):
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        related_name='password_reset_token',
-    )
-    token = models.UUIDField(default=uuid.uuid4, db_index=True)
-    used = models.BooleanField(default=False)
 
 class Family(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)

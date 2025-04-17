@@ -8,12 +8,13 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from .forms import(
-    UserLoginForm, RequestPasswordResetForm, SetNewPasswordForm, 
-    UserRegistrationForm, UserProfileForm, UserUpdateForm, UserProfileForm, 
+    UserLoginForm,
+    #   RequestPasswordResetForm, SetNewPasswordForm, 
+    UserRegistrationForm, UserUpdateForm, 
     ChildrenForm,
 )
 from django.http import JsonResponse
-from .models import PasswordResetToken, UserProfile, Family, Children
+from .models import Family, Children
 from app.models import User, Invitation
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -34,7 +35,6 @@ class UserRegisterView(CreateView):
     def form_valid(self, form):
         user = form.save() 
         relationship = form.cleaned_data['relationship']
-        UserProfile.objects.create(user=user, relationship=relationship)
         response = super().form_valid(form)
         # 登録後のユーザーにFamilyを紐づけ
         Family.objects.create(user=self.object)
@@ -88,75 +88,24 @@ class PasswordChange(LoginRequiredMixin, PasswordChangeView):
 class PasswordChangeDone(LoginRequiredMixin,PasswordChangeDoneView):
     template_name = 'password_change_done.html'
 
-
-def password_reset_form(request):
-    form = RequestPasswordResetForm(request.POST or None)
-    message = ''
-    if form.is_valid():
-        email = form.cleaned_data['email']
-        user = get_object_or_404(User, email=email)
-        password_reset_token, created = PasswordResetToken.objects.get_or_create(user=user)
-        if not created:
-            password_reset_token.token = uuid.uuid4()
-            password_reset_token.used = False
-            password_reset_token.save()
-        user.is_active = False
-        user.save()
-        token = password_reset_token.token
-        print(f"{request.scheme}://{request.get_host()}/user/reset_password/{token}")
-        message = 'パスワードリセットメールをお送りしました'
-    return render(request, 'password_reset_form.html', context={
-        'reset_form': form, 'message': message,
-    })
-
-def reset_password(request, token):
-    password_reset_token = get_object_or_404(
-        PasswordResetToken,
-        token=token,
-        used=False,
-    )
-    form = SetNewPasswordForm(request.POST or None)
-    message = ''
-    if form.is_valid():
-        user = password_reset_token.user
-        password = form.cleaned_data['password1']
-        validate_password(password)
-        # パスワード更新
-        user.set_password(password)
-        user.is_active = True
-        user.save()
-
-        password_reset_token.used = True
-        password_reset_token.save()
-        message = 'パスワードをリセットしました。'
-
-    return render(request,'app/password_reset_confirm.html', context={
-        'form': form, 'message': message,
-        })
-    
 class GuideView(LoginRequiredMixin, TemplateView):
     template_name = 'guide.html'
 
 @login_required
 def account_edit_view(request):
     user = request.user
-    profile = user.userprofile  # OneToOne なのでOK
 
     if request.method == 'POST':
         user_form = UserUpdateForm(request.POST, instance=user)
-        profile_form = UserProfileForm(request.POST, instance=profile)
-
-        if user_form.is_valid() and profile_form.is_valid():
+        
+        if user_form.is_valid():
             user_form.save()
-            profile_form.save()
             return redirect('app:user')  # 編集後の遷移先
     else:
         user_form = UserUpdateForm(instance=user)
-        profile_form = UserProfileForm(instance=profile)
 
     context = {
         'user_form': user_form,
-        'profile_form': profile_form,
     }
     return render(request, 'user_change.html', context)
 

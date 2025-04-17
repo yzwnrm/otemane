@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
 # from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
-from .models import UserProfile, Children
+from .models import Children, User, RELATIONSHIP_CHOICES
 
 User = get_user_model()
 # class RegistForm(forms.ModelForm):
@@ -41,16 +41,16 @@ class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True, label='メールアドレス')
     
     RELATIONSHIP_CHOICES = [
-        ('mother', '母'),
-        ('father', '父'),
-        ('sisiter', '姉'),
-        ('brother', '兄'),
-        ('graundmother', '祖母'),
-        ('graundfather', '祖父'),
-        ('other', 'その他'),
+        (0, '母'),
+        (1, '父'),
+        (2, '祖母'),
+        (3, '祖父'),
+        (4, '兄'),
+        (5, '姉'),
+        (6, 'その他'),
     ]
     relationship = forms.ChoiceField(choices=RELATIONSHIP_CHOICES, required=True, label='続柄')
-    
+
     password1 = forms.CharField(label='パスワード', widget=forms.PasswordInput)
     password2 = forms.CharField(label='パスワード（再入力）', widget=forms.PasswordInput)
 
@@ -58,73 +58,53 @@ class UserRegistrationForm(UserCreationForm):
         model = User
         fields = ['username', 'email', 'relationship']
 
-class RequestPasswordResetForm(forms.Form):
-    email = forms.EmailField(
-        label='メールアドレス',
-        widget=forms.EmailInput()
-    )
+# class RequestPasswordResetForm(forms.Form):
+#     email = forms.EmailField(
+#         label='メールアドレス',
+#         widget=forms.EmailInput()
+#     )
 
-    def clean_email(self):
-        email = self.cleaned_data['email']
-        if not User.objects.filter(email=email).exists():
-            raise ValidationError('このメールアドレスのユーザーは存在しません')
-        return email
+#     def clean_email(self):
+#         email = self.cleaned_data['email']
+#         if not User.objects.filter(email=email).exists():
+#             raise ValidationError('このメールアドレスのユーザーは存在しません')
+#         return email
     
-class SetNewPasswordForm(forms.Form):
-    password1 = forms.CharField(
-        label='新しいパスワード',
-        widget=forms.PasswordInput,
-    )
+# class SetNewPasswordForm(forms.Form):
+#     password1 = forms.CharField(
+#         label='新しいパスワード',
+#         widget=forms.PasswordInput,
+#     )
 
-    password2 = forms.CharField(
-        label='新しいパスワード(確認)',
-        widget=forms.PasswordInput,
-    )
+#     password2 = forms.CharField(
+#         label='新しいパスワード(確認)',
+#         widget=forms.PasswordInput,
+#     )
 
-    def clean(self):
-        cleaned_date = super().clean()
-        password1 =cleaned_date.get('password1')
-        password2 =cleaned_date.get('password2')
+#     def clean(self):
+#         cleaned_date = super().clean()
+#         password1 =cleaned_date.get('password1')
+#         password2 =cleaned_date.get('password2')
 
-        if password1 and password2:
-            if password1 != password2:
-                raise ValidationError('パスワードが一致しません')
-            else:
-                raise ValidationError('パスワードを設定してください')
-        return cleaned_date
+#         if password1 and password2:
+#             if password1 != password2:
+#                 raise ValidationError('パスワードが一致しません')
+#             else:
+#                 raise ValidationError('パスワードを設定してください')
+#         return cleaned_date
 
 class UserUpdateForm(forms.ModelForm):
+    relationship = forms.ChoiceField(choices=RELATIONSHIP_CHOICES, label='続柄')
+
     class Meta:
         model = User
-        fields = ['username', 'email']
+        fields = ['username', 'email', 'relationship']
         labels = {
             'username': '名前',
             'email': 'メールアドレス',
+            'relationship': '続柄',
+
         }
-
-
-class UserProfileForm(forms.ModelForm):
-
-    RELATIONSHIP_CHOICES = [
-        ('mother', '母'),
-        ('father', '父'),
-        ('sister', '姉'),
-        ('brother', '兄'),
-        ('grandmother', '祖母'),
-        ('grandfather', '祖父'),
-        ('other', 'その他'),
-    ]
-    
-    relationship = forms.ChoiceField(
-        choices=RELATIONSHIP_CHOICES,
-        required=True,
-        label='続柄',
-        initial='other',  # デフォルトで「その他」を選択
-    )
-
-    class Meta:
-        model = UserProfile
-        fields = ['relationship']
 
 class ChildrenForm(forms.ModelForm):
     class Meta:
@@ -134,6 +114,6 @@ class ChildrenForm(forms.ModelForm):
             'birthday': forms.DateInput(attrs={'type': 'date'}),
         }
         labels = {
-            'name': 'なまえ',
+            'child_name': 'なまえ',
             'birthday': 'たんじょうび',
         }
