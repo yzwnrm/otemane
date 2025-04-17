@@ -3,7 +3,7 @@ from .views import (
     UserRegisterView, HomeView, UserLoginView,
     UserLogoutView, UserView, PasswordChangeDone, 
     PasswordChange, RegistDone, GuideView, UserLogoutDone,
-    FamilyInfoView, ChildCreateView
+    FamilyInfoView, ChildCreateView, InvitePageView, AjaxCreateInviteView
 )
 from . import views
 
@@ -25,4 +25,6 @@ urlpatterns = [
     path('user_change/', views.account_edit_view, name='user_change'),
     path('family_info/<int:family_id>/', FamilyInfoView.as_view(), name='family_info'),
     path('child_regist/', ChildCreateView.as_view(), name='child_regist'),
+    path('invite/', InvitePageView.as_view(), name='invite'),
+    path('invite/ajax/create/', AjaxCreateInviteView.as_view(), name='ajax_create_invite'),
 ]

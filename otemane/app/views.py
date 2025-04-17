@@ -4,15 +4,17 @@ from django.views.generic import(
 )
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login, logout
-from .forms import UserUpdateForm, UserProfileForm, ChildrenForm
+from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from .forms import(
-    # RegistForm, 
     UserLoginForm, RequestPasswordResetForm, SetNewPasswordForm, 
-    UserRegistrationForm, UserProfileForm, 
+    UserRegistrationForm, UserProfileForm, UserUpdateForm, UserProfileForm, 
+    ChildrenForm,
 )
+from django.http import JsonResponse
 from .models import PasswordResetToken, UserProfile, Family, Children
-from app.models import User
+from app.models import User, Invitation
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import(
@@ -184,3 +186,25 @@ class ChildCreateView(LoginRequiredMixin, CreateView):
         family = get_object_or_404(Family, user=self.request.user)
         form.instance.family = family 
         return super().form_valid(form)
+    
+class HelpMakeView(FormView):
+    template_name = 'help_make.html'
+    form_class = UserLoginForm
+    success_url = reverse_lazy('app:home')
+
+@method_decorator(login_required, name='dispatch')
+class InvitePageView(TemplateView):
+    template_name = 'invite.html'
+
+class AjaxCreateInviteView(View):
+    def post(self, request, *args, **kwargs):
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            family_id = request.user.family
+            invitation = Invitation.objects.create(
+                family_id=family_id,
+                invitation_URL=uuid.uuid4().hex,
+                status=0
+            )
+            full_url = request.build_absolute_uri(invitation.get_invite_url())
+            return JsonResponse({'url': full_url})
+        return JsonResponse({'error': 'Invalid request'}, status=400)

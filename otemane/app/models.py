@@ -1,10 +1,11 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import(
     BaseUserManager, AbstractUser, PermissionsMixin,
     User, 
 )
 from django.urls import reverse_lazy
-import uuid
+
 
 class UserManager(BaseUserManager):
     def create_user(self, username, email, password):
@@ -72,3 +73,25 @@ class Helps(models.Model):
     
     def __str__(self):
         return f"{self.help_name} ({self.child.name})"
+
+
+class Invitation(models.Model):
+    STATUS_CHOICES = [
+        (0, '保留'),
+        (1, '承認'),
+        (2, '否認'),
+    ]
+
+    family_id = models.IntegerField()
+    invitation_URL = models.CharField(max_length=64, unique=True, editable=False)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if not self.invitation_URL:
+            self.invitation_URL = uuid.uuid4().hex  # 招待URLトークン生成
+        super().save(*args, **kwargs)
+
+    def get_invite_url(self):
+        return f'/invite/accept/{self.invitation_URL}/'
