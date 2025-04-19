@@ -11,7 +11,7 @@ from .forms import(
     UserLoginForm,
     #   RequestPasswordResetForm, SetNewPasswordForm, 
     UserRegistrationForm, UserUpdateForm, 
-    ChildrenForm,
+    ChildrenForm, HelpMakeForm,
 )
 
 from django.contrib.auth.views import PasswordResetView
@@ -144,7 +144,7 @@ class ChildCreateView(LoginRequiredMixin, CreateView):
     
 class HelpMakeView(FormView):
     template_name = 'help_make.html'
-    form_class = UserLoginForm
+    form_class = HelpMakeForm
     success_url = reverse_lazy('app:home')
 
 @method_decorator(login_required, name='dispatch')

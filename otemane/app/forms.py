@@ -1,5 +1,5 @@
 from django import forms
-from app.models import User
+from app.models import User, Helps
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
@@ -83,3 +83,14 @@ class ChildrenForm(forms.ModelForm):
             'child_name': 'なまえ',
             'birthday': 'たんじょうび',
         }
+
+class HelpMakeForm():
+
+    widgets = {
+            'reward_type': forms.RadioSelect()
+        }
+    
+    class Meta:
+        model = Helps
+        
+        

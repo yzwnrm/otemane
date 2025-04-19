@@ -2,11 +2,13 @@
 {% block content %}
 <body>
     <h1>おてつだいをつくる</h1>
-        <form>
+        <form method="POST">
             <h4>どんなおてつだい？</h4>
             <h4>なにがほしい？</h4>
             <p>(ひとつだけえらぶ)おかし・おかね・おねがい</p>
-            <input type="submit" value="つくる">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-light">つくる</button>
         </form>
 </body>
 {% endblock  %}

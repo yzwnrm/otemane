@@ -10,12 +10,10 @@
     <body>
       <div class="container">
         <h4>家族情報管理</h4>
-        <p>親ユーザー: {{ parent_user.username }}</p>
+        {% comment %} <p>親ユーザー: {{ parent_user.username }}</p>
 
-<!-- 家族情報 -->
-        <p>家族名: {{ family.name }}</p>
+        <p>家族名: {{ family.name }}</p> {% endcomment %}
 
-        <!-- 子どもたち（子ユーザー）のリスト -->
         <h2>子どもたち</h2>
         <ul>
             {% for child in children %}
