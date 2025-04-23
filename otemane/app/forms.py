@@ -5,32 +5,9 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
 # from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
-from .models import Children, User, RELATIONSHIP_CHOICES
+from .models import Children, User, Rewards, RELATIONSHIP_CHOICES
 
 User = get_user_model()
-# class RegistForm(forms.ModelForm):
-
-#     class Meta:
-#         model = User
-#         fields = ['username', 
-#                 #   'relationship', 
-#                   'email', 'password']
-#         widgets = {
-#             'password': forms.PasswordInput(),
-#         }
-#         labels = {
-#             'username': '名前/ニックネーム',
-#             # 'relationship': '続柄',
-#             'email': 'メールアドレス',
-#             'password': 'パスワード',    
-#         }
-
-#     def save(self, commit = False):
-#         user = super().save(commit=False)
-#         validate_password(self.cleaned_data['password'], user)
-#         user.set_password(self.cleaned_data['password'])
-#         user.save()
-#         return user
 
 class UserLoginForm(forms.Form):
     email = forms.EmailField(label='メールアドレス')
@@ -84,13 +61,25 @@ class ChildrenForm(forms.ModelForm):
             'birthday': 'たんじょうび',
         }
 
-class HelpMakeForm():
-
-    widgets = {
-            'reward_type': forms.RadioSelect()
-        }
-    
+class HelpsForm(forms.ModelForm):
     class Meta:
         model = Helps
+        fields = ['help_name']
+        labels = {
+            'help_name': '',
+        }
+
+        
+class RewardsForm(forms.ModelForm):
+     class Meta:
+        model = Rewards
+        fields = ['reward_prize', 'reward_detail']
+        widgets = {
+            'reward_prize': forms.NumberInput(attrs={'placeholder': 'いくら？'}),
+            'reward_detail': forms.TextInput(attrs={'placeholder': 'どんなこと？'}),
+        }
+
+
+
         
         

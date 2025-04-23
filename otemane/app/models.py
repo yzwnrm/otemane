@@ -125,7 +125,7 @@ class Rewards(models.Model):
     help = models.ForeignKey(Helps, on_delete=models.CASCADE, related_name='rewards')
     reward_type = models.IntegerField(choices=REWARD_CHOICES, default=0)
     reward_prize = models.IntegerField(null=True, blank=True)
-    reward_detail = models.CharField(max_length=255, unique=True, editable=False)
+    reward_detail = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

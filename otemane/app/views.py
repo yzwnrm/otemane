@@ -11,14 +11,14 @@ from .forms import(
     UserLoginForm,
     #   RequestPasswordResetForm, SetNewPasswordForm, 
     UserRegistrationForm, UserUpdateForm, 
-    ChildrenForm, HelpMakeForm,
+    ChildrenForm, HelpsForm, RewardsForm
 )
 
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.auth import get_user_model
 
 from django.http import JsonResponse
-from .models import Family, Children
+from .models import Family, Children, Helps, Reactions, Records, Rewards
 from app.models import User, Invitation
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -141,11 +141,7 @@ class ChildCreateView(LoginRequiredMixin, CreateView):
         family = get_object_or_404(Family, user=self.request.user)
         form.instance.family = family 
         return super().form_valid(form)
-    
-class HelpMakeView(FormView):
-    template_name = 'help_make.html'
-    form_class = HelpMakeForm
-    success_url = reverse_lazy('app:home')
+
 
 @method_decorator(login_required, name='dispatch')
 class InvitePageView(TemplateView):
@@ -172,3 +168,45 @@ class CustomPasswordResetView(PasswordResetView):
 
     def get_users(self, email):
         return UserModel.objects.filter(email__iexact=email, is_active=True)
+    
+class AddReactionView(View):
+    def post(self, request, record_id):
+        emoji = request.POST.get('emoji')
+        record = Records.objects.get(id=record_id)
+        Reactions.objects.create(user=request.user, record=record, reaction_image=emoji)
+        return redirect('help_lists', pk=record_id)
+
+
+class HelpMakeView(View):    #おてつだいをつくる
+    def get(self, request):
+        return render(request, 'help_make.html', {
+            'helps_form': HelpsForm(),
+            'rewards_form': RewardsForm()
+        })
+
+    def post(self, request):
+        helps_form = HelpsForm(request.POST)
+        rewards_form = RewardsForm(request.POST)
+
+        if helps_form.is_valid() and rewards_form.is_valid():
+            help_obj = helps_form.save()
+            reward_obj = rewards_form.save(commit=False)
+            reward_obj.help = help_obj
+            reward_obj.save()
+            return redirect('app:home')
+
+        return render(request, 'app/help_make.html', {
+            'helps_form': helps_form,
+            'rewards_form': rewards_form
+        })
+
+
+class HelpChoiceView(TemplateView):    #おてつだいをえらぶ
+    template_name = 'help_choice.html'
+
+
+class HelpChoseView(TemplateView):    #えらんだおてつだい
+     template_name = 'help_chose.html'
+    
+class HelpEditDeleteView(TemplateView):    #おてつだいの修正・削除
+    template_name = 'help_edit_delete.html'

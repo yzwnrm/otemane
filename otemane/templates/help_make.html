@@ -1,15 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
+<head>
+  <h3>おてつだいをつくる</h3>
+</head>
 <body>
-    <h1>おてつだいをつくる</h1>
-        <form method="POST">
-            <h4>どんなおてつだい？</h4>
-            <h4>なにがほしい？</h4>
-            <p>(ひとつだけえらぶ)おかし・おかね・おねがい</p>
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-light">つくる</button>
-        </form>
+        <form method="post">
+           {% csrf_token %}
+            <h4>🧹 どんなおてつだい？</h4>
+            {{ helps_form.help_name.label }} {{ helps_form.help_name }}
+        
+            <h4>🎁 なにがほしい？</h4>
+            {% comment %} {% for radio in rewards_form.reward_type %} {% endcomment %}
+            <div class="reward-option">
+              <label><input type="radio" name="reward_type" value="0"> おかし</label>
+            </div>
+        
+            <div class="reward-option">
+              <label><input type="radio" name="reward_type" value="1"> おかね</label>
+              {{ rewards_form.reward_prize }}
+            </div>
+        
+            <div class="reward-option">
+              <label><input type="radio" name="reward_type" value="2"> おねがい</label>
+              {{ rewards_form.reward_detail }}
+            </div>
+            <button type="submit" class="btn btn-light">つくる</button>
+          </form>
+          
 </body>
 {% endblock  %}
 

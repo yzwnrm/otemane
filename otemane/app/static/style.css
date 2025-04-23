@@ -48,3 +48,19 @@ button {
     border-radius: 5px;
     cursor: pointer;
 }
+
+.reward-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.reward-option label {
+    margin-right: 0.5rem;
+    white-space: nowrap;
+}
+
+.reward-option input[type="text"] {
+    flex: 1;
+    min-width: 200px;
+}
