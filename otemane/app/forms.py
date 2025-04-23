@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
 # from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
-from .models import Children, User, Rewards, RELATIONSHIP_CHOICES
+from .models import Children, User, Rewards, RELATIONSHIP_CHOICES, HelpLists
 
 User = get_user_model()
 
@@ -79,7 +79,6 @@ class RewardsForm(forms.ModelForm):
             'reward_detail': forms.TextInput(attrs={'placeholder': 'どんなこと？'}),
         }
 
-
-
-        
-        
+# class HelpListsForm(forms.ModelForm):
+#     class Meta:
+#         model = HelpLists

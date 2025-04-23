@@ -4,6 +4,9 @@ from django.views.generic import(
 )
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login, logout
+from collections import defaultdict
+from django.utils.timezone import now
+from datetime import datetime
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
@@ -13,25 +16,63 @@ from .forms import(
     UserRegistrationForm, UserUpdateForm, 
     ChildrenForm, HelpsForm, RewardsForm
 )
-
+from django.core.paginator import Paginator
+from django.views import View
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.auth import get_user_model
 
 from django.http import JsonResponse
-from .models import Family, Children, Helps, Reactions, Records, Rewards
+from .models import Family, Children, Helps, Reactions, Records, Rewards, HelpLists
 from app.models import User, Invitation
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import(
     PasswordChangeView, PasswordChangeDoneView, 
 )
-# from django.contrib.auth.models import User
+# from django.contrib.auth.models import 
+
 import uuid
 
 UserModel = get_user_model()
 
-class HomeView(TemplateView):
-    template_name = 'home.html'
+class HomeView(LoginRequiredMixin, View):
+    class HomeView(LoginRequiredMixin, View):
+        login_url = 'user_login'
+
+    def get(self, request):
+        family = get_object_or_404(Family, user=request.user)
+        children = Children.objects.filter(family=family)
+
+        selected_child_id = request.GET.get('child_id')
+        selected_child = None
+        monthly_rewards = defaultdict(int)
+
+        if selected_child_id:
+            selected_child = get_object_or_404(Children, id=selected_child_id, family=family)
+            helps = selected_child.helps.prefetch_related('rewards', 'records')
+
+            for help in helps:
+                for record in help.records.all():
+                    if record.achievement_date:
+                        for reward in help.rewards.all():
+                            if reward.reward_type == 1 and reward.reward_prize:
+                                month = record.achievement_date.strftime('%Y-%m')
+                                monthly_rewards[month] += reward.reward_prize
+
+                            if reward.reward_type == 0 and reward.reward_type:
+                                month = record.achievement_date.strftime('%Y-%m')
+                                monthly_rewards[month] += reward.reward_type
+
+        current_month = now().strftime('%Y-%m')
+
+        context = {
+            'children': children,
+            'selected_child': selected_child,
+            'monthly_rewards': dict(monthly_rewards),
+            'current_month': current_month,
+        }
+
+        return render(request, 'home.html', context)
     
 class UserRegisterView(CreateView):
     form_class = UserRegistrationForm
@@ -201,12 +242,31 @@ class HelpMakeView(View):    #おてつだいをつくる
         })
 
 
-class HelpChoiceView(TemplateView):    #おてつだいをえらぶ
-    template_name = 'help_choice.html'
+class HelpListsView(TemplateView):    #えらんだおてつだい
+    template_name = 'help_chose.html'
 
 
-class HelpChoseView(TemplateView):    #えらんだおてつだい
-     template_name = 'help_chose.html'
+class HelpChoseView(TemplateView):    #おてつだいをえらぶ
+    def get(self, request, child_id):
+        helps = Helps.objects.all().order_by('-created_at')[:30]  # 最大30件
+        paginator = Paginator(helps, 10)  # 1ページ10件
+
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        return render(request, 'help_chose.html', {
+            'page_obj': page_obj,
+            'child_id': child_id
+        })
+
+    def post(self, request, child_id):
+        help_id = request.POST.get('help_id')
+        help_obj = get_object_or_404(Helps, id=help_id)
+        child = get_object_or_404(Children, id=child_id)
+
+        HelpLists.objects.get_or_create(child=child, help=help_obj)
+
+        return redirect('app:help_chose', child_id=child_id)
     
 class HelpEditDeleteView(TemplateView):    #おてつだいの修正・削除
     template_name = 'help_edit_delete.html'

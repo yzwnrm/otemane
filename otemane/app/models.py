@@ -110,8 +110,8 @@ class Invitation(models.Model):
         return f'/invite/accept/{self.invitation_URL}/'
 
 class HelpLists(models.Model):
-    child = models.ForeignKey(Children, on_delete=models.CASCADE, related_name='help_lists')
-    help = models.ForeignKey(Helps, on_delete=models.CASCADE, related_name='helps_lists')
+    child = models.ForeignKey(Children, on_delete=models.CASCADE)
+    help = models.ForeignKey(Helps, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

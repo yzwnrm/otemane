@@ -6,7 +6,7 @@ from .views import (
     PasswordChange, RegistDone, GuideView, UserLogoutDone,
     FamilyInfoView, ChildCreateView, InvitePageView, AjaxCreateInviteView, 
     CustomPasswordResetView, AddReactionView, 
-    HelpMakeView, HelpChoiceView, HelpChoseView, HelpEditDeleteView,
+    HelpMakeView, HelpChoseView, HelpListsView, HelpEditDeleteView,
 )
 from . import views
 
@@ -34,8 +34,8 @@ urlpatterns = [
     path('invite/ajax/create/', AjaxCreateInviteView.as_view(), name='ajax_create_invite'),
     # path('record/<int:record_id>/react/', AddReactionView.as_view(), name='add_reaction'),
     path('help/make/', HelpMakeView.as_view(), name='help_make'),
-    path('help_choice/', HelpChoiceView.as_view(), name='help_choice'),
-    path('help_chose/', HelpChoseView.as_view(), name='help_chose'),
+    path('help_lists/', HelpListsView.as_view(), name='help_lists'),
+    path('help_chose/<int:child_id>/', HelpChoseView.as_view(), name='help_chose'),
     path('help_edit_delete/', HelpEditDeleteView.as_view(), name='help_edit_delete'),
 
 ]

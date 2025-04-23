@@ -1,5 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>えらんだおてつだい</h1>
+<h3>おてつだいをえらぶ</h3>
+
+{% for help in page_obj %}
+  <div class="help-item">
+    <p>{{ help.help_name }}</p>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="help_id" value="{{ help.id }}">
+      <button type="submit">えらぶ</button>
+    </form>
+  </div>
+{% endfor %}
+
+<div class="pagination">
+  {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}">← 前</a>
+  {% endif %}
+
+  <span>ページ {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+
+  {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">次 →</a>
+  {% endif %}
+</div>
+
 {% endblock  %}
 

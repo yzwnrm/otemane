@@ -7,7 +7,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f0f0f0
+    background-color: #ffffff
 }
 
 .container {
@@ -38,12 +38,12 @@ input[type="text"], input[type="email"], input[type="password"], select {
     padding: 10px;
     margin-bottom: 15px;
     border-radius: 5px;
-    border: 1px solid #ccc;
+    border: 1px solid #cccccc;
 }
 
 button {
     padding: 10px;
-    color: white;
+    color: rgb(5, 5, 5);
     border: none;
     border-radius: 5px;
     cursor: pointer;
