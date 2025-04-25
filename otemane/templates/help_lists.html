@@ -1,4 +1,44 @@
 {% extends "base.html" %}
 {% block content %}
-<p>どのおてつだいにする？</p>
+
+<div class="text-end my-2">
+    <button class="btn btn-light">選択して一括登録をする</button>
+</div>
+
+<p>かぞくといっしょにできたボタンをおそう！</p>
+
+{% for help in selected_helps %}
+<div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
+  <div>
+    <strong>・{{ help.help_name }}</strong>
+    {% for reward in help.rewards.all %}
+      —
+      {% if reward.reward_type == 1 %}
+        {{ reward.reward_prize }}えん
+      {% elif reward.reward_type == 0 %}
+        おかし１つ
+      {% endif %}
+    {% endfor %}
+  </div>
+  <form method="post" action="{% url 'app:help_done' help.id %}">
+    {% csrf_token %}
+    <button class="btn btn-outline-success">できた！</button>
+  </form>
+</div>
+{% empty %}
+<p>まだおてつだいがありません。</p>
+{% endfor %}
+
+<!-- 「おてつだいをえらぶ」 -->
+<div class="mt-4">
+<a href="{% url 'app:help_chose' child.id %}" class="btn btn-outline-secondary w-100">＋ おてつだいをえらぶ</a>
+</div>
+
+<!-- エラーメッセージ -->
+{% if error_message %}
+<div class="alert alert-warning mt-3">
+  {{ error_message }}
+</div>
+{% endif %}
+</div>
 {% endblock  %}

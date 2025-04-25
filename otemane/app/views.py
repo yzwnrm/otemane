@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import(
     TemplateView, CreateView, FormView, View, ListView
 )
-from django.urls import reverse_lazy
+from django.views.generic.edit import FormView
+from django.urls import reverse_lazy, reverse
 from django.contrib.auth import authenticate, login, logout
 from collections import defaultdict
 from django.utils.timezone import now
@@ -20,6 +21,7 @@ from django.core.paginator import Paginator
 from django.views import View
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.auth import get_user_model
+from django.contrib import messages
 
 from django.http import JsonResponse
 from .models import Family, Children, Helps, Reactions, Records, Rewards, HelpLists
@@ -43,33 +45,36 @@ class HomeView(LoginRequiredMixin, View):
         family = get_object_or_404(Family, user=request.user)
         children = Children.objects.filter(family=family)
 
+        # URLのchild_idがあればセッションに保存
         selected_child_id = request.GET.get('child_id')
+        if selected_child_id:
+            request.session['selected_child_id'] = selected_child_id
+        else:
+            selected_child_id = request.session.get('selected_child_id')
+
         selected_child = None
-        monthly_rewards = defaultdict(int)
+        monthly_rewards = defaultdict(lambda: {"money": 0, "sweets": 0})
 
         if selected_child_id:
-            selected_child = get_object_or_404(Children, id=selected_child_id, family=family)
-            helps = selected_child.helps.prefetch_related('rewards', 'records')
+            selected_child = Children.objects.filter(id=selected_child_id, family=family).first()
+            if selected_child:
+                helps = selected_child.helps.prefetch_related('rewards', 'records')
 
-            for help in helps:
-                for record in help.records.all():
-                    if record.achievement_date:
-                        for reward in help.rewards.all():
-                            if reward.reward_type == 1 and reward.reward_prize:
-                                month = record.achievement_date.strftime('%Y-%m')
-                                monthly_rewards[month] += reward.reward_prize
-
-                            if reward.reward_type == 0 and reward.reward_type:
-                                month = record.achievement_date.strftime('%Y-%m')
-                                monthly_rewards[month] += reward.reward_type
-
-        current_month = now().strftime('%Y-%m')
+                for help in helps:
+                    for record in help.records.all():
+                        if record.achievement_date:
+                            month = record.achievement_date.strftime('%Y-%m')
+                            for reward in help.rewards.all():
+                                if reward.reward_type == 1:  # おかね
+                                    monthly_rewards[month]["money"] += reward.reward_prize or 0
+                                elif reward.reward_type == 0:  # おかし
+                                    monthly_rewards[month]["sweets"] += 1
 
         context = {
             'children': children,
             'selected_child': selected_child,
             'monthly_rewards': dict(monthly_rewards),
-            'current_month': current_month,
+            'current_month': now().strftime('%Y-%m'),
         }
 
         return render(request, 'home.html', context)
@@ -204,8 +209,8 @@ class AjaxCreateInviteView(View):
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'registration/password_reset.html'
     email_template_name = 'registration/password_reset_email.txt'
-    # subject_template_name = 'registration/password_reset_subject.txt'  # これがないとエラー出る場合がある
-    success_url = reverse_lazy('app:password_reset_done')  # ハードコーディング避けると安心
+    # subject_template_name = 'registration/password_reset_subject.txt'  # これがないとエラー出るかも
+    success_url = reverse_lazy('app:password_reset_done')  
 
     def get_users(self, email):
         return UserModel.objects.filter(email__iexact=email, is_active=True)
@@ -218,7 +223,15 @@ class AddReactionView(View):
         return redirect('help_lists', pk=record_id)
 
 
-class HelpMakeView(View):    #おてつだいをつくる
+class HelpMakeView(FormView):    # おてつだいをつくる
+    form_class = HelpsForm
+    template_name = 'help_make.html'
+    success_url = reverse_lazy('app:help_chose')
+
+    def get_success_url(self):
+        selected_child_id = self.request.session.get('selected_child_id')
+        return reverse('app:help_chose', kwargs={'child_id': selected_child_id})
+    
     def get(self, request):
         return render(request, 'help_make.html', {
             'helps_form': HelpsForm(),
@@ -229,44 +242,99 @@ class HelpMakeView(View):    #おてつだいをつくる
         helps_form = HelpsForm(request.POST)
         rewards_form = RewardsForm(request.POST)
 
-        if helps_form.is_valid() and rewards_form.is_valid():
-            help_obj = helps_form.save()
-            reward_obj = rewards_form.save(commit=False)
-            reward_obj.help = help_obj
-            reward_obj.save()
-            return redirect('app:home')
+        # セッションに子どものIDがない場合、エラー処理
+        selected_child_id = request.session.get('selected_child_id')
+        if not selected_child_id:
+            helps_form.add_error(None, "子どもが選択されていません。")
+            return render(request, 'help_make.html', {
+                'helps_form': helps_form,
+                'rewards_form': rewards_form
+            })
 
-        return render(request, 'app/help_make.html', {
+        # フォームが正しい場合、Help と Reward を保存
+        if helps_form.is_valid() and rewards_form.is_valid():
+            family = get_object_or_404(Family, user=request.user)
+            child = get_object_or_404(Children, id=selected_child_id, family=family)
+            
+            # help インスタンス作成
+            help_obj = helps_form.save(commit=False)
+            help_obj.child = child  # 選択した子どもをセット
+            help_obj.save()
+
+            # reward インスタンス作成
+            reward_obj = rewards_form.save(commit=False)
+            reward_obj.help = help_obj  # Help と関連付け
+            reward_obj.save()
+
+            return redirect(self.get_success_url())
+        
+        # フォームが無効な場合
+        return render(request, 'help_make.html', {
             'helps_form': helps_form,
             'rewards_form': rewards_form
         })
 
+class HelpListsView(ListView):    #えらんだおてつだい
+    template_name = 'help_lists.html'
+    context_object_name = 'helps'
 
-class HelpListsView(TemplateView):    #えらんだおてつだい
+    def get_queryset(self):
+        child_id = self.kwargs['child_id']
+        return HelpLists.objects.filter(child_id=child_id).select_related('help')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        child_id = self.kwargs['child_id']
+        context['child'] = get_object_or_404(Children, id=child_id)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        child_id = self.kwargs['child_id']
+        help_id = request.POST.get("help_id")
+
+        if 'done' in request.POST:
+            help_item = get_object_or_404(HelpLists, child_id=child_id, help_id=help_id)
+            # 完了記録を追加（カレンダー等に表示可能）
+            Records.objects.create(child_id=child_id, help_id=help_id)
+            help_item.delete()
+            messages.success(request, "おてつだいを記録しました")
+        return redirect('app:help_list', child_id=child_id)
+    
+class HelpChoseView(TemplateView):   #おてつだいをえらぶ
     template_name = 'help_chose.html'
 
-
-class HelpChoseView(TemplateView):    #おてつだいをえらぶ
     def get(self, request, child_id):
-        helps = Helps.objects.all().order_by('-created_at')[:30]  # 最大30件
+        family = get_object_or_404(Family, user=request.user)
+        helps = Helps.objects.filter(child__family=family).prefetch_related('rewards').order_by('-created_at')[:30]  # 最大30件
         paginator = Paginator(helps, 10)  # 1ページ10件
 
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
 
-        return render(request, 'help_chose.html', {
+        return self.render_to_response({
             'page_obj': page_obj,
-            'child_id': child_id
+            'child_id': child_id,
         })
 
     def post(self, request, child_id):
         help_id = request.POST.get('help_id')
-        help_obj = get_object_or_404(Helps, id=help_id)
-        child = get_object_or_404(Children, id=child_id)
+        current_count = HelpLists.objects.filter(child_id=child_id).count()
 
-        HelpLists.objects.get_or_create(child=child, help=help_obj)
+        if current_count >= 10:
+            messages.error(request, "10件までしか選べません")
+        else:
+            HelpLists.objects.get_or_create(child_id=child_id, help_id=help_id)
 
         return redirect('app:help_chose', child_id=child_id)
-    
+
 class HelpEditDeleteView(TemplateView):    #おてつだいの修正・削除
     template_name = 'help_edit_delete.html'
+
+class SetChildView(View):
+    def post(self, request, *args, **kwargs):
+        child_id = request.POST.get('child_id')
+        if child_id:
+            family = get_object_or_404(Family, user=request.user)
+            child = get_object_or_404(Children, id=child_id, family=family)
+            request.session['selected_child_id'] = child.id
+        return redirect('app:home')

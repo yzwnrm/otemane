@@ -70,7 +70,7 @@ class Family(models.Model):
 
 class Children(models.Model):
     family = models.ForeignKey(Family, on_delete=models.CASCADE, related_name='children')
-    child_name = models.CharField(max_length=100, default='No Name')
+    child_name = models.CharField(max_length=100)
     birthday = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -79,7 +79,7 @@ class Children(models.Model):
         return f"{self.child_name}({self.family})"
 
 class Helps(models.Model):
-    child = models.ForeignKey(Children, on_delete=models.CASCADE, related_name='helps')
+    child = models.ForeignKey(Children, null=True, on_delete=models.CASCADE, related_name='helps')
     help_name = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

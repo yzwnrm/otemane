@@ -2,11 +2,10 @@
 {% load static %}
 {% block content %}
 <body>
-    <p>メンバー選択</p>
-
-    <form method="get" action=".">
+    <form method="post" action="{% url 'app:set_child' %}">
+      {% csrf_token %}
       <select name="child_id" onchange="this.form.submit()">
-        <option value="">-- だれ？ --</option>
+        <option value="">-- メンバー選択 --</option>
         {% for child in children %}
           <option value="{{ child.id }}" {% if child == selected_child %}selected{% endif %}>
             {{ child.child_name }}
@@ -16,7 +15,7 @@
     </form>
     
     {% if selected_child %}
-      <p>{{ selected_child.child_name }}</p>
+      {% comment %} <p>{{ selected_child.child_name }}</p> {% endcomment %}
         <div class="text-center my-4">
         <div class="d-flex justify-content-center align-items-center">
             <button id="prevMonth" >◁ 前月</button>

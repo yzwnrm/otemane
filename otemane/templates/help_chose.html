@@ -3,26 +3,46 @@
 <h3>おてつだいをえらぶ</h3>
 
 {% for help in page_obj %}
-  <div class="help-item">
-    <p>{{ help.help_name }}</p>
-    <form method="post">
-      {% csrf_token %}
-      <input type="hidden" name="help_id" value="{{ help.id }}">
-      <button type="submit">えらぶ</button>
-    </form>
+<div class="help-item border p-3 mb-3 d-flex justify-content-between align-items-center">
+  <div>
+    <strong>{{ help.help_name }}</strong>
+    {% for reward in help.rewards.all %}
+      —
+      {% if reward.reward_type == 1 %}
+        💰 {{ reward.reward_prize }}えん
+      {% elif reward.reward_type == 0 %}
+        🍩 おかし 1こ
+      {% elif reward.reward_type == 2 %}
+        🙏 おねがい
+      {% endif %}
+    {% empty %}
+      — 報酬なし
+    {% endfor %}
   </div>
+
+  <form method="post" class="m-0">
+    {% csrf_token %}
+    <input type="hidden" name="help_id" value="{{ help.id }}">
+    <button type="submit" class="btn btn-light">えらぶ</button>
+  </form>
+</div>
+{% empty %}
+<p>お手伝いがありません。</p>
 {% endfor %}
 
+
 <div class="pagination">
-  {% if page_obj.has_previous %}
-    <a href="?page={{ page_obj.previous_page_number }}">← 前</a>
-  {% endif %}
-
-  <span>ページ {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
-
-  {% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}">次 →</a>
-  {% endif %}
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">前</a>
+        {% endif %}
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">次</a>
+        {% endif %}
+    </span>
 </div>
 
 {% endblock  %}
