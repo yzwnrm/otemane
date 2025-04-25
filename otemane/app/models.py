@@ -150,11 +150,11 @@ class Records(models.Model):
     
 class Reactions(models.Model):
     REACTION_CHOICES = [
-        (0, '💗'),
-        (1, '😊'),
-        (2, '👍'),
-        (3, '🌸'),
-        (4, '😎'),
+        (0, '💗'), #heart
+        (1, '😊'), #smile
+        (2, '👍'), #good
+        (3, '🌸'), #flower
+        (4, '😎'), #nice
     ]
 
     record = models.ForeignKey(Records, on_delete=models.CASCADE, related_name='reaction')

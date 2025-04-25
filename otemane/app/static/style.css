@@ -65,3 +65,63 @@ button {
     flex: 1;
     min-width: 200px;
 }
+
+/* モーダルを開くボタンのスタイル */
+.open-modal {
+    /*position: absolute; /* ボタンをページ上に絶対位置で配置 */
+    /*top: 50%; /* ボタンを縦方向に中央に配置 */
+    /*left: 50%; /* ボタンを横方向に中央に配置 */
+    width: 250px; /* ボタンの幅 */
+    height: 60px; /* ボタンの高さ */
+    font-size: 16px; /* ボタン内のテキストのフォントサイズ */
+    font-weight: bold; /* テキストのフォントを太字に設定 */
+    color: #000; /* ボタンのテキストカラー */
+    background: #fff; /* ボタンの背景色 */
+    border: #fff; /* ボタンの境界線 */
+    border-radius: 14px; /* ボタンの角を丸くするための半径 */
+    cursor: pointer; /* カーソルがホバーした時にポインタが表示されるように設定 */
+    /*transform: translate(-50%, -50%); /* 中央に位置するための補正 */
+  }
+  
+  /* モーダルウィンドウの基本スタイル */
+  .modal {
+    display: none; /* デフォルトでは非表示に設定 */
+    position: fixed; /* モーダルがページ全体に固定されるように設定 */
+    top: 0; /* ページの最上部からスタート */
+    left: 0; /* ページの最左端からスタート */
+    width: 0; /* モーダルが画面全体の幅を占める */
+    height: 0%; /* モーダルが画面全体の高さを占める */
+    background-color: rgba(0, 0, 0, 0.4); /* 背景を半透明の黒に設定（モーダルの背後が見えるように） */
+  }
+  
+  .modal-content {
+    position: fixed; /* モーダル内容が画面上に固定されるように設定 */
+    top: 50%; /* 縦方向の中央に配置 */
+    left: 50%; /* 横方向の中央に配置 */
+    transform: translate(-50%, -50%); /* 完全に中央に配置するための補正 */
+    padding: 20px; /* モーダル内の余白を設定 */
+    width: 300px; /* モーダルの幅 */
+    height: 60px; /* モーダルの高さ */
+    background-color: #fefefe; /* モーダルの背景色を白に設定 */
+    border: 1px solid #888; /* 境界線の色を薄いグレーに設定 */
+    border-radius: 10px; /* モーダルの角を丸くするための半径 */
+  }
+  
+  /* モーダルを閉じるボタン（×）のスタイル */
+  #closeModal {
+    position: absolute; /* モーダル内で絶対位置に配置 */
+    display: flex; /* ボタン内のテキストが中央に配置されるようにフレックスボックスを使用 */
+    align-items: center; /* ボタン内のテキストを縦方向に中央揃え */
+    justify-content: center; /* ボタン内のテキストを横方向に中央揃え */
+    top: -30%; /* モーダル内容の上部から離れた位置に配置 */
+    right: -10%; /* モーダル内容の右端から離れた位置に配置 */
+    font-size: 28px; /* 閉じるボタンのフォントサイズ */
+    font-weight: bold; /* 閉じるボタンのフォントを太字に設定 */
+    cursor: pointer; /* ホバー時にポインタが表示されるように設定 */
+    color: #FFF; /* 閉じるボタンのテキストカラーを白に設定 */
+    width: 40px; /* ボタンの幅 */
+    height: 40px; /* ボタンの高さ */
+    background-color: #333; /* ボタンの背景色をダークグレーに設定 */
+    border: #333; /* ボタンの境界線を背景と同じ色に設定 */
+    border-radius: 50%; /* ボタンを丸くするための半径 */
+  }

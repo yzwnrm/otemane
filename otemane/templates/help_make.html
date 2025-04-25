@@ -6,10 +6,10 @@
 <body>
         <form method="post">
            {% csrf_token %}
-            <h4>🧹 どんなおてつだい？</h4>
+            <h4> どんなおてつだい？</h4>
             {{ helps_form.help_name.label }} {{ helps_form.help_name }}
         
-            <h4>🎁 なにがほしい？</h4>
+            <h4> なにがほしい？</h4>
             {% comment %} {% for radio in rewards_form.reward_type %} {% endcomment %}
             <div class="reward-option">
               <label><input type="radio" name="reward_type" value="0"> おかし</label>

@@ -71,7 +71,7 @@ class HelpsForm(forms.ModelForm):
 
         
 class RewardsForm(forms.ModelForm):
-     class Meta:
+    class Meta:
         model = Rewards
         fields = ['reward_type', 'reward_prize', 'reward_detail']
         widgets = {
@@ -79,3 +79,8 @@ class RewardsForm(forms.ModelForm):
             'reward_prize': forms.NumberInput(attrs={'placeholder': 'いくら？', 'class': 'form-control'}),
             'reward_detail': forms.TextInput(attrs={'placeholder': 'どんなこと？', 'class': 'form-control'}),
         }
+
+# class HelpLists(forms.ModelForm):
+#     class Meta: 
+#         model = HelpLists
+

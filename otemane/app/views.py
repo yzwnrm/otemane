@@ -14,15 +14,13 @@ from django.views.decorators.csrf import csrf_exempt
 from .forms import(
     UserLoginForm,
     #   RequestPasswordResetForm, SetNewPasswordForm, 
-    UserRegistrationForm, UserUpdateForm, 
-    ChildrenForm, HelpsForm, RewardsForm
+    UserRegistrationForm, UserUpdateForm,  ChildrenForm, HelpsForm, RewardsForm
 )
 from django.core.paginator import Paginator
 from django.views import View
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.auth import get_user_model
 from django.contrib import messages
-
 from django.http import JsonResponse
 from .models import Family, Children, Helps, Reactions, Records, Rewards, HelpLists
 from app.models import User, Invitation
