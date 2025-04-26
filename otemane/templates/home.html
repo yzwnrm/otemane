@@ -13,7 +13,7 @@
     </form>
 <body>
   <div class="container">    
-    {% if selected_child %}
+    {% comment %} {% if selected_child %} {% endcomment %}
       {% comment %} <p>{{ selected_child.child_name }}</p> {% endcomment %}
       <div class="text-center my-4">
         <div class="d-flex justify-content-center align-items-center">
@@ -32,33 +32,7 @@
             <h4 id="flowerTotal" >🌸 0 </h4>
             <h4 id="niceTotal" >😎 0 </h4>
         </div>
-        {% comment %} <button class="button js-modal-button">くわしくみる</button> {% endcomment %}
-
-        {% comment %} <div class="layer js-modal">
-          <div class="modal">
-            <div class="modal__inner">
-              <div class="modal__button-wrap">
-                <button class="close-button js-close-button" title="モーダルを閉じる">
-                  <span></span>
-                  <span></span>
-                </button>
-              </div>
-              <div class="modal__contents">
-                <div class="modal__content">
-                  おてつだい・報酬内容表示
-                  おてつだい・報酬内容表示
-                  おてつだい・報酬内容表示
-                  おてつだい・報酬内容表示
-                  おてつだい・報酬内容表示
-                  おてつだい・報酬内容表示
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> {% endcomment %}
-        <button id="openModal" class="open-modal">くわしくみる</button>
-
-<!-- モーダルウィンドウの内容 -->
+            <button id="openModal" class="open-modal">くわしくみる</button>
         <div id="myModal" class="modal">
             <div class="modal-content">
                 <span id="closeModal">&times;</span>
@@ -66,7 +40,6 @@
             </div>
         </div>
   </div>
-      {% endif %}
     
     <script>
         window.monthlyRewards = {{ monthly_rewards|safe }};

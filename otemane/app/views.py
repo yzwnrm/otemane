@@ -231,7 +231,7 @@ class HelpMakeView(FormView):    # おてつだいをつくる
     def get(self, request):
         return render(request, 'help_make.html', {
             'helps_form': HelpsForm(),
-            'rewards_form': RewardsForm()
+            'rewards_form': RewardsForm(),
         })
 
     def post(self, request):
@@ -314,7 +314,10 @@ class AddReactionView(View):
     def get(self, request):
         family = request.user.family
         children = Children.objects.filter(family=family)
-        records = Records.objects.filter(child__in=children).select_related('help', 'child')
+        records = Records.objects.filter(
+            child__in=children,
+            reactions__isnull=True
+        ).select_related('help', 'child')
 
         context = {
             'records': records,

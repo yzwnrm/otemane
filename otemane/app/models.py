@@ -139,7 +139,7 @@ class Records(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"{self.child.name} - {self.help.name} ({self.achievement_date})"
+        return f"{self.child.child_name} - {self.help.help_name} ({self.achievement_date})"
     
 class Reactions(models.Model):
     REACTION_CHOICES = [
@@ -150,7 +150,7 @@ class Reactions(models.Model):
         (4, '😎'), #nice
     ]
 
-    record = models.ForeignKey(Records, on_delete=models.CASCADE, related_name='reaction')
+    record = models.ForeignKey(Records, on_delete=models.CASCADE, related_name='reactions')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     reaction_image = models.IntegerField(choices=REACTION_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)

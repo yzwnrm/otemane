@@ -1,55 +1,23 @@
 {% extends "base.html" %}
-    {% comment %} <div class="container">
-            {% if record.id %}
-            <form method="POST" action="{% url 'add_reaction' record.id %}">
-                {% csrf_token %}
-                <button type="submit" name="reaction_content" value="0">💗</button>
-                <button type="submit" name="reaction_content" value="1">😊</button>
-                <button type="submit" name="reaction_content" value="2">👍</button>
-                <button type="submit" name="reaction_content" value="3">🌸</button>
-                <button type="submit" name="reaction_content" value="4">😎</button>
-            </form>
-            {% else %}
-              <span>リアクション未対応</span>
-            {% endif %}
-
-    {% comment %} </div> {% endcomment %}
-    {% comment %} <h1>お手伝いの進捗に対するリアクション</h1>
-
-{% for record in records %}
-    <div class="record">
-        <p><strong>{{ record.help.name }}</strong> (達成日: {{ record.achievement_date }})</p>
-
-        <div class="reactions">
-            {% for value, label in record.reaction_image.get_FOO_display %}
-                <button class="reaction-button" data-record-id="{{ record.id }}" data-reaction="{{ value }}">
-                    {{ label }}
-                </button>
-            {% endfor %}
-        </div>
-    </div>
-{% endfor %} {% endcomment %}
 {% load static %}
-<body>
-    <h1>お手伝いの進捗に対するリアクション</h1>
 
-    {% csrf_token %}
-
-    {% for record in records %}
+{% block content %}
+  <h2>ありがとうを送る</h2>
+  <p>達成されたお手伝い</p>
+      {% for record in records %}
         <div class="record">
-            <p><strong>{{ record.help.name }}</strong> (達成日: {{ record.achievement_date }})</p>
-            <div class="reactions">
-                {% for value, label in record.REACTION_CHOICES %}
-                    <button class="reaction-button" data-record-id="{{ record.id }}" data-reaction="{{ value }}">
-                        {{ label }}
-                    </button>
-                {% endfor %}
-            </div>
+          <p><strong>{{ record.help.name }}</strong> (達成日: {{ record.achievement_date }})</p>
+          <div class="reaction">
+        {% for value, label in REACTION_CHOICES %}
+          <button class="reaction-button" data-record-id="{{ record.id }}" data-reaction="{{ value }}">
+            {{ label }}
+          </button>
+        {% endfor %}
+          </div>
         </div>
-    {% endfor %}
-
-    <script src="{% static 'js/reaction.js' %}"></script>
-</body>
-{% endblock  %}
-
-
+  {% empty %}
+  <p>まだリアクションできる記録がありません。</p>
+  {% endfor %}
+  
+  <script src="{% static 'js/reaction.js' %}"></script>
+  {% endblock %}
