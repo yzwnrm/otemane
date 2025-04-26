@@ -2,11 +2,16 @@
 {% load static %}
 
 {% block content %}
+
+<form style="display:none;">
+  {% csrf_token %}
+</form>
+
   <h2>ありがとうを送る</h2>
   <p>達成されたお手伝い</p>
       {% for record in records %}
         <div class="record">
-          <p><strong>{{ record.help.name }}</strong> (達成日: {{ record.achievement_date }})</p>
+          <p>(達成日: {{ record.achievement_date }}) <strong>{{ record.help.help_name }}</strong> </p>
           <div class="reaction">
         {% for value, label in REACTION_CHOICES %}
           <button class="reaction-button" data-record-id="{{ record.id }}" data-reaction="{{ value }}">
@@ -19,5 +24,6 @@
   <p>まだリアクションできる記録がありません。</p>
   {% endfor %}
   
+  <script>const addReactionUrl = "{% url 'app:add_reaction' %}";</script>
   <script src="{% static 'js/reaction.js' %}"></script>
   {% endblock %}

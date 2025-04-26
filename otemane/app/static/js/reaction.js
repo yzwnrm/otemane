@@ -1,21 +1,20 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // 絵文字ボタンのクリックイベント
     document.querySelectorAll('.reaction-button').forEach(function(button) {
         button.addEventListener('click', function() {
             const recordId = button.getAttribute('data-record-id');
             const reactionImage = button.getAttribute('data-reaction');
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-            // AjaxでPOSTリクエストを送信
-            fetch("{% url 'app:add_reaction' %}", {
+            fetch(addReactionUrl, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    'Content-Type': 'application/x-www-form-urlencoded', 
+                    'X-CSRFToken': csrfToken,
                 },
-                body: JSON.stringify({
+                body: new URLSearchParams({  
                     'record_id': recordId,
-                    'reaction_image': reactionImage
-                })
+                    'reaction_image': reactionImage,
+                }),
             })
             .then(response => response.json())
             .then(data => {

@@ -32,7 +32,7 @@ from django.contrib.auth.views import(
 )
 # from django.contrib.auth.models import 
 
-import uuid
+import uuid, json
 
 UserModel = get_user_model()
 
@@ -252,14 +252,12 @@ class HelpMakeView(FormView):    # おてつだいをつくる
             family = get_object_or_404(Family, user=request.user)
             child = get_object_or_404(Children, id=selected_child_id, family=family)
             
-            # help インスタンス作成
             help_obj = helps_form.save(commit=False)
-            help_obj.child = child  # 選択した子どもをセット
+            help_obj.child = child 
             help_obj.save()
 
-            # reward インスタンス作成
             reward_obj = rewards_form.save(commit=False)
-            reward_obj.help = help_obj  # Help と関連付け
+            reward_obj.help = help_obj  
             reward_obj.save()
 
             return redirect(self.get_success_url())
@@ -306,46 +304,50 @@ class HelpListsView(ListView):    #えらんだおてつだい
         
         return redirect('app:help_list', child_id=child_id)
     
-        
-@method_decorator(login_required, name='dispatch')
-class AddReactionView(View):
-    template_name = 'add_reaction.html'
+class ReactionListView(LoginRequiredMixin, TemplateView):
+    template_name = 'reactions.html'
 
-    def get(self, request):
-        family = request.user.family
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        family = self.request.user.family
         children = Children.objects.filter(family=family)
         records = Records.objects.filter(
             child__in=children,
             reactions__isnull=True
         ).select_related('help', 'child')
 
-        context = {
-            'records': records,
-        }
-        return render(request, self.template_name, context)
-
-    def post(self, request):
-        record_id = request.POST.get('record_id')
-        reaction_image = request.POST.get('reaction_image')
-
-        if not record_id or reaction_image is None:
-            return JsonResponse({'error': 'レコードまたはリアクションが指定されていません。'}, status=400)
-
-        record = get_object_or_404(Records, id=record_id)
-
-        # すでに同じユーザーがその記録に対してリアクションしていれば更新
-        reaction, created = Reactions.objects.get_or_create(
-            record=record,
-            user=request.user,
-            defaults={'reaction_image': reaction_image}
-        )
-
-        if not created:
-            reaction.reaction_image = reaction_image
-            reaction.save()
-
-        return JsonResponse({'success': True})
+        context['records'] = records
+        context['REACTION_CHOICES'] = Reactions.REACTION_CHOICES
+        return context
     
+@method_decorator(csrf_exempt, name='dispatch')
+class AddReactionAjaxView(View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            record_id = data.get('record_id')
+            reaction_image = data.get('reaction_image')
+
+            if not record_id or reaction_image is None:
+                return JsonResponse({'success': False, 'error': 'レコードまたはリアクションが指定されていません。'}, status=400)
+
+            record = get_object_or_404(Records, id=record_id)
+
+            reaction, created = Reactions.objects.get_or_create(
+                record=record,
+                user=request.user,
+                defaults={'reaction_image': reaction_image}
+            )
+
+            if not created:
+                reaction.reaction_image = reaction_image
+                reaction.save()
+
+            return JsonResponse({'success': True})
+        
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'error': '無効なJSONです。'}, status=400)
+            
 class HelpChoseView(TemplateView):   #おてつだいをえらぶ
     template_name = 'help_chose.html'
 
