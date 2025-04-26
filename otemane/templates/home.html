@@ -1,52 +1,59 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-    <form method="post" action="{% url 'app:set_child' %}">
-      {% csrf_token %}
-      <select id="childSelect" name="child_id" onchange="this.form.submit()">
-        {% for child in children %}
-          <option value="{{ child.id }}" {% if child == selected_child %}selected{% endif %}>
-            {{ child.child_name }}
-          </option>
-        {% endfor %}
-      </select>
-    </form>
+<form method="post" action="{% url 'app:set_child' %}">
+  {% csrf_token %}
+  <select id="childSelect" name="child_id" onchange="this.form.submit()">
+    {% for child in children %}
+      <option value="{{ child.id }}" {% if child == selected_child %}selected{% endif %}>
+        {{ child.child_name }}
+      </option>
+    {% endfor %}
+  </select>
+</form>
+
 <body>
-  <div class="container">    
-    {% comment %} {% if selected_child %} {% endcomment %}
-      {% comment %} <p>{{ selected_child.child_name }}</p> {% endcomment %}
-      <div class="text-center my-4">
-        <div class="d-flex justify-content-center align-items-center">
-            <button id="prevMonth" >◁ 前月</button>
-            <h2 id="monthTitle" class="mb-0">4がつのごほうび</h2>
-            <button id="nextMonth" >翌月 ▷</button>
-        </div>
-        
-            <h3 id="moneyTotal" class="mt-3">おかね💰 0 えん</h3>
-            <h3 id="sweetsTotal" class="mt-3">おかし🍩 0 こ</h3>
+  <div class="container">
+    <div class="text-center my-4">
+      <div class="d-flex justify-content-center align-items-center">
+        <button id="prevMonth">◁ 前月</button>
+        <h2 id="monthTitle" class="mb-0">4がつのごほうび</h2>
+        <button id="nextMonth">翌月 ▷</button>
+      </div>
 
-        <div class="d-flex justify-content-center align-items-center flex-wrap gap-3 mt-3 ">
-            <h4 id="heartTotal" >💗 0 </h4>
-            <h4 id="smileTotal" >😊 0 </h4>
-            <h4 id="goodTotal" >👍 0 </h4>
-            <h4 id="flowerTotal" >🌸 0 </h4>
-            <h4 id="niceTotal" >😎 0 </h4>
+      <!-- ここはお金とおかしだけ -->
+      <h3 id="moneyTotal" class="mt-3">おかね💰 0 えん</h3>
+      <h3 id="sweetsTotal" class="mt-3">おかし🍩 0 こ</h3>
+
+      <!-- リアクションまとめ -->
+      <div class="d-flex justify-content-center align-items-center flex-wrap gap-3 mt-3">
+        <h4 id="heartTotal">💗 0</h4>
+        <h4 id="smileTotal">😊 0</h4>
+        <h4 id="goodTotal">👍 0</h4>
+        <h4 id="flowerTotal">🌸 0</h4>
+        <h4 id="niceTotal">😎 0</h4>
+      </div>
+
+      <!-- モーダルボタン -->
+      <button id="openModal" class="open-modal">くわしくみる</button>
+
+      <!-- モーダル -->
+      <div id="myModal" class="modal" style="display:none;">
+        <div class="modal-content">
+          <span id="closeModal">&times;</span>
+          <p>モーダルの内容です。</p>
         </div>
-            <button id="openModal" class="open-modal">くわしくみる</button>
-        <div id="myModal" class="modal">
-            <div class="modal-content">
-                <span id="closeModal">&times;</span>
-                <p>モーダルの内容です。</p>
-            </div>
-        </div>
+      </div>
+
+    </div>
   </div>
-    
-    <script>
-        window.monthlyRewards = {{ monthly_rewards|safe }};
-        window.currentMonth = "{{ current_month }}";
-    </script>
-    <script src="{% static 'js/home.js' %}"></script>
+
+  <!-- データ渡し -->
+  <script>
+    window.monthlyRewards = {{ monthly_rewards|safe }};
+    window.currentMonth = "{{ current_month }}";
+  </script>
+
+  <script src="{% static 'js/home.js' %}"></script>
 </body>
-{% endblock  %}
-
-
+{% endblock %}

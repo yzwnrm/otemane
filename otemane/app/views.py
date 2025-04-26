@@ -37,46 +37,64 @@ import uuid, json
 UserModel = get_user_model()
 
 class HomeView(LoginRequiredMixin, View):
-    class HomeView(LoginRequiredMixin, View):
-        login_url = 'user_login'
+    login_url = 'user_login'
 
     def get(self, request):
         family = request.user.family
         children = family.children.all()
-        # URLのchild_idがあればセッションに保存
-        selected_child_id = request.GET.get('child_id')
-        if selected_child_id:
-            request.session['selected_child_id'] = selected_child_id
-        else:
-            selected_child_id = request.session.get('selected_child_id')
+
+        selected_child_id = request.GET.get('child_id') or request.session.get('selected_child_id')
 
         selected_child = None
-        monthly_rewards = defaultdict(lambda: {"money": 0, "sweets": 0})
-
         if selected_child_id:
             selected_child = Children.objects.filter(id=selected_child_id, family=family).first()
-            if selected_child:
-                helps = selected_child.helps.prefetch_related('rewards', 'records')
 
-                for help in helps:
-                    for record in help.records.all():
-                        if record.achievement_date:
-                            month = record.achievement_date.strftime('%Y-%m')
-                            for reward in help.rewards.all():
-                                if reward.reward_type == 1:  # おかね
-                                    monthly_rewards[month]["money"] += reward.reward_prize or 0
-                                elif reward.reward_type == 0:  # おかし
-                                    monthly_rewards[month]["sweets"] += 1
+        monthly_rewards = defaultdict(lambda: {
+            "money": 0,
+            "sweets": 0,
+            "heart": 0,
+            "smile": 0,
+            "good": 0,
+            "flower": 0,
+            "nice": 0,
+        })
 
+        if selected_child:
+            helps = selected_child.helps.prefetch_related('rewards', 'records__reactions')
+
+            for help in helps:
+                for record in help.records.all():
+                    if record.achievement_date:
+                        month = record.achievement_date.strftime('%Y-%m')
+
+                        # 報酬
+                        for reward in help.rewards.all():
+                            if reward.reward_type == 1:  # おかね
+                                monthly_rewards[month]["money"] += reward.reward_prize or 0
+                            elif reward.reward_type == 0:  # おかし
+                                monthly_rewards[month]["sweets"] += 1
+
+                        # リアクション
+                        for reaction in record.reactions.all():
+                            if reaction.reaction_image == 0:  # 💗
+                                monthly_rewards[month]["heart"] += 1
+                            elif reaction.reaction_image == 1:  # 😊
+                                monthly_rewards[month]["smile"] += 1
+                            elif reaction.reaction_image == 2:  # 👍
+                                monthly_rewards[month]["good"] += 1
+                            elif reaction.reaction_image == 3:  # 🌸
+                                monthly_rewards[month]["flower"] += 1
+                            elif reaction.reaction_image == 4:  # 😎
+                                monthly_rewards[month]["nice"] += 1
         context = {
             'children': children,
-            'selected_child': selected_child,
+            'selected_child': selected_child,  # ← これ絶対渡す！
             'monthly_rewards': dict(monthly_rewards),
             'current_month': now().strftime('%Y-%m'),
         }
 
         return render(request, 'home.html', context)
-    
+
 class UserRegisterView(CreateView):
     form_class = UserRegistrationForm
     template_name = 'regist.html'

@@ -5,28 +5,33 @@ document.addEventListener('DOMContentLoaded', function() {
             const reactionImage = button.getAttribute('data-reaction');
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-            fetch(addReactionUrl, {
-                method: 'POST',
+            fetch("/app/add_reaction/", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded', 
-                    'X-CSRFToken': csrfToken,
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken
                 },
-                body: new URLSearchParams({  
-                    'record_id': recordId,
-                    'reaction_image': reactionImage,
-                }),
+                body: JSON.stringify({
+                    record_id: recordId,
+                    reaction_image: reactionImage
+                })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("サーバーエラー");
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
-                    alert('リアクションが追加されました！');
+                    console.log("リアクション送信成功");
                 } else {
-                    alert('エラーが発生しました');
+                    alert("リアクション失敗");
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                alert('エラーが発生しました');
+                console.error("エラー:", error);
+                alert("エラーが発生しました");
             });
         });
     });
