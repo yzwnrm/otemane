@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import(
-    TemplateView, CreateView, FormView, View, ListView
+    TemplateView, CreateView, FormView, View, ListView, DetailView
 )
 from django.views.generic.edit import FormView
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth import authenticate, login, logout
 from collections import defaultdict
+from django.utils import timezone
 from django.utils.timezone import now
 from datetime import datetime
 from django.utils.decorators import method_decorator
@@ -40,9 +41,8 @@ class HomeView(LoginRequiredMixin, View):
         login_url = 'user_login'
 
     def get(self, request):
-        family = get_object_or_404(Family, user=request.user)
-        children = Children.objects.filter(family=family)
-
+        family = request.user.family
+        children = family.children.all()
         # URLのchild_idがあればセッションに保存
         selected_child_id = request.GET.get('child_id')
         if selected_child_id:
@@ -125,6 +125,12 @@ class UserLogoutDone(TemplateView):
 
 class UserView(LoginRequiredMixin, TemplateView):
     template_name = 'user.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        children = Children.objects.filter(family__user=self.request.user)
+        context['records'] = Records.objects.filter(child__in=children).select_related('help', 'child')
+        return context
 
 class PasswordChange(LoginRequiredMixin, PasswordChangeView):
     success_url = reverse_lazy('app:password_change_done')
@@ -212,14 +218,6 @@ class CustomPasswordResetView(PasswordResetView):
 
     def get_users(self, email):
         return UserModel.objects.filter(email__iexact=email, is_active=True)
-    
-class AddReactionView(View):
-    def post(self, request, record_id):
-        emoji = request.POST.get('emoji')
-        record = Records.objects.get(id=record_id)
-        Reactions.objects.create(user=request.user, record=record, reaction_image=emoji)
-        return redirect('help_lists', pk=record_id)
-
 
 class HelpMakeView(FormView):    # おてつだいをつくる
     form_class = HelpsForm
@@ -284,19 +282,66 @@ class HelpListsView(ListView):    #えらんだおてつだい
         context = super().get_context_data(**kwargs)
         child_id = self.kwargs['child_id']
         context['child'] = get_object_or_404(Children, id=child_id)
+        context['selected_helps'] = HelpLists.objects.filter(child_id=child_id)  
         return context
 
     def post(self, request, *args, **kwargs):
         child_id = self.kwargs['child_id']
-        help_id = request.POST.get("help_id")
+        help_id = int(request.POST.get("help_id"))
+        
+        if not help_id:
+            return self.render_to_response({
+                **self.get_context_data(),
+                'error_message': "おてつだいのIDが指定されていません。"
+            })
 
-        if 'done' in request.POST:
-            help_item = get_object_or_404(HelpLists, child_id=child_id, help_id=help_id)
-            # 完了記録を追加（カレンダー等に表示可能）
-            Records.objects.create(child_id=child_id, help_id=help_id)
-            help_item.delete()
-            messages.success(request, "おてつだいを記録しました")
+        child = get_object_or_404(Children, id=child_id)
+        help_item = get_object_or_404(Helps, id=help_id)
+
+        Records.objects.create(
+            child_id=child_id,
+            help_id=help_id,
+            achievement_date=timezone.now()  # 現在の日付を設定
+        )
+        
         return redirect('app:help_list', child_id=child_id)
+    
+        
+@method_decorator(login_required, name='dispatch')
+class AddReactionView(View):
+    template_name = 'add_reaction.html'
+
+    def get(self, request):
+        family = request.user.family
+        children = Children.objects.filter(family=family)
+        records = Records.objects.filter(child__in=children).select_related('help', 'child')
+
+        context = {
+            'records': records,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        record_id = request.POST.get('record_id')
+        reaction_image = request.POST.get('reaction_image')
+
+        if not record_id or reaction_image is None:
+            return JsonResponse({'error': 'レコードまたはリアクションが指定されていません。'}, status=400)
+
+        record = get_object_or_404(Records, id=record_id)
+
+        # すでに同じユーザーがその記録に対してリアクションしていれば更新
+        reaction, created = Reactions.objects.get_or_create(
+            record=record,
+            user=request.user,
+            defaults={'reaction_image': reaction_image}
+        )
+
+        if not created:
+            reaction.reaction_image = reaction_image
+            reaction.save()
+
+        return JsonResponse({'success': True})
     
 class HelpChoseView(TemplateView):   #おてつだいをえらぶ
     template_name = 'help_chose.html'
@@ -336,3 +381,34 @@ class SetChildView(View):
             child = get_object_or_404(Children, id=child_id, family=family)
             request.session['selected_child_id'] = child.id
         return redirect('app:home')
+
+
+class CalenderView(DetailView):
+    model = Records
+    template_name = 'calender.html'
+    context_object_name = 'record'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_id = self.kwargs['pk']
+        user = get_object_or_404(User, id=user_id)
+
+        # 親ユーザーが管理している子どもを取得
+        children = Children.objects.filter(family=user.family)
+
+        # 子どもごとのhelp, reward, recordを集める（リストや辞書で管理）
+        data = []
+        for child in children:
+            helps = Helps.objects.filter(child=child)
+            rewards = Rewards.objects.filter(help__in=helps)
+            records = Records.objects.filter(child=child)
+            data.append({
+                'child': child,
+                'helps': helps,
+                'rewards': rewards,
+                'records': records,
+            })
+
+        context['user'] = user
+        context['calendar_data'] = data
+        return context

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <h4>マイページ</h4>
-    {% comment %} <a class="btn btn-light" href="{% url 'app:add_reaction' %}" role="button">ありがとうを送る</a> {% endcomment %}
+    <a class="btn btn-light" href="{% url 'app:add_reaction' %}" role="button">ありがとうを送る</a>
     <a class="btn btn-light" href="{% url 'app:help_edit_delete' %}" role="button">お手伝いの修正・削除</a>
     <a class="btn btn-light" href="{% url 'app:child_regist' %}" role="button">お手伝いメンバー編集</a>
     <a class="btn btn-light" href="{% url 'app:guide' %}" role="button">使い方ガイド</a>

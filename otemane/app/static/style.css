@@ -113,15 +113,26 @@ button {
     display: flex; /* ボタン内のテキストが中央に配置されるようにフレックスボックスを使用 */
     align-items: center; /* ボタン内のテキストを縦方向に中央揃え */
     justify-content: center; /* ボタン内のテキストを横方向に中央揃え */
-    top: -30%; /* モーダル内容の上部から離れた位置に配置 */
-    right: -10%; /* モーダル内容の右端から離れた位置に配置 */
-    font-size: 28px; /* 閉じるボタンのフォントサイズ */
+    top: 0%; /* モーダル内容の上部から離れた位置に配置 */
+    right: 0%; /* モーダル内容の右端から離れた位置に配置 */
+    font-size: 24px; /* 閉じるボタンのフォントサイズ */
     font-weight: bold; /* 閉じるボタンのフォントを太字に設定 */
     cursor: pointer; /* ホバー時にポインタが表示されるように設定 */
-    color: #FFF; /* 閉じるボタンのテキストカラーを白に設定 */
+    color: #000; /* 閉じるボタンのテキストカラーを白に設定 */
     width: 40px; /* ボタンの幅 */
     height: 40px; /* ボタンの高さ */
-    background-color: #333; /* ボタンの背景色をダークグレーに設定 */
-    border: #333; /* ボタンの境界線を背景と同じ色に設定 */
+    background-color: #fff; /* ボタンの背景色をダークグレーに設定 */
+    border: #fff; /* ボタンの境界線を背景と同じ色に設定 */
     border-radius: 50%; /* ボタンを丸くするための半径 */
   }
+
+  .reaction-button {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    margin: 5px;
+    cursor: pointer;
+}
+.reaction-button:hover {
+    opacity: 0.7;
+}

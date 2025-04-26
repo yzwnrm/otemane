@@ -18,7 +18,6 @@ RELATIONSHIP_CHOICES = [
         (6, 'その他'),
     ]
 
-
 class UserManager(BaseUserManager):
     def create_user(self, username, email, password):
         if not email:
@@ -33,24 +32,20 @@ class UserManager(BaseUserManager):
         user.set_password(password)
         user.save()
         return user
-    
+
+class Family(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
 class User(AbstractBaseUser, PermissionsMixin):
-    
-    family_id = models.IntegerField(null=True, blank=True)
-    
+    family = models.ForeignKey(Family, on_delete=models.CASCADE)
     username = models.CharField(max_length=64)
-
     relationship = models.IntegerField(choices=RELATIONSHIP_CHOICES)
-
     is_active = models.BooleanField(default=True)
-
     email = models.EmailField(max_length=64, unique=True)
-
     password = models.CharField(max_length=100)  
-
     password_token = models.CharField(max_length=100, blank=True, null=True)
     password_expiry = models.DateTimeField(blank=True, null=True)
-
     created_at = models.DateTimeField(default=timezone.now)
     update_at = models.DateTimeField(auto_now=True)
 
@@ -61,12 +56,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_absolute_url(self):
         return reverse_lazy("accounts:home")
+    
+    def __str__(self):
+        return self.username
 
-class Family(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class Children(models.Model):
     family = models.ForeignKey(Family, on_delete=models.CASCADE, related_name='children')
@@ -146,7 +139,7 @@ class Records(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"{self.child.name} - {self.help_name} ({self.achievement_date})"
+        return f"{self.child.name} - {self.help.name} ({self.achievement_date})"
     
 class Reactions(models.Model):
     REACTION_CHOICES = [

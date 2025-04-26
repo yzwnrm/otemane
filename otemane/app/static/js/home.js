@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     const rewards = window.monthlyRewards || {};
+    //const reaction = window.monthlyReactions || {};
     let currentMonth = window.currentMonth; // "2025-04"
 
     function updateRewardDisplay() {
@@ -14,6 +15,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById('moneyTotal').textContent = `💰 おかね：${reward.money}えん`;
     document.getElementById('sweetsTotal').textContent = `🍩 おかし：${reward.sweets}こ`;
+
+    //    const reaction = reactions[currentMonth] ||{
+    //        heart: 0,
+    //        smile: 0,
+    //        good: 0,
+    //        flower: 0,
+    //        nice: 0,
+
+    //};
+
+    //document.getElementById('heartTotal').textContent = `💗 ：${reaction.heart}`;
+    //document.getElementById('smileTotal').textContent = `😊 ：${reaction.smile}`;
+    //document.getElementById('goodTotal').textContent = `👍 ：${reaction.good}`;
+    //document.getElementById('flowerTotal').textContent = `🌸 ：${reaction.flower}`;
+    //document.getElementById('niceTotal').textContent = `😎 ：${reaction.nice}`;
 }    
         
     function changeMonth(offset) {

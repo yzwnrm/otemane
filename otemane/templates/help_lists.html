@@ -10,8 +10,8 @@
 {% for help in selected_helps %}
 <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
   <div>
-    <strong>・{{ help.help_name }}</strong>
-    {% for reward in help.rewards.all %}
+    <strong>・{{ help.help.help_name }}</strong>
+    {% for reward in help.help.rewards.all %}
       —
       {% if reward.reward_type == 1 %}
         {{ reward.reward_prize }}えん
@@ -20,8 +20,9 @@
       {% endif %}
     {% endfor %}
   </div>
-  <form method="post" action="{% url 'app:help_done' help.id %}">
+  <form method="post" action="{% url 'app:help_lists' help.id %}">
     {% csrf_token %}
+    <input type="hidden" name="help_id" value="{{ help.help.id }}">
     <button class="btn btn-outline-success">できた！</button>
   </form>
 </div>

@@ -1,4 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>カレンダー</h1>
-{% endblock  %}
+
+<h2>カレンダー（達成記録一覧）</h2>
+
+{% for item in calendar_data %}
+  <div class="mb-4 p-3 border rounded">
+    <h4>{{ item.child.name }} の記録</h4>
+
+    {% if item.records %}
+      <ul class="list-group">
+        {% for record in item.records %}
+          <li class="list-group-item">
+            <strong>達成日:</strong> {{ record.achievement_date|date:"Y年m月d日" }}<br>
+            <strong>おてつだい:</strong> {{ record.help.title }}<br>
+            <strong>ごほうび:</strong> {{ record.help.reward.name }}（{{ record.help.reward.point }} ポイント）<br>
+
+            {% comment %} {% with record.reactions.all as reactions %}
+              {% if reactions %}
+                <strong>リアクション:</strong>
+                {% for reaction in reactions %}
+                  {{ reaction.get_reaction_image_display }} 
+                {% endfor %}
+              {% else %}
+                <em>リアクションなし</em>
+              {% endif %}
+            {% endwith %} {% endcomment %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>記録はまだありません。</p>
+    {% endif %}
+  </div>
+{% endfor %}
+
+{% endblock %}
