@@ -165,24 +165,20 @@ class PasswordChangeDone(LoginRequiredMixin,PasswordChangeDoneView):
 class GuideView(LoginRequiredMixin, TemplateView):
     template_name = 'guide.html'
 
-@login_required
-def account_edit_view(request):
-    user = request.user
+class AccountEditView(LoginRequiredMixin, View):
+    login_url = 'user_login'
 
-    if request.method == 'POST':
-        user_form = UserUpdateForm(request.POST, instance=user)
-        
+    def get(self, request):
+        user_form = UserUpdateForm(instance=request.user)
+        return render(request, 'account_edit.html', {'user_form': user_form})
+
+    def post(self, request):
+        user_form = UserUpdateForm(request.POST, instance=request.user)
         if user_form.is_valid():
             user_form.save()
-            return redirect('app:user')  # 編集後の遷移先
-    else:
-        user_form = UserUpdateForm(instance=user)
-
-    context = {
-        'user_form': user_form,
-    }
-    return render(request, 'user_change.html', context)
-
+            return redirect('app:user')
+        return render(request, 'account_edit.html', {'user_form': user_form})
+    
 class FamilyInfoView(LoginRequiredMixin, ListView):
     model = Children
     template_name = 'family_info.html'

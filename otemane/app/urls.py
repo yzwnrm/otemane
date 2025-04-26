@@ -2,7 +2,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import path
 from .views import (
     UserRegisterView, HomeView, UserLoginView,
-    UserLogoutView, UserView, PasswordChangeDone, 
+    UserLogoutView, UserView, PasswordChangeDone, AccountEditView,
     PasswordChange, RegistDone, GuideView, UserLogoutDone,
     FamilyInfoView, ChildCreateView, InvitePageView, AjaxCreateInviteView, 
     CustomPasswordResetView, ReactionListView, AddReactionAjaxView,
@@ -29,7 +29,7 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/',auth_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm.html'),name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
     path('guide/', GuideView.as_view(), name='guide'),
-    path('user_change/', views.account_edit_view, name='user_change'),
+    path('account/edit/', AccountEditView.as_view(), name='account_edit'),
     path('family_info/<int:family_id>/', FamilyInfoView.as_view(), name='family_info'),
     path('child_regist/', ChildCreateView.as_view(), name='child_regist'),
     path('invite/', InvitePageView.as_view(), name='invite'),

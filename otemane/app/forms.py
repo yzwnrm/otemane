@@ -38,16 +38,28 @@ class UserRegistrationForm(UserCreationForm):
 
 class UserUpdateForm(forms.ModelForm):
     relationship = forms.ChoiceField(choices=RELATIONSHIP_CHOICES, label='続柄')
+    new_email = forms.EmailField(label='新しいメールアドレス', required=False)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'relationship']
+        fields = ['user_name', 'relationship', 'email' ]
         labels = {
-            'username': '名前',
-            'email': 'メールアドレス',
+            'user_name': '名前/ニックネーム',
             'relationship': '続柄',
-
+            'email': 'メールアドレス'
         }
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        new_email = self.cleaned_data.get('new_email')
+
+        if new_email:
+            user.email = new_email  # 新しいメールアドレスがあれば上書き
+
+        if commit:
+            user.save()
+        return user
+
 
 class ChildrenForm(forms.ModelForm):
     class Meta:
@@ -79,9 +91,3 @@ class RewardsForm(forms.ModelForm):
             'reward_prize': forms.NumberInput(attrs={'placeholder': 'いくら？', 'class': 'form-control'}),
             'reward_detail': forms.TextInput(attrs={'placeholder': 'どんなこと？', 'class': 'form-control'}),
         }
-
-class ReactionForm(forms.ModelForm):
-    class Meta: 
-        model = Reactions
-        fields = ['reaction_image']
-

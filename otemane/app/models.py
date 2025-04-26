@@ -39,7 +39,7 @@ class Family(models.Model):
 
 class User(AbstractBaseUser, PermissionsMixin):
     family = models.ForeignKey(Family, on_delete=models.CASCADE)
-    username = models.CharField(max_length=64)
+    user_name = models.CharField(max_length=64)
     relationship = models.IntegerField(choices=RELATIONSHIP_CHOICES)
     is_active = models.BooleanField(default=True)
     email = models.EmailField(max_length=64, unique=True)
