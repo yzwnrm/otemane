@@ -7,7 +7,7 @@ from .views import (
     FamilyInfoView, ChildCreateView, InvitePageView, AjaxCreateInviteView, 
     CustomPasswordResetView, ReactionListView, AddReactionAjaxView,
     HelpMakeView, HelpChoseView, HelpListsView, HelpEditDeleteView,
-    SetChildView, CalenderView, HelpDeleteView
+    SetChildView, CalenderView, 
 
 )
 from . import views
@@ -41,8 +41,7 @@ urlpatterns = [
     path('help/chose/<int:child_id>/', HelpChoseView.as_view(), name='help_chose'),
     path('help_edit_delete/', HelpEditDeleteView.as_view(), name='help_edit_delete'),
     path('help_update/<int:pk>/', views.help_update, name='help_update'),
-    path('help_delete/<int:pk>/', HelpDeleteView.as_view(), name='help_delete'),
+    path('help_delete/<int:pk>/', views.help_delete, name='help_delete'),
     path('set-child/', SetChildView.as_view(), name='set_child'),
     # path('calender/<int:pk>/', CalenderView.as_view(), name='calender'),
-
 ]

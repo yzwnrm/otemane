@@ -1,28 +1,68 @@
 {% extends "base.html" %}
-{% block content%}
+{% load static %}
+{% block content %}
 <h2>お手伝い一覧</h2>
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-success" role="alert">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
 <table class="table">
   <tbody>
-  {% for help in helps %}
-    <td>{{ help.help_name }}</td>
-    <td>
-      {% for reward in help.rewards.all %}
-      —
-      {% if reward.reward_type == 1 %}
-        {{ reward.reward_prize }}えん
-      {% elif reward.reward_type == 0 %}
-        おかし１つ
-      {% elif reward.reward_type == 2 %}
-        {{ reward.reward_detail }}
-
-      {% endif %}
-      {% endfor %}</td>
-    <td>
-      <a class="btn btn-light" href="{% url 'app:help_update' help.pk %}">修正</a> 
-      <a class="btn btn-light" href="{% url 'app:help_delete' help.pk %}">削除</a>
-    </td> 
-  </tr>
-  {% endfor %}
+    {% for help in helps %}
+    <tr>
+      <td>{{ help.help_name }}</td>
+      <td>
+        {% for reward in help.rewards.all %}
+        —
+        {% if reward.reward_type == 1 %}
+          {{ reward.reward_prize }}えん
+        {% elif reward.reward_type == 0 %}
+          おかし１つ
+        {% elif reward.reward_type == 2 %}
+          {{ reward.reward_detail }}
+        {% endif %}
+        {% endfor %}
+      </td>
+      <td>
+        <a class="btn btn-light" href="{% url 'app:help_update' help.pk %}">修正</a>
+        <button class="btn btn-danger"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteModal"
+                data-help-id="{{ help.id }}">
+          削除
+        </button>
+      </td>
+    </tr>
+    {% endfor %}
   </tbody>
 </table>
+
+<!-- ✅ モーダル本体：ループの外に1つだけ -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" id="deleteForm">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title">おてつだいの削除</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          削除した内容は元に戻せません。削除しますか？
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+          <button type="submit" class="btn btn-danger">削除する</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ BootstrapのJS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/help_delete.js' %}"></script>
 {% endblock %}

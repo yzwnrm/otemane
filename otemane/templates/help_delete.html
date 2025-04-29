@@ -6,7 +6,8 @@
 <form method="post">
   {% csrf_token %}
   <button type="submit">削除</button>
-  <a href="{% url 'help_edit_delete' %}">キャンセル</a>
+  <a href="{% url 'app:help_edit_delete' %}">キャンセル</a>
 </form>
+  <script src="{% static 'js/help_delete.js' %}"></script>
 </body>
 {% endblock %}

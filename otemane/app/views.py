@@ -419,10 +419,12 @@ def help_update(request, pk):
         'rewards_form': reward_form,
     })
 
-class HelpDeleteView(DeleteView):
-    model = Helps
-    template_name = 'help_delete.html'
-    success_url = reverse_lazy('help_edit_delete')
+def help_delete(request, pk):
+    if request.method == 'POST':
+        help = get_object_or_404(Helps, pk=pk)
+        help.delete()
+        messages.success(request, 'お手伝いを1件削除しました。')
+    return redirect('app:help_edit_delete')  
 
 class SetChildView(View):
     def post(self, request, *args, **kwargs):
