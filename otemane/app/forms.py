@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import modelformset_factory
 from app.models import User, Helps
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -87,7 +88,14 @@ class RewardsForm(forms.ModelForm):
         model = Rewards
         fields = ['reward_type', 'reward_prize', 'reward_detail']
         widgets = {
-            'reward_type': forms.Select(attrs={'class': 'form-select'}),
+            'reward_type': forms.RadioSelect, 
             'reward_prize': forms.NumberInput(attrs={'placeholder': 'いくら？', 'class': 'form-control'}),
             'reward_detail': forms.TextInput(attrs={'placeholder': 'どんなこと？', 'class': 'form-control'}),
         }
+
+RewardsFormSet = modelformset_factory(
+    Rewards,
+    form=RewardsForm,
+    extra=1,  # 初期フォームを1つ表示
+    can_delete=True  # フォームを削除できるオプションを追加
+)

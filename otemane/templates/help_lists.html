@@ -17,6 +17,8 @@
         {{ reward.reward_prize }}えん
       {% elif reward.reward_type == 0 %}
         おかし１つ
+      {% elif reward.reward_type == 2 %}
+        {{ reward.reward_detail }}
       {% endif %}
     {% endfor %}
   </div>

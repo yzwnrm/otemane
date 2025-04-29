@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>おてつだいを修正</h3>
+<form method="post">
+  {% csrf_token %}
+
+  <h4>どんなおてつだい？</h4>
+  {{ helps_form.help_name.label }} {{ helps_form.help_name }}
+
+  <h4>なにがほしい？</h4>
+
+  <div class="reward-option">
+    <label>
+      <input type="radio" name="reward_type" value="0"
+        {% if rewards_form.instance.reward_type == 0 %}checked{% endif %}>
+      おかし
+    </label>
+  </div>
+
+  <div class="reward-option">
+    <label>
+      <input type="radio" name="reward_type" value="1"
+        {% if rewards_form.instance.reward_type == 1 %}checked{% endif %}>
+      おかね
+    </label>
+    {{ rewards_form.reward_prize }}
+  </div>
+
+  <div class="reward-option">
+    <label>
+      <input type="radio" name="reward_type" value="2"
+        {% if rewards_form.instance.reward_type == 2 %}checked{% endif %}>
+      おねがい
+    </label>
+    {{ rewards_form.reward_detail }}
+  </div>
+
+  <button type="submit">保存</button>
+</form>
+{% endblock %}

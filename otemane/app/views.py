@@ -1,6 +1,8 @@
+from django.forms import inlineformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import(
-    TemplateView, CreateView, FormView, View, ListView, DetailView
+    TemplateView, CreateView, FormView, View, 
+    ListView, DetailView, UpdateView, DeleteView
 )
 from django.views.generic.edit import FormView
 from django.urls import reverse_lazy, reverse
@@ -15,7 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .forms import(
     UserLoginForm,
     #   RequestPasswordResetForm, SetNewPasswordForm, 
-    UserRegistrationForm, UserUpdateForm,  ChildrenForm, HelpsForm, RewardsForm
+    UserRegistrationForm, UserUpdateForm,  ChildrenForm, HelpsForm, RewardsForm, RewardsFormSet
 )
 from django.core.paginator import Paginator
 from django.views import View
@@ -389,8 +391,38 @@ class HelpChoseView(TemplateView):   #おてつだいをえらぶ
 
         return redirect('app:help_chose', child_id=child_id)
 
-class HelpEditDeleteView(TemplateView):    #おてつだいの修正・削除
+class HelpEditDeleteView(ListView):
+    model = Helps
     template_name = 'help_edit_delete.html'
+    context_object_name = 'helps'
+
+def help_update(request, pk):
+    help_instance = Helps.objects.get(pk=pk)
+    reward_instance = help_instance.rewards.first()  # 最初の報酬1件を取得
+
+    if request.method == 'POST':
+        help_form = HelpsForm(request.POST, instance=help_instance)
+        reward_form = RewardsForm(request.POST, instance=reward_instance)
+
+        if help_form.is_valid() and reward_form.is_valid():
+            help = help_form.save()
+            reward = reward_form.save(commit=False)
+            reward.help = help  # 外部キーの再設定（念のため）
+            reward.save()
+            return redirect('app:help_edit_delete')
+    else:
+        help_form = HelpsForm(instance=help_instance)
+        reward_form = RewardsForm(instance=reward_instance)
+
+    return render(request, 'help_update.html', {
+        'helps_form': help_form,
+        'rewards_form': reward_form,
+    })
+
+class HelpDeleteView(DeleteView):
+    model = Helps
+    template_name = 'help_delete.html'
+    success_url = reverse_lazy('help_edit_delete')
 
 class SetChildView(View):
     def post(self, request, *args, **kwargs):

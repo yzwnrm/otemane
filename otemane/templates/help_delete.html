@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content%}
+<body>
+    <h2>本当に削除しますか？</h2>
+<p>{{ object.title }} を削除します。</p>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">削除</button>
+  <a href="{% url 'help_edit_delete' %}">キャンセル</a>
+</form>
+</body>
+{% endblock %}
