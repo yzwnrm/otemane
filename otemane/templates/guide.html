@@ -8,37 +8,60 @@
       <link rel="stylesheet" href="{% static 'style.css' %}">
     </head>
     <body>
-      <div class="container">
-        <h3>使い方ガイド</h3>
-        {% comment %} <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-        Launch demo modal
-        </button>
-  
-        <!-- Modal -->
-        <div class="modal" tabindex="-1">
-            <div class="modal-dialog">
+      <h3>使い方ガイド</h3>
+        <button class="open-modal btn btn-light" data-target=".modal-1">ありがとうを送るとは？</button>
+        <button class="open-modal btn btn-light" data-target=".modal-2">お手伝いの内容を変えたい</button>
+        <button class="open-modal btn btn-light" data-target=".modal-3">家族を招待したい</button>
+        <button class="open-modal btn btn-light" data-target=".modal-4">子どもの情報を変えたい</button>
+        <button class="open-modal btn btn-light" data-target=".modal-5">パスワードを変更したい</button>
+
+
+          <!-- モーダル1 -->
+            <div class="modal modal-1">
               <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title">ありがとうを送るとは？</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <p>Modal body text goes here.</p>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
+                <span class="close-modal">&times;</span>
+                <h4>ありがとうを送るとは？</h4>
+                <p>達成できたお手伝いに対し、おうちの人が感謝の気持ちを込めてリアクションを残す機能です。
+                  「ありがとうを送る」のページに進むと達成できたお手伝い内容が表示され、５つのイラストから「ありがとう」を選択できるようになっています。
+                  その中から１つクリックすると、ホーム画面のお手伝いの記録に反映されます。</p>
               </div>
             </div>
-          </div> {% endcomment %}
-        <button type="submit" class="btn btn-light">ありがとうを送るとは？</button>
-        <button type="submit" class="btn btn-light">お手伝いの内容を変えたい</button>
-        <button type="submit" class="btn btn-light">家族を招待したい</button>
-        <button type="submit" class="btn btn-light">子どもの情報を変えたい</button>
-        <button type="submit" class="btn btn-light">パスワードを変更したい</button>
-        <a href="/app/user/">マイページへ戻る</a>
-      </div>
+          <!-- モーダル2 -->
+            <div class="modal modal-2">
+              <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h4>お手伝いの内容を変えたい</h4>
+                <p>...準備中...</p>
+              </div>
+            </div>
+          <!-- モーダル3 -->
+            <div class="modal modal-3">
+              <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h4>家族を招待したい</h4>
+                <p>...準備中...</p>
+              </div>
+            </div>
+          <!-- モーダル4 -->
+            <div class="modal modal-4">
+              <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h4>子どもの情報を変えたい</h4>
+                <p>...準備中...</p>
+              </div>
+            </div>
+          <!-- モーダル5 -->
+            <div class="modal modal-5">
+              <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h4>パスワードを変更したい</h4>
+                <p>...準備中...</p>
+              </div>
+            </div>
+            <div class="example">
+              <a href="/app/user/">マイページへ戻る</a>
+            </div>
+
+    <script src="{% static 'js/guide.js' %}"></script>
     </body>
 </html>
