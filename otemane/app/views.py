@@ -409,6 +409,7 @@ def help_update(request, pk):
             reward = reward_form.save(commit=False)
             reward.help = help  # 外部キーの再設定（念のため）
             reward.save()
+            messages.success(request, 'お手伝いを1件修正しました。')
             return redirect('app:help_edit_delete')
     else:
         help_form = HelpsForm(instance=help_instance)
