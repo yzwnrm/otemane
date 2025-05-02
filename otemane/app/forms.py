@@ -74,6 +74,25 @@ class ChildrenForm(forms.ModelForm):
             'birthday': 'たんじょうび',
         }
 
+    def save(self, commit=True):
+        child = super().save(commit=False)
+        
+        if commit:
+            child.save()
+        return child
+
+class ChildUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Children
+        fields = ['child_name', 'birthday']
+        widgets = {
+            'birthday': forms.DateInput(attrs={'type': 'date'}),
+        }
+        labels = {
+            'child_name': 'なまえ',
+            'birthday': 'たんじょうび',
+        }
+
 class HelpsForm(forms.ModelForm):
     class Meta:
         model = Helps

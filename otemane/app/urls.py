@@ -2,12 +2,12 @@ from django.contrib.auth import views as auth_views
 from django.urls import path
 from .views import (
     UserRegisterView, HomeView, UserLoginView,
-    UserLogoutView, UserView, PasswordChangeDone, AccountEditView,
+    UserLogoutView, UserView, PasswordChangeDone, 
     PasswordChange, RegistDone, GuideView, UserLogoutDone,
     FamilyInfoView, ChildCreateView, InvitePageView, AjaxCreateInviteView, 
     CustomPasswordResetView, ReactionListView, AddReactionAjaxView,
     HelpMakeView, HelpChoseView, HelpListsView, HelpEditDeleteView,
-    SetChildView, CalenderView, 
+    SetChildView, CalenderView, ChildUpdateView, ChildDeleteView, UserDeleteView, UserUpdateView
 
 )
 from . import views
@@ -29,7 +29,7 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/',auth_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm.html'),name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
     path('guide/', GuideView.as_view(), name='guide'),
-    path('account/edit/', AccountEditView.as_view(), name='account_edit'),
+    # path('account/edit/', AccountEditView.as_view(), name='account_edit'),
     path('family_info/<int:family_id>/', FamilyInfoView.as_view(), name='family_info'),
     path('child_regist/', ChildCreateView.as_view(), name='child_regist'),
     path('invite/', InvitePageView.as_view(), name='invite'),
@@ -42,6 +42,10 @@ urlpatterns = [
     path('help_edit_delete/', HelpEditDeleteView.as_view(), name='help_edit_delete'),
     path('help_update/<int:pk>/', views.help_update, name='help_update'),
     path('help_delete/<int:pk>/', views.help_delete, name='help_delete'),
-    path('set-child/', SetChildView.as_view(), name='set_child'),
-    # path('calender/<int:pk>/', CalenderView.as_view(), name='calender'),
+    path('set_child/', SetChildView.as_view(), name='set_child'),
+    path('child/<int:pk>update/', ChildUpdateView.as_view(), name='child_update'),
+    path('user/<int:pk>/update/', UserUpdateView.as_view(), name='user_update'),
+    path('user/<int:pk>/delete/', UserDeleteView.as_view(), name='user_delete'),
+    path('child/<int:pk>/delete/', ChildDeleteView.as_view(), name='child_delete'),
+    path('calender/<int:pk>/', CalenderView.as_view(), name='calender'),
 ]

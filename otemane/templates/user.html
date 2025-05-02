@@ -3,10 +3,10 @@
 <h4>マイページ</h4>
     <a class="btn btn-light" href="{% url 'app:reactions' %}" role="button">ありがとうを送る</a>
     <a class="btn btn-light" href="{% url 'app:help_edit_delete' %}" role="button">お手伝いの修正・削除</a>
-    <a class="btn btn-light" href="{% url 'app:child_regist' %}" role="button">お手伝いメンバー編集</a>
+    <a class="btn btn-light" href="{% url 'app:child_regist' %}" role="button">お手伝いメンバー登録</a>
     <a class="btn btn-light" href="{% url 'app:guide' %}" role="button">使い方ガイド</a>
     <a class="btn btn-light" href="{% url 'app:invite' %}" role="button">家族を招待する</a>
-    {% comment %} <a class="btn btn-light" href="{% url 'app:family_info' family.id %}" role="button">家族情報管理</a> {% endcomment %}
-    <a class="btn btn-light" href="{% url 'app:account_edit' %}" role="button">アカウント編集</a> 
+    <a class="btn btn-light" href="{% url 'app:family_info' family.id %}" role="button">家族情報管理</a>
+    <a class="btn btn-light" href="{% url 'app:user_update' user.id %}" role="button">アカウント編集</a> 
     <a class="btn btn-light" href="{% url 'app:user_logout' %}" role="button">ログアウト</a> 
 {% endblock  %}

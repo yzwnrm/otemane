@@ -17,7 +17,8 @@ from django.views.decorators.csrf import csrf_exempt
 from .forms import(
     UserLoginForm,
     #   RequestPasswordResetForm, SetNewPasswordForm, 
-    UserRegistrationForm, UserUpdateForm,  ChildrenForm, HelpsForm, RewardsForm, RewardsFormSet
+    UserRegistrationForm, UserUpdateForm,  ChildrenForm, ChildUpdateForm,
+    HelpsForm, RewardsForm, RewardsFormSet
 )
 from django.core.paginator import Paginator
 from django.views import View
@@ -150,6 +151,7 @@ class UserView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         children = Children.objects.filter(family__user=self.request.user)
         context['records'] = Records.objects.filter(child__in=children).select_related('help', 'child')
+        context['family'] = self.request.user.family
         return context
 
 class PasswordChange(LoginRequiredMixin, PasswordChangeView):
@@ -166,37 +168,8 @@ class PasswordChangeDone(LoginRequiredMixin,PasswordChangeDoneView):
 
 class GuideView(LoginRequiredMixin, TemplateView):
     template_name = 'guide.html'
+   
 
-class AccountEditView(LoginRequiredMixin, View):
-    login_url = 'user_login'
-
-    def get(self, request):
-        user_form = UserUpdateForm(instance=request.user)
-        return render(request, 'account_edit.html', {'user_form': user_form})
-
-    def post(self, request):
-        user_form = UserUpdateForm(request.POST, instance=request.user)
-        if user_form.is_valid():
-            user_form.save()
-            return redirect('app:user')
-        return render(request, 'account_edit.html', {'user_form': user_form})
-    
-class FamilyInfoView(LoginRequiredMixin, ListView):
-    model = Children
-    template_name = 'family_info.html'
-    context_object_name = 'children'
-
-    def get_queryset(self):
-        family_id = self.kwargs['family_id']
-        self.family = get_object_or_404(Family, id=family_id)
-        return self.family.children.all()
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['parent_user'] = self.request.user
-        context['family'] = self.family
-        return context
-    
 class ChildCreateView(LoginRequiredMixin, CreateView):
     model = Children
     form_class = ChildrenForm
@@ -234,6 +207,84 @@ class CustomPasswordResetView(PasswordResetView):
 
     def get_users(self, email):
         return UserModel.objects.filter(email__iexact=email, is_active=True)
+
+class FamilyInfoView(LoginRequiredMixin, TemplateView):
+    template_name = 'family_info.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        family_id = self.kwargs['family_id']
+        family = get_object_or_404(Family, id=family_id)
+
+        context['family'] = family
+        context['user'] = User.objects.filter(family=family)
+        context['child'] = Children.objects.filter(family=family)
+
+        return context
+    
+class UserUpdateView(LoginRequiredMixin, View):
+    model = User
+    template_name = 'user_update.html'
+    # login_url = 'user_login'
+
+class UserUpdateView(LoginRequiredMixin, View):
+    template_name = 'user_update.html'  
+    def get(self, request, pk, *args, **kwargs):
+        user = get_object_or_404(User, pk=pk)
+        user_form = UserUpdateForm(instance=user)
+        return render(request, self.template_name, {'user_form': user_form})
+
+    def post(self, request, pk, *args, **kwargs):
+        user = get_object_or_404(User, pk=pk)
+        user_form = UserUpdateForm(request.POST, instance=user)
+        if user_form.is_valid():
+            user_form.save()
+            return redirect('app:family_info') 
+        return render(request, self.template_name, {'user_form': user_form})
+
+class ChildUpdateView(LoginRequiredMixin,View):
+    model = Children
+    template_name = 'child_update.html'
+
+    def get(self, request, pk):
+        child = get_object_or_404(Children, pk=pk)
+        child_form = ChildUpdateForm(instance=child)
+        family = child.family 
+
+        return render(request, self.template_name, {
+            'child_form': child_form,
+            'family': family,  
+        })
+
+    def post(self, request, pk):
+        child = get_object_or_404(Children, pk=pk)
+        child_form = ChildUpdateForm(request.POST, instance=child)
+
+        family = child.family
+
+        if child_form.is_valid():
+            child_form.save()
+            return redirect('app:family_info', family_id=family.id)
+        return render(request, self.template_name, {
+            'child_form': child_form,
+            'family': family,
+        })
+
+class ChildDeleteView(LoginRequiredMixin, DeleteView):
+    model = Children
+    tempalte_name = 'child_delete.html'
+    success_url = reverse_lazy('app:family_info')  
+    def get_queryset(self):
+        # 同じファミリーに限定（セキュリティ対策）
+        return Children.objects.filter(family=self.request.child.family)
+
+class UserDeleteView(LoginRequiredMixin, DeleteView):
+    model = User
+    tempalte_name = 'user_delete.html'
+    success_url = reverse_lazy('app:family_info')  
+    def get_queryset(self):
+        # 同じファミリーに限定（セキュリティ対策）
+        return User.objects.filter(family=self.request.user.family)
 
 class HelpMakeView(FormView):    # おてつだいをつくる
     form_class = HelpsForm
@@ -391,7 +442,7 @@ class HelpChoseView(TemplateView):   #おてつだいをえらぶ
 
         return redirect('app:help_chose', child_id=child_id)
 
-class HelpEditDeleteView(ListView):
+class HelpEditDeleteView(ListView):   
     model = Helps
     template_name = 'help_edit_delete.html'
     context_object_name = 'helps'
@@ -435,7 +486,6 @@ class SetChildView(View):
             child = get_object_or_404(Children, id=child_id, family=family)
             request.session['selected_child_id'] = child.id
         return redirect('app:home')
-
 
 class CalenderView(DetailView):
     model = Records

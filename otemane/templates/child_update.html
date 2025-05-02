@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<body>
+    <div class="container">
+        <h4>メンバー編集・削除</h4>
+        <form method="POST">
+            {% csrf_token %}
+            {{ child_form.as_p }}
+            <button type="submit">保存</button>
+            <a class="btn btn-light" href="{% url 'app:family_info' family.id %}" role="button">戻る</a>
+            
+        </form>
+    </div>
+</body>
+{% endblock  %}
+
+
