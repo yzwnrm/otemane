@@ -18,7 +18,7 @@ from .forms import(
     UserLoginForm,
     #   RequestPasswordResetForm, SetNewPasswordForm, 
     UserRegistrationForm, UserUpdateForm,  ChildrenForm, ChildUpdateForm,
-    HelpsForm, RewardsForm, RewardsFormSet
+    HelpsForm, RewardsForm, RewardsFormSet, PasswordConfirmationForm
 )
 from django.core.paginator import Paginator
 from django.views import View
@@ -146,6 +146,11 @@ class UserLogoutDone(TemplateView):
 
 class UserView(LoginRequiredMixin, TemplateView):
     template_name = 'user.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.session.get('mypage_authenticated'):
+            return redirect('app:mypage_password')
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -516,3 +521,18 @@ class CalenderView(DetailView):
         context['user'] = user
         context['calendar_data'] = data
         return context
+    
+class PasswordConfirmView(LoginRequiredMixin, FormView):
+    template_name = 'mypage_password.html'
+    form_class = PasswordConfirmationForm
+    success_url = reverse_lazy('app:user')
+
+    def form_valid(self, form):
+        password = form.cleaned_data['password']
+        user = authenticate(username=self.request.user.email, password=password)
+        if user is not None:
+            self.request.session['mypage_authenticated'] = True
+            return super().form_valid(form)
+        else:
+            form.add_error(None, 'パスワードが違います')
+            return self.form_invalid(form)

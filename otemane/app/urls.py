@@ -48,4 +48,5 @@ urlpatterns = [
     path('user/<int:pk>/delete/', UserDeleteView.as_view(), name='user_delete'),
     path('child/<int:pk>/delete/', ChildDeleteView.as_view(), name='child_delete'),
     path('calender/<int:pk>/', CalenderView.as_view(), name='calender'),
+     path("reauth/", views.PasswordConfirmView.as_view(), name="mypage_password"),
 ]

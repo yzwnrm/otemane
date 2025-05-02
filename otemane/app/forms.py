@@ -118,3 +118,9 @@ RewardsFormSet = modelformset_factory(
     extra=1,  # 初期フォームを1つ表示
     can_delete=True  # フォームを削除できるオプションを追加
 )
+
+class PasswordConfirmationForm(forms.Form):
+    password = forms.CharField(
+        widget=forms.PasswordInput(),
+        label="パスワード"
+    )
