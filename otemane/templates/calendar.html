@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'style.css' %}">
+
+<h2>カレンダー</h2>
+
+<form method="get" id="monthSelectorForm" class="date-select-form">
+  <label for="year">年</label>
+  <select name="year" id="year">
+    {% for y in year_range %}
+      <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
+    {% endfor %}
+  </select>
+
+  <label for="month">月</label>
+  <select name="month" id="month">
+    {% for m in month_range %}
+      <option value="{{ m }}" {% if m == month %}selected{% endif %}>{{ m }}</option>
+    {% endfor %}
+  </select>
+
+</form>
+
+<div class="calendar-container">
+  <table class="calendar-table">
+    <thead>
+      <tr>
+        <th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for week in calendar_weeks %}
+        <tr>
+          {% for day in week %}
+            <td class="{% if not day.in_month %}other-month{% endif %}">
+              <div class="calendar-day">
+                <span class="date-number">{{ day.day }}</span>
+                {% if day.records %}
+                  <span class="achievement-mark" data-date="{{ day.date }}">✅</span>
+                {% endif %}
+              </div>
+            </td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- モーダル -->
+<div id="recordModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script src="{% static 'js/calendar.js' %}"></script>
+{% endblock %}

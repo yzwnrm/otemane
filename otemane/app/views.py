@@ -10,9 +10,11 @@ from django.contrib.auth import authenticate, login, logout
 from collections import defaultdict
 from django.utils import timezone
 from django.utils.timezone import now
-from datetime import datetime
+from calendar import monthrange, Calendar
+from datetime import date, datetime
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
 from .forms import(
     UserLoginForm,
@@ -35,7 +37,8 @@ from django.contrib.auth.views import(
 )
 # from django.contrib.auth.models import 
 
-import uuid, json
+import uuid, json, logging
+logger = logging.getLogger(__name__)
 
 UserModel = get_user_model()
 
@@ -492,35 +495,83 @@ class SetChildView(View):
             request.session['selected_child_id'] = child.id
         return redirect('app:home')
 
-class CalenderView(DetailView):
-    model = Records
-    template_name = 'calender.html'
-    context_object_name = 'record'
+
+class CalendarView(TemplateView):
+    template_name = 'calendar.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user_id = self.kwargs['pk']
-        user = get_object_or_404(User, id=user_id)
 
-        # 親ユーザーが管理している子どもを取得
-        children = Children.objects.filter(family=user.family)
+        year = int(self.request.GET.get('year', now().year))
+        month = int(self.request.GET.get('month', now().month))
 
-        # 子どもごとのhelp, reward, recordを集める（リストや辞書で管理）
-        data = []
-        for child in children:
-            helps = Helps.objects.filter(child=child)
-            rewards = Rewards.objects.filter(help__in=helps)
-            records = Records.objects.filter(child=child)
-            data.append({
-                'child': child,
-                'helps': helps,
-                'rewards': rewards,
-                'records': records,
-            })
+        # 該当月の開始・終了日
+        start_date = date(year, month, 1)
+        end_day = monthrange(year, month)[1]
+        end_date = date(year, month, end_day)
 
-        context['user'] = user
-        context['calendar_data'] = data
+        # カレンダー情報作成
+        cal = Calendar(firstweekday=6)  # 日曜始まり
+        month_days = cal.monthdatescalendar(year, month)
+
+        # 該当月の達成記録取得
+        all_records = Records.objects.filter(achievement_date__range=(start_date, end_date))
+        record_map = {}
+        for r in all_records:
+            record_map.setdefault(r.achievement_date, []).append(r)
+
+        # テンプレート用構造体に整形
+        calendar_weeks = []
+        for week in month_days:
+            week_days = []
+            for day in week:
+                week_days.append({
+                    'day': day.day,
+                    'date': day.isoformat(),
+                    'in_month': day.month == month,
+                    'records': record_map.get(day, [])
+                })
+            calendar_weeks.append(week_days)
+
+        context.update({
+            'year': year,
+            'month': month,
+            'calendar_weeks': calendar_weeks,
+            'year_range': range(now().year - 5, now().year + 2),
+            'month_range': range(1, 13),
+        })
         return context
+
+
+
+@require_GET
+@login_required
+def records_by_date(request):
+    try:
+        date_str = request.GET.get('date')
+        date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        children = Children.objects.filter(family=request.user.family)
+
+        records = Records.objects.filter(
+            child__in=children, 
+            achievement_date=date
+        ).select_related('help__reward', 'child')
+        
+        data = {
+            'records': [
+                {
+                    'child': r.child.name,
+                    'help': r.help.title,
+                    'reward': f"{r.help.reward.name}（{r.help.reward.point}pt）"
+                } for r in records
+            ]
+        }
+        return JsonResponse(data)
+
+    except Exception as e:
+            logger.error(f"Error in records_by_date view: {str(e)}")
+            return JsonResponse({'error': str(e)}, status=500)
+
     
 class PasswordConfirmView(LoginRequiredMixin, FormView):
     template_name = 'mypage_password.html'

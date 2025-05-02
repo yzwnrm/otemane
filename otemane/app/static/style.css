@@ -91,7 +91,7 @@ button {
     position: fixed; /* モーダルがページ全体に固定されるように設定 */
     top: 0; /* ページの最上部からスタート */
     left: 0; /* ページの最左端からスタート */
-    width: 100; /* モーダルが画面全体の幅を占める */
+    width: 100%; /* モーダルが画面全体の幅を占める */
     height: 100%; /* モーダルが画面全体の高さを占める */
     background-color: rgba(0, 0, 0, 0.4); /* 背景を半透明の黒に設定（モーダルの背後が見えるように） */
   }
@@ -179,4 +179,65 @@ button {
     height: auto;
   }
   
+  .calendar-container {
+    width: 100%;
+    overflow-x: auto;
+    padding: 1rem;
+  }
+  
+  .calendar-table {
+    width: 100%;
+    table-layout: fixed;  /* 均等幅 */
+    border-collapse: collapse;
+  }
+  
+  .calendar-table th,
+  .calendar-table td {
+    border: 1px solid #ccc;
+    text-align: center;
+    vertical-align: top;
+    padding: 0.5rem;
+    height: 80px;  /* 高さを明示 */
+  }
+  
+  .calendar-day {
+    position: relative;
+    height: 100%;
+  }
+  
+  .date-number {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+  
+  .achievement-mark {
+    color: green;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  .other-month {
+    background-color: #f5f5f5;
+    color: #999;
+  }
+  
+
+  .date-select-form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;  /* 年月の間の余白を小さめに */
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .date-select-form label {
+    margin-right: 0.25rem;
+  }
+  
+  .date-select-form select {
+    margin-right: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 1rem;
+  }
   

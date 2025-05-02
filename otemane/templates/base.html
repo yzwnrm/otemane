@@ -14,7 +14,7 @@
           <a class="navbar-brand" href="{% url 'app:help_chose' selected_child.id %}">おてつだいをえらぶ</a>
           <a class="navbar-brand" href="{% url 'app:help_lists' selected_child.id %}">えらんだおてつだい</a>
           {% endif %}
-        {% comment %} <a class="navbar-brand" href="{% url 'app:calender' user.id %}">カレンダー</a> {% endcomment %}
+        <a class="navbar-brand" href="{% url 'app:calendar' user.id %}">カレンダー</a>
         <a class="navbar-brand" href="{% url 'app:help_make' %}">おてつだいをつくる</a>
         {% else %}
         <a class="navbar-brand" href="{% url 'app:user_login' %}">ログイン</a>
