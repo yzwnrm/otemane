@@ -280,19 +280,33 @@ class ChildUpdateView(LoginRequiredMixin,View):
 
 class ChildDeleteView(LoginRequiredMixin, DeleteView):
     model = Children
-    tempalte_name = 'child_delete.html'
-    success_url = reverse_lazy('app:family_info')  
+    template_name = 'child_delete.html'
+    success_url = reverse_lazy('app:family_info')
+
     def get_queryset(self):
-        # 同じファミリーに限定（セキュリティ対策）
-        return Children.objects.filter(family=self.request.child.family)
+        return Children.objects.filter(family=self.request.user.family)
+
+    def delete(self, request, *args, **kwargs):
+        if request.is_ajax():
+            self.object = self.get_object()
+            self.object.delete()
+            return JsonResponse({'success': True})
+        return super().delete(request, *args, **kwargs)
 
 class UserDeleteView(LoginRequiredMixin, DeleteView):
     model = User
-    tempalte_name = 'user_delete.html'
-    success_url = reverse_lazy('app:family_info')  
+    template_name = 'user_delete.html'
+    success_url = reverse_lazy('app:family_info')
+
     def get_queryset(self):
-        # 同じファミリーに限定（セキュリティ対策）
         return User.objects.filter(family=self.request.user.family)
+
+    def delete(self, request, *args, **kwargs):
+        if request.is_ajax():
+            self.object = self.get_object()
+            self.object.delete()
+            return JsonResponse({'success': True})
+        return super().delete(request, *args, **kwargs)
 
 class HelpMakeView(FormView):    # おてつだいをつくる
     form_class = HelpsForm

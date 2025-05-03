@@ -2,7 +2,6 @@
 {% load static %}
 {% block content %}
 <h2>ファミリー情報</h2>
-
 <h3>親メンバー</h3>
 <table class="table">
   <thead>
@@ -14,7 +13,7 @@
   </thead>
   <tbody>
     {% for user in user %}
-    <tr>
+    <tr data-user-id="{{ user.id }}">
       <td>{{ user.user_name }}</td>
       <td>{{ user.get_relationship_display }}</td>
       <td>
@@ -48,7 +47,7 @@
   </thead>
   <tbody>
     {% for child in child %}
-    <tr>
+    <tr data-child-id="{{ child.id }}">
       <td>{{ child.child_name }}</td>
       <td>{{ child.birthday }}</td>
       <td>
@@ -71,7 +70,7 @@
 </table>
 
 <!-- 削除確認モーダル -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+<div class="modal" id="deleteModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <form method="POST" id="deleteForm">
@@ -91,7 +90,12 @@
     </div>
   </div>
 </div>
+
 {% endblock %}
 {% block scripts %}
-   <script src="{% static 'js/delete.js' %}"></script>
-{% endblock %} 
+    <!-- BootstrapのJavaScript（必要なもの） -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-..." crossorigin="anonymous"></script>
+
+    <!-- 自作のJSファイル -->
+    <script src="{% static 'js/info_delete.js' %}"></script>
+{% endblock %}
