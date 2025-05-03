@@ -1,43 +1,44 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const marks = document.querySelectorAll(".achievement-mark");
-  
-  if (marks.length === 0) {
-    console.log("達成マークがページに存在しません。");
-    return;
-  }
-  const modal = document.getElementById("recordModal");
-  const modalContent = document.getElementById("modalContent");
-  const closeButton = document.querySelector(".close-button");
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('recordModal');
+  const modalContent = document.getElementById('modalContent');
+  const closeBtn = document.querySelector('.close-modal');
 
-  marks.forEach(mark => {
-    mark.addEventListener("click", function () {
-      const date = this.dataset.date;
+  document.querySelectorAll('.achievement-mark').forEach(mark => {
+    mark.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const date = mark.getAttribute('data-date');
 
       fetch(`/app/records_by_date/?date=${date}`)
         .then(response => response.json())
         .then(data => {
-          modalContent.innerHTML = "";
-          if (data.records.length === 0) {
-            modalContent.innerHTML = "<p>記録がありません。</p>";
-          } else {
-            data.records.forEach(record => {
-              const p = document.createElement("p");
-              p.textContent = `${record.child}：${record.help}（${record.reward}）`;
-              modalContent.appendChild(p);
-            });
-          }
-          modal.style.display = "block";
+            modalContent.innerHTML = '';
+            if (data.records && data.records.length > 0) {
+                modalContent.innerHTML = '';
+                data.records.forEach(record => {
+                  const item = document.createElement('p');
+                  item.textContent = `${record.child_name}：${record.help_name}`;
+                  modalContent.appendChild(item);
+                });
+            } else {
+                modalContent.textContent = 'この日に達成されたおてつだいはありません。';
+            }
+            modal.style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            modalContent.textContent = 'データ取得に失敗しました。';
+            modal.style.display = 'block'
         });
     });
   });
-
-  closeButton.addEventListener("click", function () {
-    modal.style.display = "none";
-  });
-
-  window.addEventListener("click", function (event) {
-    if (event.target == modal) {
-      modal.style.display = "none";
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+  }
+  window.addEventListener('click', (event) => {
+    if (event.target === modal) {
+      modal.style.display = 'none';
     }
   });
 });
@@ -49,12 +50,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const monthSelect = document.getElementById('month');
   const form = document.getElementById('monthSelectorForm');
 
-  function autoSubmit() {
-    if (yearSelect.value && monthSelect.value) {
-      form.submit();
+  if (yearSelect && monthSelect && form) {
+    function autoSubmit() {
+      if (yearSelect.value && monthSelect.value) {
+        form.submit();
+      }
     }
-  }
 
   yearSelect.addEventListener('change', autoSubmit);
   monthSelect.addEventListener('change', autoSubmit);
+  }
 });

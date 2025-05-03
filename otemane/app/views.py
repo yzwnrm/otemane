@@ -549,29 +549,32 @@ class CalendarView(TemplateView):
 def records_by_date(request):
     try:
         date_str = request.GET.get('date')
-        date = datetime.strptime(date_str, '%Y-%m-%d').date()
-        children = Children.objects.filter(family=request.user.family)
+        if not date_str:
+            return JsonResponse({'error': '日付が指定されていません'}, status=400)
 
-        records = Records.objects.filter(
-            child__in=children, 
-            achievement_date=date
-        ).select_related('help__reward', 'child')
+        try:
+            target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        except ValueError:
+            return JsonResponse({'error': '日付の形式が不正です'}, status=400)
+
+        records = Records.objects.select_related('help', 'child').filter(
+            achievement_date=target_date
+        )
+
+        data = []
+        for record in records:
+            data.append({
+                'id': record.id,
+                'help_name': record.help.help_name,
+                'child_name': record.child.child_name,
+                'achievement_date': str(record.achievement_date),
+            })
         
-        data = {
-            'records': [
-                {
-                    'child': r.child.name,
-                    'help': r.help.title,
-                    'reward': f"{r.help.reward.name}（{r.help.reward.point}pt）"
-                } for r in records
-            ]
-        }
-        return JsonResponse(data)
+        return JsonResponse({'records': data})
 
     except Exception as e:
-            logger.error(f"Error in records_by_date view: {str(e)}")
-            return JsonResponse({'error': str(e)}, status=500)
-
+        print(f"Error in records_by_date view: {e}")
+        return JsonResponse({'error': 'サーバーエラーが発生しました'}, status=500)
     
 class PasswordConfirmView(LoginRequiredMixin, FormView):
     template_name = 'mypage_password.html'

@@ -42,7 +42,7 @@ input[type="text"], input[type="email"], input[type="password"], select {
     padding: 10px;
     margin-bottom: 15px;
     border-radius: 5px;
-    border: 1px solid #f18989;
+    border: 1px solid #f1f1f1;
 }
 
 button {
@@ -86,7 +86,7 @@ button {
   }
   
   /* モーダルウィンドウの基本スタイル */
-  .modal {
+.modal {
     display: none; /* デフォルトでは非表示に設定 */
     position: fixed; /* モーダルがページ全体に固定されるように設定 */
     top: 0; /* ページの最上部からスタート */
@@ -96,7 +96,7 @@ button {
     background-color: rgba(0, 0, 0, 0.4); /* 背景を半透明の黒に設定（モーダルの背後が見えるように） */
   }
   
-  .modal-content {
+.modal-content {
     position: fixed; /* モーダル内容が画面上に固定されるように設定 */
     top: 50%; /* 縦方向の中央に配置 */
     left: 50%; /* 横方向の中央に配置 */
@@ -110,7 +110,7 @@ button {
   }
   
   /* モーダルを閉じるボタン（×）のスタイル */
-  .close-modal{
+.close-modal{
     position: absolute; /* モーダル内で絶対位置に配置 */
     display: flex; /* ボタン内のテキストが中央に配置されるようにフレックスボックスを使用 */
     align-items: center; /* ボタン内のテキストを縦方向に中央揃え */
