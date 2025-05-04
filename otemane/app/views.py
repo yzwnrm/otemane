@@ -9,7 +9,7 @@ from django.urls import reverse_lazy, reverse
 from django.contrib.auth import authenticate, login, logout
 from collections import defaultdict
 from django.utils import timezone
-from django.utils.timezone import now
+from django.utils.timezone import now, localtime
 from calendar import monthrange, Calendar
 from datetime import date, datetime
 from django.utils.decorators import method_decorator
@@ -36,6 +36,7 @@ from django.contrib.auth.views import(
     PasswordChangeView, PasswordChangeDoneView, 
 )
 # from django.contrib.auth.models import 
+from collections import defaultdict
 
 import uuid, json, logging
 logger = logging.getLogger(__name__)
@@ -48,13 +49,15 @@ class HomeView(LoginRequiredMixin, View):
     def get(self, request):
         family = request.user.family
         children = family.children.all()
+ 
+        month_str = request.GET.get('month') or now().strftime('%Y-%m') 
+        current_month = datetime.strptime(month_str, '%Y-%m')
 
         selected_child_id = request.GET.get('child_id') or request.session.get('selected_child_id')
-
         selected_child = None
         if selected_child_id:
             selected_child = Children.objects.filter(id=selected_child_id, family=family).first()
-
+ 
         monthly_rewards = defaultdict(lambda: {
             "money": 0,
             "sweets": 0,
@@ -64,23 +67,32 @@ class HomeView(LoginRequiredMixin, View):
             "flower": 0,
             "nice": 0,
         })
-
+        monthly_records = []
+ 
         if selected_child:
             helps = selected_child.helps.prefetch_related('rewards', 'records__reactions')
-
+ 
             for help in helps:
                 for record in help.records.all():
                     if record.achievement_date:
                         month = record.achievement_date.strftime('%Y-%m')
-
-                        # 報酬
-                        for reward in help.rewards.all():
-                            if reward.reward_type == 1:  # おかね
-                                monthly_rewards[month]["money"] += reward.reward_prize or 0
-                            elif reward.reward_type == 0:  # おかし
-                                monthly_rewards[month]["sweets"] += 1
-
-                        # リアクション
+ 
+                         # 報酬
+                        if month == month_str:
+                            for reward in help.rewards.all():
+                                if reward.reward_type == 1:  # おかね
+                                    monthly_rewards[month]["money"] += reward.reward_prize or 0
+                                elif reward.reward_type == 0:  # おかし
+                                    monthly_rewards[month]["sweets"] += 1
+                        
+                        if month == month_str:
+                            monthly_records.append({
+                                "date": record.achievement_date.strftime('%Y-%m-%d'),
+                                "help": help.help_name,
+                                "reward": ", ".join([r.get_reward_type_display() for r in help.rewards.all()]),
+                                "reaction": "".join([r.get_reaction_image_display() for r in record.reactions.all()])
+                            })
+                         # リアクション
                         for reaction in record.reactions.all():
                             if reaction.reaction_image == 0:  # 💗
                                 monthly_rewards[month]["heart"] += 1
@@ -94,13 +106,16 @@ class HomeView(LoginRequiredMixin, View):
                                 monthly_rewards[month]["nice"] += 1
         context = {
             'children': children,
-            'selected_child': selected_child,  # ← これ絶対渡す！
+            'selected_child': selected_child, 
             'monthly_rewards': dict(monthly_rewards),
-            'current_month': now().strftime('%Y-%m'),
+            'monthly_records': monthly_records,
+            'current_month': month_str,
         }
-
+ 
         return render(request, 'home.html', context)
 
+
+ 
 class UserRegisterView(CreateView):
     form_class = UserRegistrationForm
     template_name = 'regist.html'
@@ -604,3 +619,35 @@ class PasswordConfirmView(LoginRequiredMixin, FormView):
         else:
             form.add_error(None, 'パスワードが違います')
             return self.form_invalid(form)
+        
+        
+class MonthlyRewardView(TemplateView):
+    template_name = 'monthly_rewards.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        month_str = self.request.GET.get('month') or timezone.now().strftime('%Y-%m')
+        year, month = map(int, month_str.split('-'))
+
+        child = self.request.user.children.first()
+
+        records = Records.objects.filter(
+            child=child,
+            date__year=year,
+            date__month=month
+        ).select_related('help__reward')
+
+        record_data = []
+        for r in records:
+            reaction = Reactions.objects.filter(record=r).first()
+            record_data.append({
+                "date": r.date.day,
+                "help": r.help.title,
+                "reward": r.help.reward.__str__(),
+                "reaction": reaction.emoji if reaction else "",
+            })
+
+        context["record_data_json"] = record_data
+        context["current_month"] = f"{year}-{str(month).zfill(2)}"
+        return context

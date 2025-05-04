@@ -7,7 +7,8 @@ from .views import (
     FamilyInfoView, ChildCreateView, InvitePageView, AjaxCreateInviteView, 
     CustomPasswordResetView, ReactionListView, AddReactionAjaxView,
     HelpMakeView, HelpChoseView, HelpListsView, HelpEditDeleteView,
-    SetChildView, CalendarView, ChildUpdateView, ChildDeleteView, UserDeleteView, UserUpdateView
+    SetChildView, MonthlyRewardView,
+    CalendarView, ChildUpdateView, ChildDeleteView, UserDeleteView, UserUpdateView
 
 )
 from . import views
@@ -50,4 +51,5 @@ urlpatterns = [
     path('calendar/<int:pk>/', CalendarView.as_view(), name='calendar'),
     path('records_by_date/', views.records_by_date, name='records_by_date'),
     path("reauth/", views.PasswordConfirmView.as_view(), name="mypage_password"),
+    path('rewards/monthly/', MonthlyRewardView.as_view(), name='monthly_rewards'),
 ]

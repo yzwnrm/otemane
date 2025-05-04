@@ -17,7 +17,7 @@
     <div class="text-center my-4">
       <div class="d-flex justify-content-center align-items-center">
         <button id="prevMonth">◁ 前月</button>
-        <h2 id="monthTitle" class="mb-0">4がつのごほうび</h2>
+        <h2 id="monthTitle" class="mb-0"></h2>
         <button id="nextMonth">翌月 ▷</button>
       </div>
 
@@ -40,20 +40,23 @@
       <!-- モーダル -->
       <div id="myModal" class="modal" style="display:none;">
         <div class="modal-content">
-          <span id="closeModal">&times;</span>
-          <p>モーダルの内容です。</p>
+          <span id="closeModal" class="close">&times;</span>
+          <h4>お手伝い詳細</h4>
+          <div id="helpRecordsContainer"></div>
         </div>
       </div>
 
     </div>
   </div>
 
-  <!-- データ渡し -->
+
   <script>
     window.monthlyRewards = {{ monthly_rewards|safe }};
+    window.monthlyRecords = {{ monthly_records|safe }};
     window.currentMonth = "{{ current_month }}";
   </script>
 
   <script src="{% static 'js/home.js' %}"></script>
+  <script src="{% static 'js/home_reward.js' %}"></script>
 </body>
 {% endblock %}
