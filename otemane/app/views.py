@@ -127,7 +127,6 @@ class UserRegisterView(CreateView):
         user = form.save() 
         relationship = form.cleaned_data['relationship']
         response = super().form_valid(form)
-        # 登録後のユーザーにFamilyを紐づけ
         Family.objects.create(user=self.object)
         return response
     

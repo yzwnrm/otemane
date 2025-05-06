@@ -315,3 +315,18 @@ button {
     font-size: 1rem;
   }
   
+  .help-icon {
+    display: inline-block;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    color: #333;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    line-height: 22px;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0;
+}
