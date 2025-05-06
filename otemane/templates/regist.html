@@ -14,35 +14,40 @@
         </div>
     </header>
     {% block content %}
-    <div class="container">
-        <h4>おうちのひと登録</h4>
-        <form method="POST">
+    <div class="container d-flex flex-column align-items-center justify-content-center min-vh-100">
+        <h2 class="mb-4 text-center">おうちのひと登録</h2>
+        <form method="POST" class="w-100" style="max-width: 400px;">
             {% csrf_token %}
 
+            <div class="mb-3">
             {{ form.username.label_tag }} 
             {{ form.username }}
-
+            </div>
+            
+            <div class="mb-3">
             {{ form.relationship.label_tag }}
             {{ form.relationship }}
+            </div>
 
+            <div class="mb-3">
             {{ form.email.label_tag }}
-            
             {{ form.email }}
+            </div>
 
               <!-- パスワード1 -->
             <div class="mb-3 position-relative">
-            {{ form.password1.label_tag }}
+                {{ form.password1.label_tag }}
                 <div class="d-flex align-items-center">
-                  {{ form.password1 }}
-                  <button type="button" class="help-icon ms-2" data-bs-toggle="popover" data-bs-trigger="focus"
-                    title="パスワードルール"
-                    data-bs-content="・最低１０文字以上必要です
-                    ・アルファベットの大文字、小文字、数字を組み合わせてください
-                    ・記号（例：!,@,#,$,%,&）を含めてください
-                    ・連続した数字や文字は使用できません
-                    ・意味のない文字列にしてください">
-                    ?
-                  </button>
+                    {{ form.password1 }}
+                    <button type="button" class="help-icon ms-2" data-bs-toggle="popover" data-bs-trigger="focus"
+                      title="パスワードルール"
+                      data-bs-content="・最低１０文字以上必要です
+                      ・アルファベットの大文字、小文字、数字を組み合わせてください
+                      ・記号（例：!,@,#,$,%,&）を含めてください
+                      ・連続した数字や文字は使用できません
+                      ・意味のない文字列にしてください">
+                      ?
+                    </button>
                 </div>
             </div>
           
@@ -59,7 +64,8 @@
             {% endif %}
           
             
-              <input type="submit" class="btn btn-primary" value="登録">
+              <input type="submit" class="btn btn-primary  w-100" value="登録">
         </form>
     </div>
-    {% endblock %}
+</body>
+{% endblock %}
