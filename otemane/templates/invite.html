@@ -7,18 +7,27 @@
     <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
 <body>
+    <header>
+        <a href="/app/home/" class="header-link">おてまね</a>
+        <div class="header-links">
+            <a href="/app/user/" class="header-link-2">マイページへ戻る</a>
+        </div>
+    </header>
     <h2>家族を招待する</h2>
-    <h4>利用方法</h4>
-    <p>利用するをクリックし、リンク先URLを表示</p>
-    <p>招待したい家族にリンク先を共有しアカウントを登録してもらう</p>
-    <p>※発行されたURLは一度利用すると失効します。</p>
+    <div class="instruction-box">
+        <h4>利用方法</h4>
+        <p>利用するをクリックし、リンク先URLを表示</p>
+        <p>招待したい家族にリンク先を共有しアカウントを登録してもらう</p>
+        <p>※発行されたURLは一度利用すると失効します。</p>
+    </div>
 
-    <meta name="csrf-token" content="{{ csrf_token }}">
-    <button id="generate-btn">URLを発行する</button>
-    <div id="result" style="margin-top: 20px; font-weight: bold;"></div>
+    <div class="centered-content">
+        <meta name="csrf-token" content="{{ csrf_token }}">
+        <button id="generate-btn">家族招待URLを発行</button>
+        <div id="result" style="margin-top: 20px; font-weight: bold;"></div>
+        <input type="text" id="invite-url" class="form-control mt-2" readonly>
+    </div>
 
-
-    <a href="/app/user/">マイページへ戻る</a>
     <script src="{% static 'js/invite.js' %}"></script>
 </body>
 </html>

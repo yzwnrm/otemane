@@ -214,9 +214,9 @@ class InvitePageView(TemplateView):
 class AjaxCreateInviteView(View):
     def post(self, request, *args, **kwargs):
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            family_id = request.user.family
+            
             invitation = Invitation.objects.create(
-                family_id=family_id,
+                family=request.user.family,
                 invitation_URL=uuid.uuid4().hex,
                 status=0
             )

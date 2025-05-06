@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultDiv = document.getElementById('result');
 
     button.addEventListener('click', () => {
-        fetch('/invite/ajax/create/', {
+        fetch('/app/invite/ajax/create/', {
             method: 'POST',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
