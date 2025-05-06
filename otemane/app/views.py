@@ -24,7 +24,9 @@ from .forms import(
 )
 from django.core.paginator import Paginator
 from django.views import View
-from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth.views import (
+    PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+)
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.http import JsonResponse
@@ -44,7 +46,7 @@ logger = logging.getLogger(__name__)
 UserModel = get_user_model()
 
 class HomeView(LoginRequiredMixin, View):
-    login_url = 'user_login'
+    login_url = 'app:user_login'
 
     def get(self, request):
         family = request.user.family
@@ -223,13 +225,25 @@ class AjaxCreateInviteView(View):
         return JsonResponse({'error': 'Invalid request'}, status=400)
     
 class CustomPasswordResetView(PasswordResetView):
-    template_name = 'registration/password_reset.html'
-    email_template_name = 'registration/password_reset_email.txt'
+    template_name = 'password/password_reset.html'
+    email_template_name = 'password/password_reset_email.txt'
     # subject_template_name = 'registration/password_reset_subject.txt'  # これがないとエラー出るかも
     success_url = reverse_lazy('app:password_reset_done')  
 
     def get_users(self, email):
         return UserModel.objects.filter(email__iexact=email, is_active=True)
+    
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'password/password_reset_confirm.html'
+    success_url = reverse_lazy('app:password_reset_complete')
+
+
+class CustomPasswordResetDoneView(PasswordResetDoneView):
+    template_name = 'password/password_reset_done.html'
+
+
+class CustomPasswordResetCompleteView(PasswordResetCompleteView):
+    template_name = 'password/password_reset_complete.html'
 
 class FamilyInfoView(LoginRequiredMixin, TemplateView):
     template_name = 'family_info.html'
@@ -418,7 +432,7 @@ class BulkRegisterView(View):
     def post(self, request, child_id):
         selected_ids = request.POST.getlist('selected_helps') 
         if not selected_ids:
-            return redirect('app:help_list', child_id=child_id)  
+            return redirect('app:help_lists', child_id=child_id)  
 
         for help_list_id in selected_ids:
             help_list = get_object_or_404(HelpLists, id=help_list_id, child_id=child_id)
@@ -627,7 +641,7 @@ def records_by_date(request):
         print(f"Error in records_by_date view: {e}")
         return JsonResponse({'error': 'サーバーエラーが発生しました'}, status=500)
     
-class PasswordConfirmView(LoginRequiredMixin, FormView):
+class PasswordConfirmView(LoginRequiredMixin, FormView):  #マイページ用パスワード画面
     template_name = 'mypage_password.html'
     form_class = PasswordConfirmationForm
     success_url = reverse_lazy('app:user')
