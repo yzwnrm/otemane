@@ -6,7 +6,7 @@ from .views import (
     PasswordChange, RegistDone, GuideView, UserLogoutDone,
     FamilyInfoView, ChildCreateView, InvitePageView, AjaxCreateInviteView, 
     CustomPasswordResetView, ReactionListView, AddReactionAjaxView,
-    HelpMakeView, HelpChoseView, HelpListsView, HelpEditDeleteView,
+    HelpMakeView, HelpChoseView, HelpListsView, BulkRegisterView, HelpEditDeleteView,
     SetChildView, MonthlyRewardView,
     CalendarView, ChildUpdateView, ChildDeleteView, UserDeleteView, UserUpdateView
 
@@ -39,6 +39,7 @@ urlpatterns = [
     path('add_reaction/', AddReactionAjaxView.as_view(), name='add_reaction'),
     path('help/make/', HelpMakeView.as_view(), name='help_make'),
     path('help/list/<int:child_id>/', HelpListsView.as_view(), name='help_lists'),
+    path('help-lists/<int:child_id>/bulk-register/', views.BulkRegisterView.as_view(), name='bulk_register'),
     path('help/chose/<int:child_id>/', HelpChoseView.as_view(), name='help_chose'),
     path('help_edit_delete/', HelpEditDeleteView.as_view(), name='help_edit_delete'),
     path('help_update/<int:pk>/', views.help_update, name='help_update'),
@@ -52,4 +53,5 @@ urlpatterns = [
     path('records_by_date/', views.records_by_date, name='records_by_date'),
     path("reauth/", views.PasswordConfirmView.as_view(), name="mypage_password"),
     path('rewards/monthly/', MonthlyRewardView.as_view(), name='monthly_rewards'),
+    
 ]

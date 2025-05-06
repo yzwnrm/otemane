@@ -385,28 +385,50 @@ class HelpListsView(ListView):    #えらんだおてつだい
         child_id = self.kwargs['child_id']
         context['child'] = get_object_or_404(Children, id=child_id)
         context['selected_helps'] = HelpLists.objects.filter(child_id=child_id)  
+        
+        completed_help_ids = Records.objects.filter(child_id=child_id).values_list('help_id', flat=True)
+        uncompleted_helps = HelpLists.objects.filter(child_id=child_id).exclude(help_id__in=completed_help_ids).select_related('help')
+        context['uncompleted_helps'] = uncompleted_helps
+
         return context
 
     def post(self, request, *args, **kwargs):
         child_id = self.kwargs['child_id']
-        help_id = int(request.POST.get("help_id"))
+        help_ids = request.POST.getlist("help_ids")
         
-        if not help_id:
+        if not help_ids:
             return self.render_to_response({
                 **self.get_context_data(),
                 'error_message': "おてつだいのIDが指定されていません。"
             })
 
         child = get_object_or_404(Children, id=child_id)
-        help_item = get_object_or_404(Helps, id=help_id)
+        # help_item = get_object_or_404(Helps, id=help_id)
 
-        Records.objects.create(
-            child_id=child_id,
-            help_id=help_id,
-            achievement_date=timezone.now()  # 現在の日付を設定
-        )
+        for help_id in help_ids:
+            Records.objects.create(
+                child_id=child_id,
+                help_id=help_id,
+                achievement_date=timezone.now()  # 現在の日付を設定
+            )
         
-        return redirect('app:help_list', child_id=child_id)
+        return redirect('app:help_lists', child_id=child_id)
+    
+class BulkRegisterView(View):
+    def post(self, request, child_id):
+        selected_ids = request.POST.getlist('selected_helps') 
+        if not selected_ids:
+            return redirect('app:help_list', child_id=child_id)  
+
+        for help_list_id in selected_ids:
+            help_list = get_object_or_404(HelpLists, id=help_list_id, child_id=child_id)
+            Records.objects.create(
+                child=help_list.child,
+                help=help_list.help,
+                achievement_date=timezone.now()
+            )
+
+        return redirect('app:help_lists', child_id=child_id)
     
 class ReactionListView(LoginRequiredMixin, TemplateView):
     template_name = 'reactions.html'

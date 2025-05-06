@@ -2,7 +2,9 @@
 {% block content %}
 
 <div class="text-end my-2">
-    <button class="btn btn-light">選択して一括登録をする</button>
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bulkRegisterModal">
+      選択して一括登録をする
+  </button>
 </div>
 
 <p>かぞくといっしょにできたボタンをおそう！</p>
@@ -43,5 +45,70 @@
   {{ error_message }}
 </div>
 {% endif %}
+
+<!--  モーダル本体 -->
+<div class="modal fade" id="bulkRegisterModal" tabindex="-1" aria-labelledby="bulkRegisterModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="bulkRegisterModalLabel">おてつだい一括登録</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+      </div>
+
+      <form method="post" action="{% url 'app:bulk_register' child.id %}">
+        {% csrf_token %}
+        <div class="modal-body px-3 py-2">
+
+          <div class="table-responsive">
+            <table class="table table-bordered align-middle mb-0">
+              <thead class="table-secondary">
+                <tr>
+                  <th style="width: 60%;">お手伝いの内容</th>
+                  <th style="width: 40%;">報酬</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for help in selected_helps %}
+                <tr>
+                  <td>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="help_ids" value="{{ help.help.id }}" id="check{{ forloop.counter }}">
+                      <label class="form-check-label" for="check{{ forloop.counter }}">
+                        {{ help.help.help_name }}
+                      </label>
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    {% for reward in help.help.rewards.all %}
+                      {% if reward.reward_type == 1 %}
+                        {{ reward.reward_prize }}えん
+                      {% elif reward.reward_type == 0 %}
+                        おかし１つ
+                      {% elif reward.reward_type == 2 %}
+                        {{ reward.reward_detail }}
+                      {% endif %}
+                      {% if not forloop.last %} ／ {% endif %}
+                    {% endfor %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="2">おてつだいがありません。</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+        <div class="modal-footer justify-content-center">
+          <button type="submit" class="btn btn-secondary">まとめてとうろく</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
 </div>
 {% endblock  %}

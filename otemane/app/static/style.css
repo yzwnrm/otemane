@@ -103,7 +103,7 @@ button {
     transform: translate(-50%, -50%); /* 完全に中央に配置するための補正 */
     padding: 10px; /* モーダル内の余白を設定 */
     width: 440px; /* モーダルの幅 */
-    height: 270px; /* モーダルの高さ */
+    height: 580px; /* モーダルの高さ */
     background-color: #fefefe; /* モーダルの背景色を白に設定 */
     border: 1px solid #888; /* 境界線の色を薄いグレーに設定 */
     border-radius: 10px; /* モーダルの角を丸くするための半径 */
