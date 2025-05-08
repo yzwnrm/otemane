@@ -1,18 +1,21 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<form method="post" action="{% url 'app:set_child' %}">
-  {% csrf_token %}
-  <select id="childSelect" name="child_id" onchange="this.form.submit()">
-    {% for child in children %}
-      <option value="{{ child.id }}" {% if child == selected_child %}selected{% endif %}>
-        {{ child.child_name }}
-      </option>
-    {% endfor %}
-  </select>
-</form>
-
 <body>
+<div class="d-flex align-items-center" style="gap: 10px; margin-top: 10px;">
+  <div class="child-icon" style="font-size: 2rem;">{{ selected_child.icon }}</div>
+    <form method="post" action="{% url 'app:set_child' %}">
+      {% csrf_token %}
+      <select id="childSelect" name="child_id" onchange="this.form.submit()">
+      {% for child in children %}
+        <option value="{{ child.id }}" {% if child == selected_child %}selected{% endif %}>
+          {{ child.child_name }}
+        </option>
+      {% endfor %}
+      </select>
+    </form>
+  </div>
+</div>
   <div class="container">
     <div class="text-center my-4">
       <div class="d-flex justify-content-center align-items-center">
