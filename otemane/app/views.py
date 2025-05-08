@@ -450,13 +450,24 @@ class ReactionListView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         family = self.request.user.family
         children = Children.objects.filter(family=family)
+        
+        selected_child_id = self.request.GET.get("child_id")
+        if selected_child_id:
+            selected_child = get_object_or_404(Children, id=selected_child_id, family=family)
+        else:
+            selected_child = children.first()
+           
         records = Records.objects.filter(
             child__in=children,
             reactions__isnull=True
         ).select_related('help', 'child')
 
-        context['records'] = records
-        context['REACTION_CHOICES'] = Reactions.REACTION_CHOICES
+        context.update({
+            "children": children,
+            "selected_child": selected_child,
+            "records": records,
+            "REACTION_CHOICES": Reactions.REACTION_CHOICES,
+        })
         return context
     
 @method_decorator(csrf_exempt, name='dispatch')
@@ -647,7 +658,7 @@ class PasswordConfirmView(LoginRequiredMixin, FormView):  #マイページ用パ
 
     def form_valid(self, form):
         password = form.cleaned_data['password']
-        user = authenticate(user_name=self.request.user.email, password=password)
+        user = authenticate(username=self.request.user.email, password=password)
         if user is not None:
             self.request.session['mypage_authenticated'] = True
             return super().form_valid(form)

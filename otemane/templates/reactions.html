@@ -3,27 +3,42 @@
 
 {% block content %}
 
-<form style="display:none;">
-  {% csrf_token %}
-</form>
 
-  <h2>ありがとうを送る</h2>
-  <p>達成されたお手伝い</p>
+<div class="d-flex align-items-center" style="gap: 10px; margin-top: 10px;">
+  <div class="child-icon" style="font-size: 2rem;">{{ selected_child.icon }}</div>
+
+  <form method="GET" action="{% url 'app:reactions' %}">
+    <select name="child_id" onchange="this.form.submit()">
+      {% for child in children %}
+        <option value="{{ child.id }}" {% if child.id == selected_child.id %}selected{% endif %}>
+          {{ child.child_name }}
+        </option>
+      {% endfor %}
+    </select>
+  </form>
+</div>
+{% comment %} <form style="display:none;">
+  {% csrf_token %}
+</form> {% endcomment %}
+<div class="container d-flex flex-column align-items-center justify-content-center">
+  <h2 class="mb-4 text-center">ありがとうを送る</h2>
+  <p>{{ selected_child.child_name }} の達成されたお手伝い</p>
       {% for record in records %}
         <div class="record">
           <p>(達成日: {{ record.achievement_date }}) <strong>{{ record.help.help_name }}</strong> </p>
           <div class="reaction">
-        {% for value, label in REACTION_CHOICES %}
-          <button class="reaction-button" data-record-id="{{ record.id }}" data-reaction="{{ value }}">
-            {{ label }}
-          </button>
-        {% endfor %}
+            {% for value, label in REACTION_CHOICES %}
+            <button class="reaction-button" data-record-id="{{ record.id }}" data-reaction="{{ value }}">
+              {{ label }}
+            </button>
+            {% endfor %}
           </div>
         </div>
-  {% empty %}
-  <p>まだリアクションできる記録がありません。</p>
-  {% endfor %}
+      {% empty %}
+      <p>まだリアクションできる記録がありません。</p>
+      {% endfor %}
+</div>
   
   <script>const addReactionUrl = "{% url 'app:add_reaction' %}";</script>
   <script src="{% static 'js/reaction.js' %}"></script>
-  {% endblock %}
+{% endblock %}

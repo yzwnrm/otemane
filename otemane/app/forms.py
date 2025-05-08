@@ -65,10 +65,11 @@ class UserUpdateForm(forms.ModelForm):
 class ChildrenForm(forms.ModelForm):
     class Meta:
         model = Children
-        fields = ['child_name', 'birthday']
+        fields = ['child_name', 'birthday', 'icon']
         widgets = {
             'birthday': forms.DateInput(attrs={'type': 'date'}),
-        }
+            'icon': forms.RadioSelect
+            }
         labels = {
             'child_name': 'なまえ',
             'birthday': 'たんじょうび',

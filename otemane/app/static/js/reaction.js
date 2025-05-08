@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.success) {
                     console.log("リアクション送信成功");
+                    button.closest('.record').remove();
                 } else {
                     alert("リアクション失敗");
                 }

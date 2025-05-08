@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
+{% load static%}
 <body>
     <div class="container d-flex flex-column align-items-center justify-content-center min-vh-100">
         <h4>メンバーとうろく</h4>
         <form method="POST">
             {% csrf_token %}
-            {{ form.as_p }}
+            <p>{{ form.child_name.label_tag }} {{ form.child_name }}</p>
+            <p>{{ form.birthday.label_tag }} {{ form.birthday }}</p>
+
             <div class="icon-choices">
                 {% for radio in form.icon %}
                   <label class="icon-label">
@@ -17,6 +20,7 @@
             <input type="submit" value="おてつだいをはじめる">
         </form>
     </div>
+    <script src="{% static 'js/icon.js' %}"></script>
 </body>
 {% endblock  %}
 
