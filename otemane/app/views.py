@@ -647,7 +647,7 @@ class PasswordConfirmView(LoginRequiredMixin, FormView):  #マイページ用パ
 
     def form_valid(self, form):
         password = form.cleaned_data['password']
-        user = authenticate(username=self.request.user.email, password=password)
+        user = authenticate(user_name=self.request.user.email, password=password)
         if user is not None:
             self.request.session['mypage_authenticated'] = True
             return super().form_valid(form)

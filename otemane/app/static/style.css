@@ -338,3 +338,36 @@ button {
     font-size: 14px;
     padding: 0;
 }
+
+
+/* register_child.css */
+.icon-choices {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.icon-label {
+  font-size: 2.5rem;
+  cursor: pointer;
+  border: 2px solid transparent;
+  padding: 5px;
+  border-radius: 10px;
+  transition: border 0.2s, background 0.2s;
+}
+
+.icon-label input[type="radio"] {
+  display: none;
+}
+
+.icon-label input[type="radio"]:checked + .icon-emoji {
+  border: 2px solid #00aaff;
+  background-color: #e6f7ff;
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.icon-label.selected {
+  border: 2px solid #00aaff;
+  background-color: #e6f7ff;
+}

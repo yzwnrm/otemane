@@ -1,11 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
 <body>
-    <div class="container">
+    <div class="container d-flex flex-column align-items-center justify-content-center min-vh-100">
         <h4>メンバーとうろく</h4>
         <form method="POST">
             {% csrf_token %}
             {{ form.as_p }}
+            <div class="icon-choices">
+                {% for radio in form.icon %}
+                  <label class="icon-label">
+                    {{ radio.tag }}
+                    <span class="icon-emoji">{{ radio.choice_label }}</span>
+                  </label>
+                {% endfor %}
+            </div>
             <input type="submit" value="おてつだいをはじめる">
         </form>
     </div>

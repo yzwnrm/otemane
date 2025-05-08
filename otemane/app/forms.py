@@ -15,7 +15,7 @@ class UserLoginForm(forms.Form):
     password = forms.CharField(label='パスワード', widget=forms.PasswordInput())
 
 class UserRegistrationForm(UserCreationForm):
-    username = forms.CharField(label='名前/ニックネーム')
+    user_name = forms.CharField(label='名前/ニックネーム')
     email = forms.EmailField(required=True, label='メールアドレス')
     
     RELATIONSHIP_CHOICES = [
@@ -34,7 +34,7 @@ class UserRegistrationForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'relationship']
+        fields = ['user_name', 'email', 'relationship']
         
 
 class UserUpdateForm(forms.ModelForm):
@@ -84,9 +84,10 @@ class ChildrenForm(forms.ModelForm):
 class ChildUpdateForm(forms.ModelForm):
     class Meta:
         model = Children
-        fields = ['child_name', 'birthday']
+        fields = ['child_name', 'birthday', 'icon']
         widgets = {
             'birthday': forms.DateInput(attrs={'type': 'date'}),
+            'icon': forms.RadioSelect
         }
         labels = {
             'child_name': 'なまえ',

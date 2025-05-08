@@ -18,14 +18,22 @@ RELATIONSHIP_CHOICES = [
         (6, 'その他'),
     ]
 
+ICON_CHOICES = [
+    ("👦", "男の子"),
+    ("👧", "女の子"),
+    ("🚗", "車"),
+    ("🎀", "リボン"),
+    ("⭐", "星"),
+]
+
 class UserManager(BaseUserManager):
-    def create_user(self, username, email, password):
+    def create_user(self, user_name, email, password):
         if not email:
             raise ValueError('メールアドレスを入力してください')
         if not password:
             raise ValueError('パスワードを入力してください')
         user = self.model(
-            username=username,
+            user_name=user_name,
             email=self.normalize_email(email)
 
         )
@@ -50,21 +58,19 @@ class User(AbstractBaseUser, PermissionsMixin):
     update_at = models.DateTimeField(auto_now=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ['user_name']
 
     objects = UserManager()
-
-    def get_absolute_url(self):
-        return reverse_lazy("accounts:home")
     
     def __str__(self):
-        return self.username
+        return self.user_name
 
 
 class Children(models.Model):
     family = models.ForeignKey(Family, on_delete=models.CASCADE, related_name='children')
     child_name = models.CharField(max_length=100)
     birthday = models.DateField(null=True, blank=True)
+    icon = models.CharField(max_length=2, choices=ICON_CHOICES, default="⭐")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
