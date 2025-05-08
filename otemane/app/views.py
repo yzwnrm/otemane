@@ -279,18 +279,24 @@ class UserUpdateView(LoginRequiredMixin, View):
         return render(request, self.template_name, {'user_form': user_form})
 
 class ChildUpdateView(LoginRequiredMixin,View):
-    model = Children
     template_name = 'child_update.html'
 
+    def get_context_data(self, child):
+        family = child.family
+        children = Children.objects.filter(family=family)
+
+        context = {
+            'child_form': ChildUpdateForm(instance=child),
+            'family': family,
+            'selected_child': child,
+            'children': children,
+        }
+        return context
+    
     def get(self, request, pk):
         child = get_object_or_404(Children, pk=pk)
-        child_form = ChildUpdateForm(instance=child)
-        family = child.family 
-
-        return render(request, self.template_name, {
-            'child_form': child_form,
-            'family': family,  
-        })
+        context = self.get_context_data(child)
+        return render(request, self.template_name, context)
 
     def post(self, request, pk):
         child = get_object_or_404(Children, pk=pk)
@@ -299,12 +305,10 @@ class ChildUpdateView(LoginRequiredMixin,View):
         family = child.family
 
         if child_form.is_valid():
-            child_form.save()
-            return redirect('app:family_info', family_id=family.id)
-        return render(request, self.template_name, {
-            'child_form': child_form,
-            'family': family,
-        })
+           child_form.save()
+           return redirect('app:family_info', family_id=child.family.id)
+
+
 
 class ChildDeleteView(LoginRequiredMixin, DeleteView):
     model = Children

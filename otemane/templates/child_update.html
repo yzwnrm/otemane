@@ -1,17 +1,45 @@
 {% extends "base.html" %}
+{% load static%}
 {% block content %}
 <body>
-    <div class="container">
-        <h4>メンバー編集・削除</h4>
+    <h2>メンバー編集・削除</h2>
+    <div class="d-flex align-items-center" style="gap: 10px; margin-top: 10px;">
+        <div class="child-icon" style="font-size: 2rem;">{{ selected_child.icon }}</div>
+      
+        <form method="GET" action="">         
+            <select name="child_id" onchange="this.form.submit()">
+            {% for child in children %}
+              <option value="{{ child.id }}" {% if child.id == selected_child.id %}selected{% endif %}>
+                {{ child.child_name }}
+              </option>
+            {% endfor %}
+          </select>
+        </form>
+      </div>
+    </div>
+<body>
+    <div class="container d-flex flex-column align-items-center justify-content-center">
         <form method="POST">
             {% csrf_token %}
-            {{ child_form.as_p }}
+            <p>{{ child_form.child_name.label_tag }} {{ child_form.child_name }}</p>
+            <p>{{ child_form.birthday.label_tag }} {{ child_form.birthday }}</p>
+
+            <div class="icon-choices">
+                {% for radio in child_form.icon %}
+                  <label class="icon-label">
+                    {{ radio.tag }}
+                    <span class="icon-emoji">{{ radio.choice_label }}</span>
+                  </label>
+                {% endfor %}
+            </div>
+            
             <button type="submit">保存</button>
             <a class="btn btn-light" href="{% url 'app:family_info' family.id %}" role="button">戻る</a>
             
         </form>
     </div>
+    <script src="{% static 'js/icon.js' %}"></script>
 </body>
-{% endblock  %}
+{% endblock %}
 
 
