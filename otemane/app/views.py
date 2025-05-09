@@ -11,6 +11,7 @@ from collections import defaultdict
 from django.utils import timezone
 from django.utils.timezone import now, localtime
 from calendar import monthrange, Calendar
+from operator import itemgetter
 from datetime import date, datetime
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -31,7 +32,7 @@ from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.http import JsonResponse
 from .models import Family, Children, Helps, Reactions, Records, Rewards, HelpLists
-from app.models import User, Invitation
+from app.models import User, Invitation, Children, Rewards
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import(
@@ -76,44 +77,54 @@ class HomeView(LoginRequiredMixin, View):
  
             for help in helps:
                 for record in help.records.all():
-                    if record.achievement_date:
-                        month = record.achievement_date.strftime('%Y-%m')
- 
-                         # 報酬
-                        if month == month_str:
-                            for reward in help.rewards.all():
-                                if reward.reward_type == 1:  # おかね
-                                    monthly_rewards[month]["money"] += reward.reward_prize or 0
-                                elif reward.reward_type == 0:  # おかし
-                                    monthly_rewards[month]["sweets"] += 1
-                        
-                        if month == month_str:
-                            monthly_records.append({
-                                "date": record.achievement_date.strftime('%Y-%m-%d'),
-                                "help": help.help_name,
-                                "reward": ", ".join([r.get_reward_type_display() for r in help.rewards.all()]),
-                                "reaction": "".join([r.get_reaction_image_display() for r in record.reactions.all()])
-                            })
-                         # リアクション
-                        for reaction in record.reactions.all():
-                            if reaction.reaction_image == 0:  # 💗
-                                monthly_rewards[month]["heart"] += 1
-                            elif reaction.reaction_image == 1:  # 😊
-                                monthly_rewards[month]["smile"] += 1
-                            elif reaction.reaction_image == 2:  # 👍
-                                monthly_rewards[month]["good"] += 1
-                            elif reaction.reaction_image == 3:  # 🌸
-                                monthly_rewards[month]["flower"] += 1
-                            elif reaction.reaction_image == 4:  # 😎
-                                monthly_rewards[month]["nice"] += 1
+                    if not record.achievement_date:
+                        continue
+
+                    record_month = record.achievement_date.strftime('%Y-%m')
+                    if record_month != month_str:
+                        continue 
+
+                    for reward in help.rewards.all():
+                        if reward.reward_type == 1:  # おかね
+                            monthly_rewards[record_month]["money"] += reward.reward_prize or 0
+                        elif reward.reward_type == 0:  # おかし
+                            monthly_rewards[record_month]["sweets"] += 1
+
+                    for reaction in record.reactions.all():
+                        if reaction.reaction_image == 0:
+                            monthly_rewards[record_month]["heart"] += 1
+                        elif reaction.reaction_image == 1:
+                            monthly_rewards[record_month]["smile"] += 1
+                        elif reaction.reaction_image == 2:
+                            monthly_rewards[record_month]["good"] += 1
+                        elif reaction.reaction_image == 3:
+                            monthly_rewards[record_month]["flower"] += 1
+                        elif reaction.reaction_image == 4:
+                            monthly_rewards[record_month]["nice"] += 1
+                            
+                    monthly_records.append({
+                        "date": record.achievement_date.strftime('%Y-%m-%d'),
+                        "help": help.help_name,
+                        "reward": [
+                            {
+                                "type": r.get_reward_type_display(),
+                                "prize": r.reward_prize,
+                                "detail": r.reward_detail
+                            } for r in help.rewards.all()
+                        ],
+                        "reaction": "".join([r.get_reaction_image_display() for r in record.reactions.all()])
+                    })
+
+            monthly_records.sort(key=itemgetter('date'))
+
         context = {
             'children': children,
-            'selected_child': selected_child, 
+            'selected_child': selected_child,
             'monthly_rewards': dict(monthly_rewards),
             'monthly_records': monthly_records,
             'current_month': month_str,
         }
- 
+
         return render(request, 'home.html', context)
 
 
@@ -694,7 +705,11 @@ class MonthlyRewardView(TemplateView):
             record_data.append({
                 "date": r.date.day,
                 "help": r.help.title,
-                "reward": r.help.reward.__str__(),
+                "reward": [{
+                   "type": r.help.get_reward_type_display(), 
+                   "prize": r.help.reward.reward_prize,
+                   "detail": r.help.reward.reward_detail,
+                }],
                 "reaction": reaction.emoji if reaction else "",
             })
 

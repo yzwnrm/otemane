@@ -6,13 +6,11 @@ document.addEventListener("DOMContentLoaded", function () {
         currentMonth = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}`;
     }
 
-    // 月ごとの表示内容を更新する
     function updateRewardDisplay() {
         const monthDate = new Date(currentMonth + '-01');
         const jpMonth = monthDate.getMonth() + 1;
         document.getElementById('monthTitle').textContent = `${jpMonth}がつのごほうび`;
 
-        // デフォルトの報酬データ
         const reward = rewards[currentMonth] || {
             money: 0,
             sweets: 0,
@@ -23,7 +21,6 @@ document.addEventListener("DOMContentLoaded", function () {
             nice: 0,
         };
 
-        // 報酬データを更新
         document.getElementById('moneyTotal').textContent = `💰 おかね：${reward.money}えん`;
         document.getElementById('sweetsTotal').textContent = `🍩 おかし：${reward.sweets}こ`;
 
@@ -34,7 +31,6 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('niceTotal').textContent = `😎 ${reward.nice}`;
     }
 
-    // 月を変更する
     function changeMonth(offset) {
         const date = new Date(currentMonth + '-01');
         date.setMonth(date.getMonth() + offset);
@@ -44,14 +40,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const url = new URL(window.location.href);
         url.searchParams.set('month', newMonth);
-        window.location.href = url.toString(); // ページリロードしてデータ取り直す
+        window.location.href = url.toString(); 
     }
 
-    // 月の変更ボタンのイベント
     document.getElementById('prevMonth').addEventListener('click', () => changeMonth(-1));
     document.getElementById('nextMonth').addEventListener('click', () => changeMonth(1));
 
-    // 初期の表示を更新
     updateRewardDisplay(); 
 });
 

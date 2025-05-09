@@ -19,7 +19,7 @@
   <div class="container">
     <div class="text-center my-4">
       <div class="d-flex justify-content-center align-items-center">
-        <button id="prevMonth">◁ 前月</button>
+        <button id="prevMonth" >◁ 前月</button>
         <h2 id="monthTitle" class="mb-0"></h2>
         <button id="nextMonth">翌月 ▷</button>
       </div>
@@ -27,8 +27,7 @@
       <!-- ここはお金とおかしだけ -->
       <h3 id="moneyTotal" class="mt-3">おかね💰 0 えん</h3>
       <h3 id="sweetsTotal" class="mt-3">おかし🍩 0 こ</h3>
-
-      <!-- リアクションまとめ -->
+      <br><br>      <!-- リアクションまとめ -->
       <div class="d-flex justify-content-center align-items-center flex-wrap gap-3 mt-3">
         <h4 id="heartTotal">💗 0</h4>
         <h4 id="smileTotal">😊 0</h4>
@@ -43,9 +42,31 @@
       <!-- モーダル -->
       <div id="myModal" class="modal" style="display:none;">
         <div class="modal-content">
-          <span id="closeModal" class="close">&times;</span>
-          <h4>お手伝い詳細</h4>
+          <span id="closeModal" class="close-modal">&times;</span>
           <div id="helpRecordsContainer"></div>
+          
+          {% if monthly_records %}
+            {% for record in monthly_records %}
+              <div class="d-flex align-items-center mb-2" style="display: flex; align-items: center;">
+                <div class="me-3">{{ record.date }}</div>
+                <div class="me-3">{{ record.help }}</div>
+                <div class="me-3">
+                    {% for reward in record.reward %}
+                      {% if reward.type == "おかね" %}
+                        {{ reward.prize }}えん
+                      {% elif reward.type == "おかし" %}
+                        おかし1こ
+                      {% else %}
+                        {{ reward.type }}：{{ reward.detail }}
+                      {% endif %}
+                    {% endfor %}
+                </div>
+                <div>{{ record.reaction }}</div>
+              </div>
+              {% endfor %}
+          {% else %}
+            <div class="text-muted">今月の記録はありません。</div>
+          {% endif %}
         </div>
       </div>
 

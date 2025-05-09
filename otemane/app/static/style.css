@@ -2,14 +2,6 @@
 .example{
   text-align: center;
 }
-
-h2 {
-    margin-bottom: 20px;
-}
-
-h4 {
-    color: black;
-}
     
 body {
     font-family: Arial, sans-serif;
@@ -51,6 +43,11 @@ header {
   /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
 }
 
+.d-flex {
+  display: flex;
+  flex-direction: row;
+}
+
 .form-wrapper {
   display: flex;
   justify-content: center;  /* 横方向中央 */
@@ -64,12 +61,6 @@ header {
   padding: 16px;
   background-color: #fcfcfc;
   margin-bottom: 30px;
-}
-
-/* 「利用方法」見出しのスタイル */
-/*.instruction-box h4 {
-  font-size: 1.5rem;
-  margin-bottom: 15px;
 }
 
 /* 中央揃え */
@@ -132,8 +123,20 @@ button {
     color: rgb(3, 3, 3);
     border: none;
     border-radius: 5px;
+    background-color: none;
     cursor: pointer;
 }
+
+button#prevMonth,
+button#nextMonth {
+  background: none;
+  border: none;
+  color: inherit;      
+  font: inherit;       
+  cursor: pointer; 
+  padding: 15px;      
+}
+
 
 .reward-option {
     display: flex;
@@ -151,20 +154,16 @@ button {
     min-width: 200px;
 }
 
-/* モーダルを開くボタンのスタイル */
+/* モーダルを開く */
 .open-modal {
-    /*position: absolute; /* ボタンをページ上に絶対位置で配置 */
-    top: 50%; /* ボタンを縦方向に中央に配置 */
-    left: 50%; /* ボタンを横方向に中央に配置 */
-    width: 220px; /* ボタンの幅 */
-    height: 50px; /* ボタンの高さ */
-    font-size: 16px; /* ボタン内のテキストのフォントサイズ */
-    color: #000; /* ボタンのテキストカラー */
-    /*background: #707070; /* ボタンの背景色 */
-    /*border: #929292; /* ボタンの境界線 */
-    border-radius: 14px; /* ボタンの角を丸くするための半径 */
-    cursor: pointer; /* カーソルがホバーした時にポインタが表示されるように設定 */
-    /*transform: translate(-50%, -50%); /* 中央に位置するための補正 */
+    top: 50%; 
+    left: 50%; 
+    width: 220px; 
+    height: 50px; 
+    font-size: 16px; 
+    color: #000; 
+    border-radius: 14px; 
+    cursor: pointer; 
   }
   
   /* モーダルウィンドウの基本スタイル */
@@ -180,15 +179,15 @@ button {
   
 .modal-content {
     position: fixed; /* モーダル内容が画面上に固定されるように設定 */
-    top: 50%; /* 縦方向の中央に配置 */
-    left: 50%; /* 横方向の中央に配置 */
+    top: 50%;
+    left: 50%; 
     transform: translate(-50%, -50%); /* 完全に中央に配置するための補正 */
     padding: 10px; /* モーダル内の余白を設定 */
     width: 440px; /* モーダルの幅 */
     height: 580px; /* モーダルの高さ */
-    background-color: #fefefe; /* モーダルの背景色を白に設定 */
-    border: 1px solid #888; /* 境界線の色を薄いグレーに設定 */
-    border-radius: 10px; /* モーダルの角を丸くするための半径 */
+    background-color: #fefefe; 
+    border: 1px solid #888; 
+    border-radius: 10px; 
   }
   
   /* モーダルを閉じるボタン（×）のスタイル */
@@ -371,3 +370,4 @@ button {
   border: 2px solid #00aaff;
   background-color: #e6f7ff;
 }
+

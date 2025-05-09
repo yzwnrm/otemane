@@ -2,8 +2,8 @@
 {% block content %}
 {% load static%}
 <body>
-    <div class="container d-flex flex-column align-items-center justify-content-center min-vh-100">
-        <h4>メンバーとうろく</h4>
+  <h3>メンバーとうろく</h3>
+    <div class="container d-flex flex-column align-items-center justify-content-center">
         <form method="POST">
             {% csrf_token %}
             <p>{{ form.child_name.label_tag }} {{ form.child_name }}</p>

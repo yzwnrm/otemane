@@ -15,39 +15,59 @@ document.addEventListener("DOMContentLoaded", function () {
             const section = document.createElement('div');
             section.style.marginBottom = '20px';
 
-            const dateTitle = document.createElement('h3');
-            dateTitle.textContent = `🗓️ ${date}`;
+            const dateTitle = document.createElement('h4');
+            dateTitle.textContent = `${date}日`;
             section.appendChild(dateTitle);
 
-            const recordRow = document.createElement('div');
-            recordRow.style.display = 'flex';
-            recordRow.style.flexWrap = 'wrap';
-            recordRow.style.gap = '10px';
+            const recordList = document.createElement('div');
+            recordList.style.display = 'flex';
+            recordList.style.flexDirection = 'column';
+            recordList.style.gap = '10px';
 
             grouped[date].forEach(record => {
-                const card = document.createElement('div');
-                card.style.border = '1px solid #ccc';
-                card.style.padding = '10px';
-                card.style.borderRadius = '8px';
-                card.style.width = '200px';
-                card.style.backgroundColor = '#f9f9f9';
+                const row = document.createElement('div');
+                row.style.display = 'flex';
+                row.style.alignItems = 'center';
+                row.style.gap = '20px';
+                row.style.borderBottom = '1px solid #ccc';
+                row.style.paddingBottom = '5px';
 
-                card.innerHTML = `
-                    <p><strong>${record.help}</strong></p>
-                    <p>報酬: ${record.reward}</p>
-                    <p>リアクション: ${record.reaction}</p>
-                `;
-                recordRow.appendChild(card);
+                const help = document.createElement('div');
+                help.textContent = record.help;
+
+                row.appendChild(help);
+
+                // モーダル表示用
+                record.reward.forEach(reward => {
+                    const rewardDiv = document.createElement('div');
+                    if (reward.type === 'おかね') {
+                        rewardDiv.textContent = `${reward.prize}えん`;
+                    } else if (reward.type === 'おかし') {
+                        rewardDiv.textContent = `おかし1つ`;
+                    } else {
+                        rewardDiv.textContent = `${reward.type}：${reward.detail}`;
+                    }
+                    rewardDiv.classList.add("me-3");
+                    row.appendChild(rewardDiv);
+                });
+
+
+                const reaction = document.createElement('div');
+                reaction.textContent = record.reaction;
+
+                row.appendChild(reaction);
+
+                recordList.appendChild(row);
             });
 
-            section.appendChild(recordRow);
+            section.appendChild(recordList);
             container.appendChild(section);
         }
 
         document.getElementById('myModal').style.display = "block";
     }
 
-    document.getElementById('openModal').addEventListener('click', function() {
+    document.getElementById('openModal').addEventListener('click', function () {
         showMonthlyModal(records);
     });
 
