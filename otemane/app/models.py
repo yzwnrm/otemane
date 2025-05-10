@@ -27,30 +27,40 @@ ICON_CHOICES = [
 ]
 
 class UserManager(BaseUserManager):
-    def create_user(self, user_name, email, password):
+    def create_user(self, email, password=None, **extra_fields):
         if not email:
-            raise ValueError('メールアドレスを入力してください')
-        if not password:
-            raise ValueError('パスワードを入力してください')
-        user = self.model(
-            user_name=user_name,
-            email=self.normalize_email(email)
-
-        )
+            raise ValueError('The Email must be set')
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
         user.set_password(password)
-        user.save()
+        user.save(using=self._db)
         return user
+
+    
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
+        return self.create_user(email, password, **extra_fields)
+
 
 class Family(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 class User(AbstractBaseUser, PermissionsMixin):
-    family = models.ForeignKey(Family, on_delete=models.CASCADE)
+    family = models.ForeignKey(Family, on_delete=models.CASCADE, default=1)
     user_name = models.CharField(max_length=64)
-    relationship = models.IntegerField(choices=RELATIONSHIP_CHOICES)
-    is_active = models.BooleanField(default=True)
+    relationship = models.IntegerField(choices=RELATIONSHIP_CHOICES, default=6)
     email = models.EmailField(max_length=64, unique=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
     password = models.CharField(max_length=100)  
     password_token = models.CharField(max_length=100, blank=True, null=True)
     password_expiry = models.DateTimeField(blank=True, null=True)
@@ -78,7 +88,7 @@ class Children(models.Model):
         return f"{self.child_name}({self.family})"
 
 class Helps(models.Model):
-    child = models.ForeignKey(Children, null=True, on_delete=models.CASCADE, related_name='helps')
+    child = models.ForeignKey(Children, null=True, blank=True, on_delete=models.CASCADE, related_name='helps')
     help_name = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -1,5 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
+<body>
+<div class="d-flex justify-content-start align-items-center mt-2 ms-2">
+  <label for="dateSelect" class="me-2 mb-0 small fw-bold"></label>
+  <input type="date" id="dateSelect" name="selected_date" class="form-control form-control-sm"
+         style="width: 150px;" value="{{ selected_date|date:'Y-m-d' }}"
+         onchange="this.form.submit();">
+</div>
+
 
 <div class="text-end my-2">
   <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bulkRegisterModal">
@@ -111,4 +119,10 @@
     </div>
   </div>
 </div>
+<script>
+  document.getElementById("dateSelect").addEventListener("change", function () {
+    this.form.submit();
+  });
+</script>
+</body>
 {% endblock  %}

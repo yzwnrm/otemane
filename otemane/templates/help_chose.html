@@ -2,6 +2,16 @@
 {% block content %}
 <h3>おてつだいをえらぶ</h3>
 
+{% if messages %}
+  <div class="mt-2 ms-2">
+    {% for message in messages %}
+      <div class="alert alert-danger py-1 px-2 small" role="alert">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
 {% for help in page_obj %}
 <div class="help-item border p-3 mb-3 d-flex justify-content-between align-items-center">
   <div>

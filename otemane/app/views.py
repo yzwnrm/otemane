@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.forms import inlineformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import(
@@ -7,6 +8,7 @@ from django.views.generic import(
 from django.views.generic.edit import FormView
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from collections import defaultdict
 from django.utils import timezone
 from django.utils.timezone import now, localtime
@@ -414,13 +416,32 @@ class HelpListsView(ListView):    #えらんだおてつだい
         context['child'] = get_object_or_404(Children, id=child_id)
         context['selected_helps'] = HelpLists.objects.filter(child_id=child_id)  
         
-        completed_help_ids = Records.objects.filter(child_id=child_id).values_list('help_id', flat=True)
-        uncompleted_helps = HelpLists.objects.filter(child_id=child_id).exclude(help_id__in=completed_help_ids).select_related('help')
-        context['uncompleted_helps'] = uncompleted_helps
+        selected_date_str = self.request.GET.get("selected_date")
+        if selected_date_str:
+            try:
+                selected_date = datetime.strptime(selected_date_str, "%Y-%m-%d").date()
+            except ValueError:
+                selected_date = date.today()
+        else:
+            selected_date = date.today()
 
+        context['selected_date'] = selected_date
+        context['today_date'] = date.today()
+
+
+        completed_help_ids = Records.objects.filter(
+            child_id=child_id,
+            achievement_date=selected_date
+        ).values_list('help_id', flat=True)
+
+        uncompleted_helps = HelpLists.objects.filter(child_id=child_id).exclude(help_id__in=completed_help_ids).select_related('help')
+        
+        context['uncompleted_helps'] = uncompleted_helps
         return context
 
     def post(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        
         child_id = self.kwargs['child_id']
         help_ids = request.POST.getlist("help_ids")
         
@@ -518,7 +539,9 @@ class HelpChoseView(TemplateView):   #おてつだいをえらぶ
 
     def get(self, request, child_id):
         family = get_object_or_404(Family, user=request.user)
-        helps = Helps.objects.filter(child__family=family).prefetch_related('rewards').order_by('-created_at')[:30]  # 最大30件
+        helps = Helps.objects.filter(
+            Q(child__family=family) | Q(child__isnull=True)
+        ).prefetch_related('rewards').order_by('-created_at')[:30] # 最大30件
         paginator = Paginator(helps, 10)  # 1ページ10件
 
         page_number = request.GET.get('page')
@@ -529,15 +552,17 @@ class HelpChoseView(TemplateView):   #おてつだいをえらぶ
             'child_id': child_id,
         })
 
-    def post(self, request, child_id):
+    def post(self, request, *args, **kwargs):
+        child_id = kwargs['child_id']
         help_id = request.POST.get('help_id')
         current_count = HelpLists.objects.filter(child_id=child_id).count()
-
+        
+        selected_count = HelpLists.objects.filter(child_id=child_id).count()
         if current_count >= 10:
             messages.error(request, "10件までしか選べません")
-        else:
-            HelpLists.objects.get_or_create(child_id=child_id, help_id=help_id)
-
+            return redirect('app:help_chose', child_id=child_id)            
+    
+        HelpLists.objects.get_or_create(child_id=child_id, help_id=help_id)
         return redirect('app:help_chose', child_id=child_id)
 
 class HelpEditDeleteView(ListView):   
