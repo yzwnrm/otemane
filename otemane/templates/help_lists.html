@@ -32,7 +32,7 @@
       {% endif %}
     {% endfor %}
   </div>
-  <form method="post" action="{% url 'app:help_lists' help.id %}">
+  <form method="post" action="{% url 'app:help_lists' child.id %}">
     {% csrf_token %}
     <input type="hidden" name="help_id" value="{{ help.help.id }}">
     <button class="btn btn-outline-success">できた！</button>

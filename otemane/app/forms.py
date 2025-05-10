@@ -71,7 +71,7 @@ class ChildrenForm(forms.ModelForm):
             'icon': forms.RadioSelect
             }
         labels = {
-            'child_name': 'なまえ',
+            'child_name': 'なまえ/ニックネーム',
             'birthday': 'たんじょうび',
         }
 

@@ -1,73 +1,100 @@
-{% extends "base.html" %}
-{% load static %}
+<html>
+    <head>
+    {% load static %}
+        <meta charset='utf-8'>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <title>おてまね</title>
+        <link rel="stylesheet" href="{% static 'style.css' %}">
+    </head>
+    <body>
+        <header>
+            <a href="/app/home/" class="header-link">おてまね</a>
+            <div class="header-links">
+            <a href="/app/user/" class="header-link-2">マイページ</a>
+            </div>
+        </header>
+
 {% block content %}
-<h2>ファミリー情報</h2>
-<h3>親メンバー</h3>
-<table class="table">
-  <thead>
-    <tr>
-      <th>名前</th>
-      <th>続柄</th>
-      <th>操作</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for user in user %}
-    <tr data-user-id="{{ user.id }}">
-      <td>{{ user.user_name }}</td>
-      <td>{{ user.get_relationship_display }}</td>
-      <td>
-        <a href="{% url 'app:user_update' user.id %}" class="btn btn-primary btn-sm">編集</a>
-        <form method="POST" action="{% url 'app:user_delete' user.id %}" style="display:inline;">
-          {% csrf_token %}
-          <button
-            type="button"
-            class="btn btn-danger btn-sm"
-            data-bs-toggle="modal"
-            data-bs-target="#deleteModal"
-            data-delete-url="{% url 'app:user_delete' user.id %}">
-            削除
-          </button>
+<h2>家族情報管理</h2>
 
-        </form>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="container-fluid">
+  <div class="row justify-content-center px-3">
 
-<h3>子どもメンバー</h3>
-<table class="table">
-  <thead>
-    <tr>
-      <th>名前</th>
-      <th>誕生日</th>
-      <th>操作</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for child in child %}
-    <tr data-child-id="{{ child.id }}">
-      <td>{{ child.child_name }}</td>
-      <td>{{ child.birthday }}</td>
-      <td>
-        <a href="{% url 'app:child_update' child.id %}" class="btn btn-primary btn-sm">編集</a>
-        <form method="POST" action="{% url 'app:child_delete' child.id %}" style="display:inline;">
-          {% csrf_token %}
-          <button
-            type="button"
-            class="btn btn-danger btn-sm"
-            data-bs-toggle="modal"
-            data-bs-target="#deleteModal"
-            data-delete-url="{% url 'app:child_delete' child.id %}">
-            削除
-          </button>
-        </form>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+    <!-- 親メンバー -->
+    <div class="col-lg-6 col-12 mb-4">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>家族情報（マイページ利用可）</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in user %}
+          <tr data-user-id="{{ user.id }}">
+            <td>名前/ニックネーム</td>
+            <td>
+              {{ user.user_name }}
+              {% if user == request.user %}（自分）{% endif %}
+            </td>
+            <td>
+              <a href="{% url 'app:user_update' user.id %}" class="btn btn-secondary btn-sm">編集</a>
+              <form method="POST" action="{% url 'app:user_delete' user.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button
+                  type="button"
+                  class="btn btn-danger btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteModal"
+                  data-delete-url="{% url 'app:user_delete' user.id %}">
+                  削除
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <a href="{% url 'app:invite' %}" class="btn btn-link">＋ 家族を招待する</a>
+    </div>
+
+    <!-- 子どもメンバー -->
+    <div class="col-lg-6 col-12 mb-4">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>お手伝いメンバー情報（マイページ利用不可）</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for child in child %}
+          <tr data-child-id="{{ child.id }}">
+            <td>名前/ニックネーム</td>
+            <td>{{ child.child_name }}</td>
+            <td>
+              <a href="{% url 'app:child_update' child.id %}" class="btn btn-secondary btn-sm">編集</a>
+              <form method="POST" action="{% url 'app:child_delete' child.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button
+                  type="button"
+                  class="btn btn-danger btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteModal"
+                  data-delete-url="{% url 'app:child_delete' child.id %}">
+                  削除
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <a href="{% url 'app:child_regist' %}" class="btn btn-link">＋ メンバーを追加する</a>
+    </div>
+
+  </div> 
+</div> 
+{% endblock %}
+
 
 <!-- 削除確認モーダル -->
 <div class="modal" id="deleteModal" tabindex="-1" aria-hidden="true">
@@ -79,9 +106,7 @@
           <h5 class="modal-title">削除確認</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
         </div>
-        <div class="modal-body">
-          本当に削除しますか？
-        </div>
+        <div class="modal-body">本当に削除しますか？</div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
           <button type="submit" class="btn btn-danger">削除する</button>
@@ -91,11 +116,7 @@
   </div>
 </div>
 
-{% endblock %}
 {% block scripts %}
-    <!-- BootstrapのJavaScript（必要なもの） -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-..." crossorigin="anonymous"></script>
-
-    <!-- 自作のJSファイル -->
-    <script src="{% static 'js/info_delete.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="{% static 'js/info_delete.js' %}"></script>
 {% endblock %}

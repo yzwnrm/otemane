@@ -156,9 +156,12 @@ class UserLoginView(FormView):
         email = form.cleaned_data['email']
         password = form.cleaned_data['password']
         user = authenticate(email=email, password=password)
-        if user:
+        if user is not None:
             login(self.request, user)
-        return super().form_valid(form)
+            return super().form_valid(form)
+        else:
+            form.add_error(None,"メールアドレスまたはパスワードが正しくありません。")
+            return self.form_invalid(form)
 
     def get_success_url(self):
         next_url = self.request.GET.get('next')
@@ -270,11 +273,6 @@ class FamilyInfoView(LoginRequiredMixin, TemplateView):
         context['child'] = Children.objects.filter(family=family)
 
         return context
-    
-class UserUpdateView(LoginRequiredMixin, View):
-    model = User
-    template_name = 'user_update.html'
-    # login_url = 'user_login'
 
 class UserUpdateView(LoginRequiredMixin, View):
     template_name = 'user_update.html'  
@@ -288,7 +286,8 @@ class UserUpdateView(LoginRequiredMixin, View):
         user_form = UserUpdateForm(request.POST, instance=user)
         if user_form.is_valid():
             user_form.save()
-            return redirect('app:family_info') 
+            family_id = user.family.id
+            return redirect('app:family_info', family_id=family_id) 
         return render(request, self.template_name, {'user_form': user_form})
 
 class ChildUpdateView(LoginRequiredMixin,View):
@@ -557,11 +556,30 @@ class HelpChoseView(TemplateView):   #おてつだいをえらぶ
         help_id = request.POST.get('help_id')
         current_count = HelpLists.objects.filter(child_id=child_id).count()
         
-        selected_count = HelpLists.objects.filter(child_id=child_id).count()
         if current_count >= 10:
             messages.error(request, "10件までしか選べません")
             return redirect('app:help_chose', child_id=child_id)            
-    
+        
+        original_help = get_object_or_404(Helps, id=help_id)
+
+        if HelpLists.objects.filter(child_id=child_id, help__help_name=original_help.help_name).exists():
+            messages.info(request, "すでに選ばれています。")
+            return redirect('app:help_chose', child_id=child_id)
+
+        new_help = Helps.objects.create(
+            title=original_help.title,
+            description=original_help.description,
+            created_at=now(),
+            child_id=child_id,
+        )
+
+    # 報酬も複製（1件だけ対象）
+        reward = original_help.rewards.first()
+        if reward:
+            reward.pk = None
+            reward.help = new_help
+            reward.save()
+
         HelpLists.objects.get_or_create(child_id=child_id, help_id=help_id)
         return redirect('app:help_chose', child_id=child_id)
 
