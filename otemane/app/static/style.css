@@ -26,17 +26,22 @@ header {
   margin-bottom: 20px;
 }
 .header-link {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
+  font-weight: bold;
   margin-left: 20px;
   text-decoration: none;
   color: #333;
 }
 
 .header-link-2 {
-  font-size: 1.0rem;
+  font-size: 0.9rem;
   margin-left: 20px;
   color: inherit;
   color: #333;
+}
+
+.center-placeholder::placeholder {
+    text-align: center;
 }
 
 .container {

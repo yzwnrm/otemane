@@ -3,7 +3,7 @@ from django.forms import modelformset_factory
 from app.models import User, Helps
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 # from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from .models import Children, User, Rewards, RELATIONSHIP_CHOICES, HelpLists, Reactions
@@ -13,6 +13,15 @@ User = get_user_model()
 class UserLoginForm(forms.Form):
     email = forms.EmailField(label='メールアドレス')
     password = forms.CharField(label='パスワード', widget=forms.PasswordInput())
+
+class CustomPasswordResetForm(PasswordResetForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['email'].label = ''
+        self.fields['email'].widget.attrs.update({
+            'placeholder': 'メールアドレスを入力',
+            'class': 'form-control center-placeholder'
+        })
 
 class UserRegistrationForm(UserCreationForm):
     user_name = forms.CharField(label='名前/ニックネーム')
@@ -55,7 +64,7 @@ class UserUpdateForm(forms.ModelForm):
         new_email = self.cleaned_data.get('new_email')
 
         if new_email:
-            user.email = new_email  # 新しいメールアドレスがあれば上書き
+            user.email = new_email  
 
         if commit:
             user.save()

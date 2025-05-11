@@ -20,8 +20,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
 from .forms import(
-    UserLoginForm,
-    #   RequestPasswordResetForm, SetNewPasswordForm, 
+    UserLoginForm, CustomPasswordResetForm,
     UserRegistrationForm, UserUpdateForm,  ChildrenForm, ChildUpdateForm,
     HelpsForm, RewardsForm, RewardsFormSet, PasswordConfirmationForm
 )
@@ -242,8 +241,8 @@ class AjaxCreateInviteView(View):
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'password/password_reset.html'
     email_template_name = 'password/password_reset_email.txt'
-    # subject_template_name = 'registration/password_reset_subject.txt'  # これがないとエラー出るかも
     success_url = reverse_lazy('app:password_reset_done')  
+    form_class = CustomPasswordResetForm
 
     def get_users(self, email):
         return UserModel.objects.filter(email__iexact=email, is_active=True)
