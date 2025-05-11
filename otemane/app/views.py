@@ -136,11 +136,15 @@ class UserRegisterView(CreateView):
     success_url = reverse_lazy('app:regist_done') 
 
     def form_valid(self, form):
-        user = form.save() 
+        user = form.save(commit=False) 
         relationship = form.cleaned_data['relationship']
-        response = super().form_valid(form)
-        Family.objects.create(user=self.object)
-        return response
+        
+        family = Family.objects.create()
+        user.family = family
+        user.relationship = relationship
+        user.save()
+        
+        return super().form_valid(form)
     
 class RegistDone(TemplateView):
     template_name = 'regist_done.html'

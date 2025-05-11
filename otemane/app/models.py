@@ -54,7 +54,7 @@ class Family(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 class User(AbstractBaseUser, PermissionsMixin):
-    family = models.ForeignKey(Family, on_delete=models.CASCADE, default=1)
+    family = models.ForeignKey(Family, on_delete=models.CASCADE)
     user_name = models.CharField(max_length=64)
     relationship = models.IntegerField(choices=RELATIONSHIP_CHOICES, default=6)
     email = models.EmailField(max_length=64, unique=True)
@@ -80,7 +80,7 @@ class Children(models.Model):
     family = models.ForeignKey(Family, on_delete=models.CASCADE, related_name='children')
     child_name = models.CharField(max_length=100)
     birthday = models.DateField(null=True, blank=True)
-    icon = models.CharField(max_length=2, choices=ICON_CHOICES, default="⭐")
+    icon = models.CharField(max_length=10, choices=ICON_CHOICES, default="⭐")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

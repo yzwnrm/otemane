@@ -8,11 +8,19 @@
         <link rel="stylesheet" href="{% static 'style.css' %}">
     </head>
     <body>
+        <header>
+            <a href="/app/home/" class="header-link">おてまね</a>
+          <div class="header-links">
+            <a href="/app/user/" class="header-link-2">マイページ</a>
+          </div>
+        </header>
         <div class="container">
-            <p>アカウント登録が完了しました</p>
-            <div class="form-group row">
-                <a class="btn btn-light" href="{% url 'app:child_regist' %}" role="button">メンバー登録へ進む</a>
-                <a class="btn btn-light" href="{% url 'app:home' %}" role="button">ホームへ進む</a>
+            <div class="text-center">
+                <p>登録が完了しました</p>
+                  <div class="d-flex justify-content-between">
+                  <a class="btn btn-primary" href="{% url 'app:child_regist' %}" role="button">メンバー登録へ進む</a>
+                  <a class="btn btn-secondary" href="{% url 'app:home' %}" role="button">ホームへ進む</a>
+                  </div>
             </div>
         </div>
     </body>
