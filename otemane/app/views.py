@@ -442,22 +442,29 @@ class HelpListsView(ListView):    #えらんだおてつだい
         
         child_id = self.kwargs['child_id']
         help_ids = request.POST.getlist("help_ids")
+        help_id = request.POST.get("help_id") 
         
-        if not help_ids:
+        if help_id:
+        # 単発「できた」
+            Records.objects.create(
+                child_id=child_id,
+                help_id=help_id,
+                achievement_date=timezone.now()
+            )
+        elif help_ids:
+        # モーダルで一括「できた」
+            for hid in help_ids:
+                Records.objects.create(
+                    child_id=child_id,
+                    help_id=hid,
+                    achievement_date=timezone.now()
+            )
+        else:
+        # どちらも指定されていない
             return self.render_to_response({
                 **self.get_context_data(),
                 'error_message': "おてつだいのIDが指定されていません。"
             })
-
-        child = get_object_or_404(Children, id=child_id)
-        # help_item = get_object_or_404(Helps, id=help_id)
-
-        for help_id in help_ids:
-            Records.objects.create(
-                child_id=child_id,
-                help_id=help_id,
-                achievement_date=timezone.now()  # 現在の日付を設定
-            )
         
         return redirect('app:help_lists', child_id=child_id)
     
@@ -492,7 +499,7 @@ class ReactionListView(LoginRequiredMixin, TemplateView):
             selected_child = children.first()
            
         records = Records.objects.filter(
-            child__in=children,
+            child=selected_child,
             reactions__isnull=True
         ).select_related('help', 'child')
 
@@ -561,27 +568,33 @@ class HelpChoseView(TemplateView):   #おてつだいをえらぶ
         
         original_help = get_object_or_404(Helps, id=help_id)
 
-        if HelpLists.objects.filter(child_id=child_id, help__help_name=original_help.help_name).exists():
-            messages.info(request, "すでに選ばれています。")
-            return redirect('app:help_chose', child_id=child_id)
+        if original_help.is_default:
+            if HelpLists.objects.filter(child_id=child_id, help__help_name=original_help.help_name).exists():
+                messages.info(request, "すでに選ばれています。")
+                return redirect('app:help_chose', child_id=child_id)
 
-        new_help = Helps.objects.create(
-            title=original_help.title,
-            description=original_help.description,
-            created_at=now(),
-            child_id=child_id,
-        )
+            # 複製処理
+            new_help = Helps.objects.create(
+                help_name=original_help.help_name,
+                created_at=now(),
+                child_id=child_id,
+                is_default=False, 
+            )
 
-    # 報酬も複製（1件だけ対象）
-        reward = original_help.rewards.first()
-        if reward:
-            reward.pk = None
-            reward.help = new_help
-            reward.save()
+            # 報酬も複製（1件だけ対象）
+            reward = original_help.rewards.first()
+            if reward:
+                reward.pk = None  
+                reward.help = new_help
+                reward.save()
 
-        HelpLists.objects.get_or_create(child_id=child_id, help_id=help_id)
+            HelpLists.objects.get_or_create(child_id=child_id, help_id=new_help.id)
+
+        else:
+            messages.info(request, "デフォルトのお手伝い以外は複製できません。")
+
         return redirect('app:help_chose', child_id=child_id)
-
+    
 class HelpEditDeleteView(ListView):   
     model = Helps
     template_name = 'help_edit_delete.html'

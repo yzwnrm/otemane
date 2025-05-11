@@ -3,7 +3,6 @@
 
 {% block content %}
 
-
 <div class="d-flex align-items-center" style="gap: 10px; margin-top: 10px;">
   <div class="child-icon" style="font-size: 2rem;">{{ selected_child.icon }}</div>
 
@@ -17,28 +16,38 @@
     </select>
   </form>
 </div>
-{% comment %} <form style="display:none;">
-  {% csrf_token %}
-</form> {% endcomment %}
+    <p>の達成されたお手伝い</p>
+    
 <div class="container d-flex flex-column align-items-center justify-content-center">
-  <h2 class="mb-4 text-center">ありがとうを送る</h2>
-  <p>{{ selected_child.child_name }} の達成されたお手伝い</p>
-      {% for record in records %}
-        <div class="record">
-          <p>(達成日: {{ record.achievement_date }}) <strong>{{ record.help.help_name }}</strong> </p>
-          <div class="reaction">
-            {% for value, label in REACTION_CHOICES %}
-            <button class="reaction-button" data-record-id="{{ record.id }}" data-reaction="{{ value }}">
-              {{ label }}
-            </button>
-            {% endfor %}
-          </div>
-        </div>
-      {% empty %}
-      <p>まだリアクションできる記録がありません。</p>
-      {% endfor %}
-</div>
+  <h3 class="mb-5 text-center">ありがとうを送る</h3>
   
+  {% for record in records %}
+    <div class="w-100 mb-3" style="max-width: 600px;">
+      <table class="table table-sm table-bordered" style="margin-bottom: 0;">
+        <tbody>
+          <tr>
+            <td style="width: 30%; text-align: center; border-right: 1px solid #ccc;">
+              {{ record.achievement_date|date:"n/j" }}
+            </td>
+            <td style="width: 70%;">
+              <strong>{{ record.help.help_name }}</strong>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="reaction mt-1 d-flex justify-content-center" style="gap: 10px;">
+        {% for value, label in REACTION_CHOICES %}
+          <button class="reaction-button" data-record-id="{{ record.id }}" data-reaction="{{ value }}">
+            {{ label }}
+          </button>
+        {% endfor %}
+      </div>
+    </div>
+  {% empty %}
+    <p>まだリアクションできる記録がありません。</p>
+  {% endfor %}
+</div>
+
   <script>const addReactionUrl = "{% url 'app:add_reaction' %}";</script>
   <script src="{% static 'js/reaction.js' %}"></script>
 {% endblock %}

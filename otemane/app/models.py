@@ -90,6 +90,7 @@ class Children(models.Model):
 class Helps(models.Model):
     child = models.ForeignKey(Children, null=True, blank=True, on_delete=models.CASCADE, related_name='helps')
     help_name = models.CharField(max_length=100)
+    is_default = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

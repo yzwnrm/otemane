@@ -2,25 +2,26 @@
 {% load static %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'style.css' %}">
 
 <h2>カレンダー</h2>
 
-<form method="get" id="monthSelectorForm" class="date-select-form">
-  <label for="year">年</label>
-  <select name="year" id="year">
-    {% for y in year_range %}
-      <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
-    {% endfor %}
-  </select>
-
-  <label for="month">月</label>
-  <select name="month" id="month">
-    {% for m in month_range %}
-      <option value="{{ m }}" {% if m == month %}selected{% endif %}>{{ m }}</option>
-    {% endfor %}
-  </select>
-
+<form method="get" id="monthSelectorForm" class="date-select-form" style="display: flex; gap: 10px; align-items: center;">
+  <div style="display: flex; gap: 5px; align-items: center;">
+    <label for="year" style="margin-right: 5px;">年</label>
+    <select name="year" id="year" style="display: inline-block;">
+      {% for y in year_range %}
+        <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
+      {% endfor %}
+    </select>
+</div>
+  <div style="display: flex; gap: 5px; align-items: center;">
+    <label for="month" style="margin-right: 5px;">月</label>
+    <select name="month" id="month" style="display: inline-block;">
+      {% for m in month_range %}
+        <option value="{{ m }}" {% if m == month %}selected{% endif %}>{{ m }}</option>
+      {% endfor %}
+    </select>
+  </div>
 </form>
 
 <div class="calendar-container">

@@ -2,13 +2,15 @@
 {% block content %}
 <body>
   <h3>おてつだいをつくる</h3>
+    <div class="container">
+      <div class="text-center">
         <form method="post">
            {% csrf_token %}
             <h4> どんなおてつだい？</h4>
             {{ helps_form.help_name.label }} {{ helps_form.help_name }}
         
             <h4> なにがほしい？</h4>
-            {% comment %} {% for radio in rewards_form.reward_type %} {% endcomment %}
+            <p>（ひとつだけえらぶ）</p>
             <div class="reward-option">
               <label><input type="radio" name="reward_type" value="0"> おかし</label>
             </div>
@@ -22,9 +24,13 @@
               <label><input type="radio" name="reward_type" value="2"> おねがい</label>
               {{ rewards_form.reward_detail }}
             </div>
-            <button type="submit" >つくる</button>
-          </form>
-          
+
+            <div class="mb-3">
+            <button type="submit" class="btn btn-success" >つくる</button>
+            </div>
+        </form>
+      </div>
+    </div>    
 </body>
 {% endblock  %}
 
