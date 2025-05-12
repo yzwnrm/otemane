@@ -4,23 +4,29 @@
 {% block content %}
 
 <h2>カレンダー</h2>
+  <div style="text-align: right;">
+  <p>ひとつでもおてつだいができたら✅マークがつくよ！</p>
+  </div>
 
-<form method="get" id="monthSelectorForm" class="date-select-form" style="display: flex; gap: 10px; align-items: center;">
-  <div style="display: flex; gap: 5px; align-items: center;">
-    <label for="year" style="margin-right: 5px;">年</label>
-    <select name="year" id="year" style="display: inline-block;">
+<form method="get" id="monthSelectorForm" class="date-select-form" >
+ <div style="position: absolute; left: 0; display: flex; align-items: center;">
+    <select name="year" id="year" style="margin-right: 5px;">
       {% for y in year_range %}
         <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
       {% endfor %}
     </select>
-</div>
-  <div style="display: flex; gap: 5px; align-items: center;">
-    <label for="month" style="margin-right: 5px;">月</label>
-    <select name="month" id="month" style="display: inline-block;">
+    <span>年</span>
+  </div>
+
+  <div style="flex: 1;"></div>
+
+  <div style="display: flex; align-items: center;">
+    <select name="month" id="month" style="margin-right: 3px;">
       {% for m in month_range %}
         <option value="{{ m }}" {% if m == month %}selected{% endif %}>{{ m }}</option>
       {% endfor %}
     </select>
+    <span>月</span>
   </div>
 </form>
 

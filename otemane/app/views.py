@@ -32,14 +32,13 @@ from django.contrib.auth.views import (
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.http import JsonResponse
-from .models import Family, Children, Helps, Reactions, Records, Rewards, HelpLists
-from app.models import User, Invitation, Children, Rewards
+from .models import Family, Children, Helps, Reactions, Records, HelpLists
+from app.models import User, Invitation, Children
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import(
     PasswordChangeView, PasswordChangeDoneView, 
 )
-# from django.contrib.auth.models import 
 from collections import defaultdict
 
 import uuid, json, logging
@@ -59,7 +58,10 @@ class HomeView(LoginRequiredMixin, View):
 
         selected_child_id = request.GET.get('child_id') or request.session.get('selected_child_id')
         selected_child = None
-        if selected_child_id:
+
+        if selected_child_id == "all":
+            selected_child = "all"
+        elif selected_child_id:
             selected_child = Children.objects.filter(id=selected_child_id, family=family).first()
  
         monthly_rewards = defaultdict(lambda: {
@@ -72,8 +74,65 @@ class HomeView(LoginRequiredMixin, View):
             "nice": 0,
         })
         monthly_records = []
- 
-        if selected_child:
+        
+        if selected_child == "all":
+            # 「全員」の場合、各子どもごとに集計
+            for child in children:
+                rewards_summary = defaultdict(int)
+                child_records = []
+
+                helps = child.helps.prefetch_related('rewards', 'records__reactions')
+                for help in helps:
+                    for record in help.records.all():
+                        if not record.achievement_date:
+                            continue
+
+                        record_month = record.achievement_date.strftime('%Y-%m')
+                        if record_month != month_str:
+                            continue 
+
+                        for reward in help.rewards.all():
+                            if reward.reward_type == 1:
+                                rewards_summary["money"] += reward.reward_prize or 0
+                            elif reward.reward_type == 0:
+                                rewards_summary["sweets"] += 1
+
+                        for reaction in record.reactions.all():
+                            if reaction.reaction_image == 0:
+                                rewards_summary["heart"] += 1
+                            elif reaction.reaction_image == 1:
+                                rewards_summary["smile"] += 1
+                            elif reaction.reaction_image == 2:
+                                rewards_summary["good"] += 1
+                            elif reaction.reaction_image == 3:
+                                rewards_summary["flower"] += 1
+                            elif reaction.reaction_image == 4:
+                                rewards_summary["nice"] += 1
+
+                        child_records.append({
+                            "date": record.achievement_date.strftime('%Y-%m-%d'),
+                            "help": help.help_name,
+                            "reward": [
+                                {
+                                    "type": r.get_reward_type_display(),
+                                    "prize": r.reward_prize,
+                                    "detail": r.reward_detail
+                                } for r in help.rewards.all()
+                            ],
+                            "reaction": "".join([r.get_reaction_image_display() for r in record.reactions.all()])
+                        })
+
+                monthly_rewards[child.child_name] = dict(rewards_summary)
+                monthly_records.append({
+                    "child": child.child_name,
+                    "records": sorted(child_records, key=itemgetter('date'))
+                })
+
+        elif selected_child_id:
+            selected_child = Children.objects.filter(id=selected_child_id, family=family).first()
+            rewards_summary = defaultdict(int)
+            child_records = []
+            
             helps = selected_child.helps.prefetch_related('rewards', 'records__reactions')
  
             for help in helps:
@@ -90,7 +149,7 @@ class HomeView(LoginRequiredMixin, View):
                             monthly_rewards[record_month]["money"] += reward.reward_prize or 0
                         elif reward.reward_type == 0:  # おかし
                             monthly_rewards[record_month]["sweets"] += 1
-
+  
                     for reaction in record.reactions.all():
                         if reaction.reaction_image == 0:
                             monthly_rewards[record_month]["heart"] += 1
@@ -116,7 +175,12 @@ class HomeView(LoginRequiredMixin, View):
                         "reaction": "".join([r.get_reaction_image_display() for r in record.reactions.all()])
                     })
 
-            monthly_records.sort(key=itemgetter('date'))
+            monthly_rewards[selected_child.child_name] = dict(rewards_summary)
+            monthly_records = [{
+                "child": selected_child.child_name,
+                "records": sorted(child_records, key=itemgetter('date'))
+            }]
+
 
         context = {
             'children': children,
@@ -124,6 +188,8 @@ class HomeView(LoginRequiredMixin, View):
             'monthly_rewards': dict(monthly_rewards),
             'monthly_records': monthly_records,
             'current_month': month_str,
+            'current_month': month_str,
+            'selected_child_id': selected_child_id,  
         }
 
         return render(request, 'home.html', context)
@@ -143,7 +209,7 @@ class UserRegisterView(CreateView):
         user.family = family
         user.relationship = relationship
         user.save()
-        
+
         return super().form_valid(form)
     
 class RegistDone(TemplateView):
@@ -635,14 +701,17 @@ def help_delete(request, pk):
         messages.success(request, 'お手伝いを1件削除しました。')
     return redirect('app:help_edit_delete')  
 
-class SetChildView(View):
+class SetChildView(View): 
     def post(self, request, *args, **kwargs):
         child_id = request.POST.get('child_id')
-        if child_id:
+        if child_id == "all":
+            request.session['selected_child_id'] = "all"
+        elif child_id:
             family = get_object_or_404(Family, user=request.user)
             child = get_object_or_404(Children, id=child_id, family=family)
             request.session['selected_child_id'] = child.id
         return redirect('app:home')
+
 
 
 class CalendarView(TemplateView):
@@ -663,13 +732,18 @@ class CalendarView(TemplateView):
         cal = Calendar(firstweekday=6)  # 日曜始まり
         month_days = cal.monthdatescalendar(year, month)
 
-        # 該当月の達成記録取得
-        all_records = Records.objects.filter(achievement_date__range=(start_date, end_date))
+        family = self.request.user.family  # ← あなたのUserモデルに応じて調整
+        children_ids = family.children.values_list('id', flat=True)
+        
+        all_records = Records.objects.filter(
+            achievement_date__range=(start_date, end_date),
+            child_id__in=children_ids
+        )
+
         record_map = {}
         for r in all_records:
             record_map.setdefault(r.achievement_date, []).append(r)
 
-        # テンプレート用構造体に整形
         calendar_weeks = []
         for week in month_days:
             week_days = []
@@ -707,7 +781,8 @@ def records_by_date(request):
             return JsonResponse({'error': '日付の形式が不正です'}, status=400)
 
         records = Records.objects.select_related('help', 'child').filter(
-            achievement_date=target_date
+            achievement_date=target_date,
+            child__family=request.user.family
         )
 
         data = []

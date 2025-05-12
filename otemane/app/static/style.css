@@ -1,7 +1,7 @@
 @charset "UTF-8";
 
 .brand-main {
-  font-size: 1.5rem; 
+  font-size: 1.2rem; 
   font-weight: bold;
 }
 
@@ -55,9 +55,9 @@ header {
 
 .form-wrapper {
   display: flex;
-  justify-content: center;  /* 横方向中央 */
-  align-items: center;      /* 縦方向中央（高さを指定した場合） */
-  min-height: 100vh;        /* ビューポートの高さで中央にする場合 */
+  justify-content: center; 
+  align-items: center;      
+  min-height: 100vh;       
 }
 
 .instruction-box {
@@ -194,18 +194,18 @@ button#nextMonth {
   /* モーダルを閉じるボタン（×）のスタイル */
 .close-modal{
     position: absolute; /* モーダル内で絶対位置に配置 */
-    display: flex; /* ボタン内のテキストが中央に配置されるようにフレックスボックスを使用 */
-    align-items: center; /* ボタン内のテキストを縦方向に中央揃え */
-    justify-content: center; /* ボタン内のテキストを横方向に中央揃え */
-    top: 0%; /* モーダル内容の上部から離れた位置に配置 */
-    right: 0%; /* モーダル内容の右端から離れた位置に配置 */
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    top: 0%; 
+    right: 0%; 
     font-size: 24px; /* 閉じるボタンのフォントサイズ */
-    font-weight: bold; /* 閉じるボタンのフォントを太字に設定 */
-    cursor: pointer; /* ホバー時にポインタが表示されるように設定 */
-    color: #000; /* 閉じるボタンのテキストカラーを白に設定 */
+    font-weight: bold; 
+    cursor: pointer; 
+    color: #000; 
     width: 40px; /* ボタンの幅 */
     height: 40px; /* ボタンの高さ */
-    background-color: #fff; /* ボタンの背景色をダークグレーに設定 */
+    background-color: #fff; 
     border: #fff; /* ボタンの境界線を背景と同じ色に設定 */
     border-radius: 50%; /* ボタンを丸くするための半径 */
   }
@@ -254,8 +254,8 @@ button#nextMonth {
     margin-left: auto;
     margin-right: auto;
     background: #fff;
-    box-shadow: 3px 4px 4px rgba(0, 0, 0, 0.25);/* モーダルにシャドウをかける */
-    border-radius: 13px; /* モーダルの角を丸める */
+    box-shadow: 3px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 13px; 
     display: block;
     padding: 21px 8px 21px;
     height: auto;
