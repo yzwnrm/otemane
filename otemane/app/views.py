@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from django.forms import inlineformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import(
@@ -133,7 +133,10 @@ class HomeView(LoginRequiredMixin, View):
             rewards_summary = defaultdict(int)
             child_records = []
             
-            helps = selected_child.helps.prefetch_related('rewards', 'records__reactions')
+            helps = selected_child.helps.prefetch_related(
+                'rewards', 
+                Prefetch('records', queryset=Records.objects.prefetch_related('reactions'))
+            )
  
             for help in helps:
                 for record in help.records.all():

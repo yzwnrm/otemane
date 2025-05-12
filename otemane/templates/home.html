@@ -24,7 +24,7 @@
         <h2 id="monthTitle" class="mb-0"></h2>
         <button id="nextMonth">翌月 ▷</button>
       </div>
-
+      
 {% if selected_child == "all" %}
 <div class="row">
   {% for child, records in monthly_records.items %}
@@ -54,7 +54,7 @@
       </div>
     </div>
   {% endfor %}
-</div>
+</div> 
 
 {% else %}
   {% for record in monthly_records %}
@@ -71,18 +71,6 @@
   {% endfor %}
 {% endif %}
 
-
-{% comment %} 
-      <h3 id="moneyTotal" class="mt-3">おかね💰 0 えん</h3>
-      <h3 id="sweetsTotal" class="mt-3">おかし🍩 0 こ</h3>
-      <br><br>      <!-- リアクションまとめ -->
-      <div class="d-flex justify-content-center align-items-center flex-wrap gap-3 mt-3">
-        <h4 id="heartTotal">💗 0</h4>
-        <h4 id="smileTotal">😊 0</h4>
-        <h4 id="goodTotal">👍 0</h4>
-        <h4 id="flowerTotal">🌸 0</h4>
-        <h4 id="niceTotal">😎 0</h4>
-      </div> {% endcomment %}
 
       <!-- モーダルボタン -->
       <button id="openModal" class="open-modal">くわしくみる</button>

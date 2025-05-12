@@ -37,7 +37,9 @@
       </table>
       <div class="reaction mt-1 d-flex justify-content-center" style="gap: 10px;">
         {% for value, label in REACTION_CHOICES %}
-          <button class="reaction-button" data-record-id="{{ record.id }}" data-reaction="{{ value }}">
+          <button class="reaction-button" 
+            data-record-id="{{ record.id }}"
+            data-reaction="{{ value }}">
             {{ label }}
           </button>
         {% endfor %}

@@ -1,38 +1,44 @@
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.reaction-button').forEach(function(button) {
-        button.addEventListener('click', function() {
-            const recordId = button.getAttribute('data-record-id');
-            const reactionImage = button.getAttribute('data-reaction');
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const buttons = document.querySelectorAll('.reaction-button');
 
-            fetch("/app/add_reaction/", {
-                method: "POST",
+    buttons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            // クリックした要素
+            const target = event.target;
+
+            // data-reaction と data-record-id の取得
+            const recordId = target.getAttribute('data-record-id');
+            const reaction = target.getAttribute('data-reaction');
+
+            console.log("Record ID:", recordId);  // デバッグ
+            console.log("Reaction:", reaction);  // デバッグ
+
+            // 取得できているか確認
+            if (!recordId || !reaction) {
+                console.error("Record ID または Reaction が存在しません。");
+                return;
+            }
+
+            fetch(addReactionUrl, {
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": csrfToken
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     record_id: recordId,
-                    reaction_image: reactionImage
+                    reaction_image: reaction
                 })
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("サーバーエラー");
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     console.log("リアクション送信成功");
-                    button.closest('.record').remove();
                 } else {
-                    alert("リアクション失敗");
+                    console.error("送信失敗:", data.error);
                 }
             })
             .catch(error => {
-                console.error("エラー:", error);
-                alert("エラーが発生しました");
+                console.error("Fetch error:", error);
             });
         });
     });
