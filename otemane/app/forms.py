@@ -70,6 +70,26 @@ class UserUpdateForm(forms.ModelForm):
             user.save()
         return user
 
+class FamilyUpdateForm(forms.ModelForm):
+    relationship = forms.ChoiceField(
+        choices=RELATIONSHIP_CHOICES,
+        label='続柄',
+        widget=forms.Select()
+    )
+    class Meta:
+        model = User
+        fields = ['user_name', 'relationship']
+        widgets = {
+            'user_name': forms.TextInput(attrs={'placeholder': '変更したい名前/ニックネーム'}),
+        }
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+
+        if commit:
+            user.save()
+        return user
+
 
 class ChildrenForm(forms.ModelForm):
     class Meta:

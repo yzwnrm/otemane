@@ -37,7 +37,7 @@
               {% if user == request.user %}（自分）{% endif %}
             </td>
             <td>
-              <a href="{% url 'app:user_update' user.id %}" class="btn btn-secondary btn-sm">編集</a>
+              <a href="{% url 'app:family_update' user.id %}" class="btn btn-secondary btn-sm">編集</a>
               <form method="POST" action="{% url 'app:user_delete' user.id %}" style="display:inline;">
                 {% csrf_token %}
                 <button

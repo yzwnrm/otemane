@@ -8,7 +8,7 @@ from .views import (
     CustomPasswordResetView, CustomPasswordResetDoneView, CustomPasswordResetConfirmView, CustomPasswordResetCompleteView,
     ReactionListView, AddReactionAjaxView,
     HelpMakeView, HelpChoseView, HelpListsView, HelpEditDeleteView,
-    SetChildView, MonthlyRewardView,
+    SetChildView, MonthlyRewardView,FamilyUpdateView,
     CalendarView, ChildUpdateView, ChildDeleteView, UserDeleteView, UserUpdateView
 
 )
@@ -49,6 +49,7 @@ urlpatterns = [
     path('set_child/', SetChildView.as_view(), name='set_child'),
     path('child/<int:pk>update/', ChildUpdateView.as_view(), name='child_update'),
     path('user/<int:pk>/update/', UserUpdateView.as_view(), name='user_update'),
+    path('family/<int:pk>/update/', FamilyUpdateView.as_view(), name='family_update'),
     path('user/<int:pk>/delete/', UserDeleteView.as_view(), name='user_delete'),
     path('child/<int:pk>/delete/', ChildDeleteView.as_view(), name='child_delete'),
     path('calendar/<int:pk>/', CalendarView.as_view(), name='calendar'),

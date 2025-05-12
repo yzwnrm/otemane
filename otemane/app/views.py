@@ -22,7 +22,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .forms import(
     UserLoginForm, CustomPasswordResetForm,
     UserRegistrationForm, UserUpdateForm,  ChildrenForm, ChildUpdateForm,
-    HelpsForm, RewardsForm, RewardsFormSet, PasswordConfirmationForm
+    HelpsForm, RewardsForm, RewardsFormSet, PasswordConfirmationForm, FamilyUpdateForm
 )
 from django.core.paginator import Paginator
 from django.views import View
@@ -348,6 +348,7 @@ class FamilyInfoView(LoginRequiredMixin, TemplateView):
 
 class UserUpdateView(LoginRequiredMixin, View):
     template_name = 'user_update.html'  
+    
     def get(self, request, pk, *args, **kwargs):
         user = get_object_or_404(User, pk=pk)
         user_form = UserUpdateForm(instance=user)
@@ -362,6 +363,49 @@ class UserUpdateView(LoginRequiredMixin, View):
             return redirect('app:family_info', family_id=family_id) 
         return render(request, self.template_name, {'user_form': user_form})
 
+class FamilyUpdateView(LoginRequiredMixin, UpdateView):
+    model = User
+    template_name = 'family_update.html' 
+    form_class = FamilyUpdateForm
+    
+   
+    def dispatch(self, request, *args, **kwargs):
+        self.family_id = request.GET.get("family_id")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if self.family_id:
+            member = get_object_or_404(User, id=self.family_id)
+            kwargs['instance'] = member
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+    
+    def get_queryset(self):
+        return User.objects.filter(family=self.request.user.family)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        family_members = User.objects.filter(family=self.request.user.family)
+        selected_user = None
+        if self.family_id:
+            selected_user = get_object_or_404(User, id=self.family_id)
+        context.update({
+            'family_members': family_members,
+            'selected_user': selected_user,
+            'selected_id': self.family_id,
+            'family': self.request.user.family,
+        })
+        return context
+    
+    def get_success_url(self):
+        family_id = self.object.family.id  # または self.request.user.family.id
+        return reverse('family_info', kwargs={'family_id': family_id})
+
+    
 class ChildUpdateView(LoginRequiredMixin,View):
     template_name = 'child_update.html'
 
