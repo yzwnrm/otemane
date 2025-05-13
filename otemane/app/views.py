@@ -1,9 +1,8 @@
-from django.db.models import Q, Prefetch
-from django.forms import inlineformset_factory
+from django.db.models import Prefetch, OuterRef, Subquery
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import(
     TemplateView, CreateView, FormView, View, 
-    ListView, DetailView, UpdateView, DeleteView
+    ListView, UpdateView, DeleteView
 )
 from django.views.generic.edit import FormView
 from django.urls import reverse_lazy, reverse
@@ -11,7 +10,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from collections import defaultdict
 from django.utils import timezone
-from django.utils.timezone import now, localtime
+from django.utils.timezone import now
 from calendar import monthrange, Calendar
 from operator import itemgetter
 from datetime import date, datetime
@@ -22,7 +21,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .forms import(
     UserLoginForm, CustomPasswordResetForm,
     UserRegistrationForm, UserUpdateForm,  ChildrenForm, ChildUpdateForm,
-    HelpsForm, RewardsForm, RewardsFormSet, PasswordConfirmationForm, FamilyUpdateForm
+    HelpsForm, RewardsForm, PasswordConfirmationForm, FamilyUpdateForm
 )
 from django.core.paginator import Paginator
 from django.views import View
@@ -34,7 +33,6 @@ from django.contrib import messages
 from django.http import JsonResponse
 from .models import Family, Children, Helps, Reactions, Records, HelpLists
 from app.models import User, Invitation, Children
-from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import(
     PasswordChangeView, PasswordChangeDoneView, 
@@ -689,11 +687,22 @@ class HelpChoseView(TemplateView):   #おてつだいをえらぶ
 
     def get(self, request, child_id):
         family = get_object_or_404(Family, user=request.user)
-        helps = Helps.objects.filter(
-            Q(child__family=family) | Q(child__isnull=True)
-        ).prefetch_related('rewards').order_by('-created_at')[:30] # 最大30件
-        paginator = Paginator(helps, 10)  # 1ページ10件
+        
+        default_helps = Helps.objects.filter(
+            is_default=True,
+            child__isnull=True
+        )
 
+        original_helps = Helps.objects.filter(
+            is_default=False,
+            child__family=family
+        ).exclude(
+            help_name__in=default_helps.values_list('help_name', flat=True)
+        )
+
+        helps = (default_helps | original_helps).distinct().prefetch_related('rewards').order_by('-created_at')
+
+        paginator = Paginator(helps, 10)  # 1ページ10件
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
 
@@ -736,7 +745,7 @@ class HelpChoseView(TemplateView):   #おてつだいをえらぶ
             HelpLists.objects.get_or_create(child_id=child_id, help_id=new_help.id)
 
         else:
-            messages.info(request, "デフォルトのお手伝い以外は複製できません。")
+            messages.info(request, "すでに選ばれています。")
 
         return redirect('app:help_chose', child_id=child_id)
     
@@ -772,9 +781,14 @@ def help_update(request, pk):
 def help_delete(request, pk):
     if request.method == 'POST':
         help = get_object_or_404(Helps, pk=pk)
-        help.delete()
-        messages.success(request, 'お手伝いを1件削除しました。')
-    return redirect('app:help_edit_delete')  
+        
+        if getattr(help, 'is_default', False):  # is_default が True なら削除させない
+            messages.error(request, 'このお手伝いは削除できません。')
+        else:
+            help.delete()
+            messages.success(request, 'お手伝いを1件削除しました。')
+
+    return redirect('app:help_edit_delete')
 
 class SetChildView(View): 
     def post(self, request, *args, **kwargs):
