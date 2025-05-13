@@ -1,5 +1,17 @@
 @charset "UTF-8";
 
+.custom-navbar {
+  background-color: #fce775; 
+}
+
+.custom-navbar .navbar-brand {
+  color: rgb(61, 61, 61);
+}
+
+.custom-navbar .navbar-brand:hover {
+  color: #f5981e; 
+}
+
 .brand-main {
   font-size: 1.2rem; 
   font-weight: bold;
