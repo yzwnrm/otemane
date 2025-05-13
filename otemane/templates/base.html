@@ -12,12 +12,12 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand brand-main" href="{% url 'app:home'%}">おてまね</a>
         {% if user.is_authenticated %}
-            {% if selected_child and selected_child.id %}
-            <a class="navbar-brand brand-sub" href="{% url 'app:help_chose' selected_child.id %}">おてつだいをえらぶ</a>
-            <a class="navbar-brand brand-sub" href="{% url 'app:help_lists' selected_child.id %}">えらんだおてつだい</a>
+            {% if request.session.selected_child_id and request.session.selected_child_id != "all" %}
+              <a id="nav-help-chose" class="navbar-brand brand-sub" href="{% url 'app:help_chose' request.session.selected_child_id %}">おてつだいをえらぶ</a>
+              <a id="nav-help-lists" class="navbar-brand brand-sub" href="{% url 'app:help_lists' request.session.selected_child_id %}">えらんだおてつだい</a>
             {% else %}
-            <a class="navbar-brand brand-sub disabled" href="#">おてつだいをえらぶ</a>
-            <a class="navbar-brand brand-sub disabled" href="#">えらんだおてつだい</a>
+              <a id="nav-help-chose" class="navbar-brand brand-sub" href="javascript:void(0);">おてつだいをえらぶ</a>
+              <a id="nav-help-lists" class="navbar-brand brand-sub" href="javascript:void(0);">えらんだおてつだい</a>
             {% endif %}
         <a class="navbar-brand brand-sub" href="{% url 'app:calendar' user.id %}">カレンダー</a>
         <a class="navbar-brand brand-sub" href="{% url 'app:help_make' %}">おてつだいをつくる</a>
@@ -32,5 +32,10 @@
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/popover-init.js' %}"></script>
+    <script>
+      window.selectedChildId = "{{ selected_child.id|default:'' }}";
+      window.homeUrl = "{% url 'app:home' %}";
+    </script>
+    <script src="{% static 'js/child-check.js' %}"></script>
 </body>
 </html>

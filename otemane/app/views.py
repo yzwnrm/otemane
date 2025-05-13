@@ -799,7 +799,9 @@ class SetChildView(View):
             family = get_object_or_404(Family, user=request.user)
             child = get_object_or_404(Children, id=child_id, family=family)
             request.session['selected_child_id'] = child.id
+        
         return redirect('app:home')
+
 
 
 
