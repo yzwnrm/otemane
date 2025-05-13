@@ -78,6 +78,21 @@ class HomeView(LoginRequiredMixin, View):
         if selected_child == "all":
             # 「全員」の場合、各子どもごとに集計
             for child in children:
+                monthly_rewards[child.child_name] = {
+                    "money": 0,
+                    "sweets": 0,
+                    "heart": 0,
+                    "smile": 0,
+                    "good": 0,
+                    "flower": 0,
+                    "nice": 0,
+                }
+                monthly_records.append({
+                    "child": child.child_name,
+                    "records": []
+                })
+
+            for child in children:
                 rewards_summary = defaultdict(int)
                 child_records = []
 
@@ -121,13 +136,26 @@ class HomeView(LoginRequiredMixin, View):
                             ],
                             "reaction": "".join([r.get_reaction_image_display() for r in record.reactions.all()])
                         })
-
-                monthly_rewards[child.child_name] = dict(rewards_summary)
-                monthly_records.append({
-                    "child": child.child_name,
-                    "records": sorted(child_records, key=itemgetter('date'))
-                })
-
+                if rewards_summary:
+                    monthly_rewards[child.child_name] = dict(rewards_summary)
+                if child_records:
+                     for record_item in monthly_records:
+                        if record_item["child"] == child.child_name:
+                            record_item["records"] = sorted(child_records, key=itemgetter('date'))
+                            break
+            # 各 record_group に money_total と sweets_total を追加
+            for record_group in monthly_records:
+                money = 0
+                sweets = 0
+                for record in record_group['records']:
+                    for reward in record['reward']:
+                        if reward['type'] == 'おかね':
+                            money += int(reward['prize']) if reward['prize'] else 0
+                        elif reward['type'] == 'おかし':
+                            sweets += 1
+                record_group['money_total'] = money
+                record_group['sweets_total'] = sweets
+    
         elif selected_child_id:
             selected_child = Children.objects.filter(id=selected_child_id, family=family).first()
             rewards_summary = defaultdict(int)

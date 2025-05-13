@@ -27,33 +27,32 @@
       
 {% if selected_child == "all" %}
 <div class="row">
-  {% for child, records in monthly_records.items %}
-    <div class="col-md-4">
-      <div class="card mb-4">
-        <div class="card-body">
-          <h4>{{ child.child_name }}（{{ child.icon }}）</h4>
-          {% for record in records %}
-            <div class="d-flex align-items-center mb-2">
-              <div class="me-3">{{ record.date }}</div>
-              <div class="me-3">{{ record.help }}</div>
-              <div class="me-3">
-                {% for reward in record.reward %}
-                  {% if reward.type == "おかね" %}
-                    {{ reward.prize }}えん
-                  {% elif reward.type == "おかし" %}
-                    おかし1こ
-                  {% else %}
-                    {{ reward.type }}：{{ reward.detail }}
-                  {% endif %}
-                {% endfor %}
-              </div>
-              <div>{{ record.reaction }}</div>
-            </div>
-          {% endfor %}
-        </div>
+{% for record_group in monthly_records %}
+  <div class="col-12 col-md-6">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h3>{{ record_group.child }}</h3>
+        {% comment %} {% for record in record_group.records %} {% endcomment %}
+          {% comment %} <div class="d-flex align-items-center mb-2"> {% endcomment %}
+          {% with money_total=0 sweets_total=0 %}
+            {% for record in record_group.records %}
+              {% for reward in record.reward %}
+                {% if reward.type == "おかね" %}
+                  {% with money_total=money_total|add:reward.prize %}
+                  {% endwith %}
+                {% elif reward.type == "おかし" %}
+                  {% with sweets_total=sweets_total|add:"1" %}
+                  {% endwith %}
+                {% endif %}
+              {% endfor %}
+            {% endfor %}
+              <h4 class="mt-3">おかね💰 {{ record_group.money_total }} えん</h4>
+              <h4 class="mt-3">おかし🍩 {{ record_group.sweets_total }} こ</h4>
+          {% endwith %}
       </div>
     </div>
-  {% endfor %}
+  </div>
+{% endfor %}
 </div> 
 
 {% else %}
