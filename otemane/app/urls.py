@@ -30,9 +30,7 @@ urlpatterns = [
     path('password_reset/done/', CustomPasswordResetDoneView.as_view(), name='password_reset_done'),
     path('reset/<uidb64>/<token>/', CustomPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset/done/', CustomPasswordResetCompleteView.as_view(), name='password_reset_complete'),
- 
     path('guide/', GuideView.as_view(), name='guide'),
-    # path('account/edit/', AccountEditView.as_view(), name='account_edit'),
     path('family_info/<int:family_id>/', FamilyInfoView.as_view(), name='family_info'),
     path('child_regist/', ChildCreateView.as_view(), name='child_regist'),
     path('invite/', InvitePageView.as_view(), name='invite'),
@@ -56,5 +54,5 @@ urlpatterns = [
     path('records_by_date/', views.records_by_date, name='records_by_date'),
     path("reauth/", views.PasswordConfirmView.as_view(), name="mypage_password"),
     path('rewards/monthly/', MonthlyRewardView.as_view(), name='monthly_rewards'),
-    
+    path('top', views.portfolio, name='portfolio'),
 ]

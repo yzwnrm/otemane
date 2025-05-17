@@ -1,4 +1,4 @@
-from django.db.models import Prefetch, OuterRef, Subquery
+from django.db.models import Prefetch
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import(
     TemplateView, CreateView, FormView, View, 
@@ -941,3 +941,6 @@ class MonthlyRewardView(TemplateView):
         context["record_data_json"] = record_data
         context["current_month"] = f"{year}-{str(month).zfill(2)}"
         return context
+
+def portfolio(request):
+    return render(request, 'portfolio.html')
