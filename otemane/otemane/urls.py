@@ -20,6 +20,6 @@ from app import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('otemane/', include('app.urls')),
+    path('/otemane/', include('app.urls')),
     path('', views.portfolio, name='portfolio'),
 ]
