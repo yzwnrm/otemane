@@ -54,4 +54,5 @@ urlpatterns = [
     path('records_by_date/', views.records_by_date, name='records_by_date'),
     path("reauth/", views.PasswordConfirmView.as_view(), name="mypage_password"),
     path('rewards/monthly/', MonthlyRewardView.as_view(), name='monthly_rewards'),
+    path('', views.portfolio, name='portfolio'),
 ]
