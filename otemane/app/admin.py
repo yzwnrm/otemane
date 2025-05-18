@@ -12,7 +12,7 @@ class HelpsAdmin(admin.ModelAdmin):
 
 @admin.register(Family)
 class FamilyAdmin(admin.ModelAdmin):
-    list_display = ('id')  
+    list_display = ('id',)  
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
