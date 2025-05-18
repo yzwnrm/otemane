@@ -20,7 +20,7 @@ class UserAdmin(BaseUserAdmin):
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {'fields': ('user_name', 'family', 'relationship')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
-        ('Important dates', {'fields': ('last_login', 'created_at', 'update_at')}),
+        ('Important dates', {'fields': ('last_login', 'created_at', )}),
         ('Password reset', {'fields': ('password_token', 'password_expiry')}),
     )
     add_fieldsets = (
@@ -30,8 +30,8 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
     list_display = ('email', 'user_name', 'family', 'relationship', 'is_staff', 'is_active')
-    search_fields = ('email', 'user_name', 'family__name')
+    search_fields = ('email', 'user_name', 'family_id')
     ordering = ('email',)
 
 
-admin.site.register(Helps, HelpsAdmin, Family,)  # 管理画面に登録
+admin.site.register(Helps, HelpsAdmin,)  # 管理画面に登録
