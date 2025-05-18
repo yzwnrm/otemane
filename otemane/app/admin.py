@@ -30,7 +30,7 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
     list_display = ('email', 'user_name', 'family', 'relationship', 'is_staff', 'is_active')
-    search_fields = ('email', 'user_name', 'family_id')
+    search_fields = ('email', 'user_name', 'family__id')
     ordering = ('email',)
 
 
