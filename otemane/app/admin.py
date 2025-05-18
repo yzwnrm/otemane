@@ -34,4 +34,4 @@ class UserAdmin(BaseUserAdmin):
     ordering = ('email',)
 
 
-admin.site.register(Helps, HelpsAdmin)  # 管理画面に登録
+admin.site.register(Helps, HelpsAdmin, Family, User)  # 管理画面に登録
