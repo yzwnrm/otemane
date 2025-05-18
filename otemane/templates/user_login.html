@@ -15,12 +15,12 @@
             <form method="POST">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <a href="/app/password_reset/">パスワードを忘れた方はこちら</a>
+                <a href="{% url 'app:password_reset' %}">パスワードを忘れた方はこちら</a>
                 <br>
                 <input type="submit" value="ログイン" class="btn btn-primary w-100 mt-3">
             </form>
             <br>
-            <a href="/app/regist/">新規アカウント登録</a>
+            <a href="/otemane/regist/">新規アカウント登録</a>
         </div>
     </div>
     {% endblock  %}
