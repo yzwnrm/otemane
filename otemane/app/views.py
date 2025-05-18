@@ -745,7 +745,10 @@ class HelpChoseView(TemplateView):   #おてつだいをえらぶ
             HelpLists.objects.get_or_create(child_id=child_id, help_id=new_help.id)
 
         else:
-            messages.info(request, "すでに選ばれています。")
+            if HelpLists.objects.filter(child_id=child_id, help=original_help).exists():
+                messages.info(request, "すでに選ばれています。")
+            else:
+                HelpLists.objects.create(child_id=child_id, help=original_help)
 
         return redirect('app:help_chose', child_id=child_id)
     
