@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import Helps, Rewards, User
-
+from .models import Helps, Rewards, User, Family
 
 class RewardInline(admin.StackedInline): 
     model = Rewards
@@ -10,6 +9,10 @@ class RewardInline(admin.StackedInline):
 class HelpsAdmin(admin.ModelAdmin):
     inlines = [RewardInline]
 
+
+@admin.register(Family)
+class FamilyAdmin(admin.ModelAdmin):
+    list_display = ('id')  
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
