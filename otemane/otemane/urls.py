@@ -14,11 +14,15 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.shortcuts import redirect
 from django.contrib import admin
 from django.urls import path, include
-from app import views
+
+def redirect_to_otemane(request):
+    return redirect('/otemane/')
 
 urlpatterns = [
+    path('', redirect_to_otemane),
     path('admin/', admin.site.urls),
     path('otemane/', include('app.urls')),
 ]
