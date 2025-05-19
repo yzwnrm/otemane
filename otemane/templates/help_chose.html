@@ -69,7 +69,7 @@
 
 {% endblock  %}
 
-<script>
+{% comment %} <script>
     window.selectedChildId = "{{ selected_child_id|default:'' }}";
     window.homeUrl = "{% url 'app:home' %}";
-</script> 
+</script>  {% endcomment %}

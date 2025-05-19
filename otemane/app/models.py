@@ -57,7 +57,7 @@ class Family(models.Model):
         return f"Family {self.id}"
     
 class User(AbstractBaseUser, PermissionsMixin):
-    family = models.ForeignKey(Family, on_delete=models.CASCADE, null=True, blank=True)
+    family = models.ForeignKey(Family, on_delete=models.CASCADE)
     user_name = models.CharField(max_length=64)
     relationship = models.IntegerField(choices=RELATIONSHIP_CHOICES, default=6)
     email = models.EmailField(max_length=64, unique=True)
