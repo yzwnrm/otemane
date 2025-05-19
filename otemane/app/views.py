@@ -54,14 +54,17 @@ class HomeView(LoginRequiredMixin, View):
         month_str = request.GET.get('month') or now().strftime('%Y-%m') 
         current_month = datetime.strptime(month_str, '%Y-%m')
 
-        selected_child_id = request.GET.get('child_id') or request.session.get('selected_child_id')
-        selected_child = None
+        selected_child_id = request.GET.get('child_id')
+        if selected_child_id:
+            request.session['selected_child_id'] = selected_child_id
+        else:
+            selected_child_id = request.session.get('selected_child_id') or 'all'
 
         if selected_child_id == "all":
             selected_child = "all"
-        elif selected_child_id:
+        else:
             selected_child = Children.objects.filter(id=selected_child_id, family=family).first()
- 
+
         monthly_rewards = defaultdict(lambda: {
             "money": 0,
             "sweets": 0,
@@ -141,7 +144,7 @@ class HomeView(LoginRequiredMixin, View):
                         if record_item["child"] == child.child_name:
                             record_item["records"] = sorted(child_records, key=itemgetter('date'))
                             break
-            # 各 record_group に money_total と sweets_total を追加
+
             for record_group in monthly_records:
                 money = 0
                 sweets = 0
@@ -554,9 +557,11 @@ class HelpListsView(ListView):    #えらんだおてつだい
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         child_id = self.kwargs['child_id']
+        selected_child_id = self.request.session.get('selected_child_id')
         context['child'] = get_object_or_404(Children, id=child_id)
         context['selected_helps'] = HelpLists.objects.filter(child_id=child_id)  
-        
+        context['selected_child_id'] = selected_child_id
+
         selected_date_str = self.request.GET.get("selected_date")
         if selected_date_str:
             try:
@@ -686,6 +691,9 @@ class HelpChoseView(TemplateView):   #おてつだいをえらぶ
     template_name = 'help_chose.html'
 
     def get(self, request, child_id):
+
+        request.session['selected_child_id'] = str(child_id)
+
         family = get_object_or_404(Family, user=request.user)
         
         default_helps = Helps.objects.filter(
@@ -709,7 +717,15 @@ class HelpChoseView(TemplateView):   #おてつだいをえらぶ
         return self.render_to_response({
             'page_obj': page_obj,
             'child_id': child_id,
+            'selected_child_id': request.session.get('selected_child_id'),
         })
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        selected_child_id = self.request.session.get('selected_child_id')
+        context['selected_child_id'] = selected_child_id
+        return context
+
 
     def post(self, request, *args, **kwargs):
         child_id = kwargs['child_id']
@@ -795,14 +811,21 @@ def help_delete(request, pk):
 
 class SetChildView(View): 
     def post(self, request, *args, **kwargs):
+
         child_id = request.POST.get('child_id')
+        
         if child_id == "all":
             request.session['selected_child_id'] = "all"
         elif child_id:
             family = get_object_or_404(Family, user=request.user)
             child = get_object_or_404(Children, id=child_id, family=family)
             request.session['selected_child_id'] = child.id
+
+        request.session.set_expiry(60 * 60 * 24 * 3)
         
+        request.session.modified = True
+
+
         return redirect('app:home')
 
 

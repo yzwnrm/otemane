@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
 <body>
 <div class="d-flex justify-content-start align-items-center mt-2 ms-2">
@@ -119,10 +120,15 @@
     </div>
   </div>
 </div>
+{% endblock  %}
 <script>
   document.getElementById("dateSelect").addEventListener("change", function () {
     this.form.submit();
   });
 </script>
+<script>
+    window.selectedChildId = "{{ selected_child_id|default:'' }}";
+    window.homeUrl = "{% url 'app:home' %}";
+</script>
+
 </body>
-{% endblock  %}

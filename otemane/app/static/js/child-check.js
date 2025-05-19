@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+   
     const choseLink = document.getElementById("nav-help-chose");
     const listsLink = document.getElementById("nav-help-lists");
 
@@ -11,8 +12,6 @@ document.addEventListener("DOMContentLoaded", function () {
             window.location.href = window.homeUrl;
         };
 
-        console.log(window.selectedChildId);
-
         if (choseLink) {
             choseLink.addEventListener("click", showWarningAndRedirect);
         }
@@ -20,4 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
             listsLink.addEventListener("click", showWarningAndRedirect);
         }
     }
+
+    
+    
 });

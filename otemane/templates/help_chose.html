@@ -1,7 +1,7 @@
 {% extends "base.html" %}
+{% load static%}
 {% block content %}
 <h3>おてつだいをえらぶ</h3>
-
 {% if messages %}
   <div class="mt-2 ms-2">
     {% for message in messages %}
@@ -66,5 +66,10 @@
     </span>
 </div>
 
+
 {% endblock  %}
 
+<script>
+    window.selectedChildId = "{{ selected_child_id|default:'' }}";
+    window.homeUrl = "{% url 'app:home' %}";
+</script> 
