@@ -26,7 +26,8 @@ from .forms import(
 from django.core.paginator import Paginator
 from django.views import View
 from django.contrib.auth.views import (
-    PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+    PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView,
+    PasswordChangeView, PasswordChangeDoneView, 
 )
 from django.contrib.auth import get_user_model
 from django.contrib import messages
@@ -34,9 +35,6 @@ from django.http import JsonResponse
 from .models import Family, Children, Helps, Reactions, Records, HelpLists
 from app.models import User, Invitation, Children
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import(
-    PasswordChangeView, PasswordChangeDoneView, 
-)
 from collections import defaultdict
 
 import uuid, json, logging
@@ -242,10 +240,9 @@ class UserRegisterView(CreateView):
         user.relationship = relationship
         user.save()
 
-        return super().form_valid(form)
-    
-class RegistDone(TemplateView):
-    template_name = 'regist_done.html'
+        login(self.request, user)
+
+        return redirect('app:child_regist')
 
 
 class UserLoginView(FormView):
