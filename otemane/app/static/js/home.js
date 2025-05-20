@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const reward = rewards[currentMonth] || {
             money: 0,
             sweets: 0,
+            detail: 0,
             heart: 0,
             smile: 0,
             good: 0,
@@ -23,6 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.getElementById('moneyTotal').textContent = `💰 おかね：${reward.money}えん`;
         document.getElementById('sweetsTotal').textContent = `🍩 おかし：${reward.sweets}こ`;
+        document.getElementById('detailTotal').textContent = `🙏 おねがい：${reward.detail || 0}こ`;
 
         document.getElementById('heartTotal').textContent = `💗 ${reward.heart}`;
         document.getElementById('smileTotal').textContent = `😊 ${reward.smile}`;

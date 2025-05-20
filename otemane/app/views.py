@@ -66,6 +66,7 @@ class HomeView(LoginRequiredMixin, View):
         monthly_rewards = defaultdict(lambda: {
             "money": 0,
             "sweets": 0,
+            "detail": 0,
             "heart": 0,
             "smile": 0,
             "good": 0,
@@ -80,6 +81,7 @@ class HomeView(LoginRequiredMixin, View):
                 monthly_rewards[child.child_name] = {
                     "money": 0,
                     "sweets": 0,
+                    "detail": 0,
                     "heart": 0,
                     "smile": 0,
                     "good": 0,
@@ -110,6 +112,8 @@ class HomeView(LoginRequiredMixin, View):
                                 rewards_summary["money"] += reward.reward_prize or 0
                             elif reward.reward_type == 0:
                                 rewards_summary["sweets"] += 1
+                            elif reward.reward_type == 2:
+                                rewards_summary["detail"] += 1
 
                         for reaction in record.reactions.all():
                             if reaction.reaction_image == 0:
@@ -146,14 +150,18 @@ class HomeView(LoginRequiredMixin, View):
             for record_group in monthly_records:
                 money = 0
                 sweets = 0
+                detail = 0
                 for record in record_group['records']:
                     for reward in record['reward']:
                         if reward['type'] == 'おかね':
                             money += int(reward['prize']) if reward['prize'] else 0
                         elif reward['type'] == 'おかし':
                             sweets += 1
+                        elif reward['type'] == 'おねがい':
+                            detail += 1
                 record_group['money_total'] = money
                 record_group['sweets_total'] = sweets
+                record_group['detail_total'] = detail
     
         elif selected_child_id:
             selected_child = Children.objects.filter(id=selected_child_id, family=family).first()
@@ -179,6 +187,8 @@ class HomeView(LoginRequiredMixin, View):
                             monthly_rewards[record_month]["money"] += reward.reward_prize or 0
                         elif reward.reward_type == 0:  # おかし
                             monthly_rewards[record_month]["sweets"] += 1
+                        elif reward.reward_type == 2:  # おねがい
+                            monthly_rewards[record_month]["detail"] += 1
   
                     for reaction in record.reactions.all():
                         if reaction.reaction_image == 0:
@@ -243,7 +253,6 @@ class UserRegisterView(CreateView):
         login(self.request, user)
 
         return redirect('app:child_regist')
-
 
 class UserLoginView(FormView):
     template_name = 'user_login.html'
@@ -961,7 +970,8 @@ class MonthlyRewardView(TemplateView):
                 "reaction": reaction.emoji if reaction else "",
             })
 
-        context["record_data_json"] = record_data
+        context["record_data"] = record_data
+        
         context["current_month"] = f"{year}-{str(month).zfill(2)}"
         return context
 

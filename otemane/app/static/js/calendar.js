@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
       event.stopPropagation();
       const date = mark.getAttribute('data-date');
 
-      fetch(`/app/records_by_date/?date=${date}`)
+      fetch(`/otemane/records_by_date/?date=${date}`)
         .then(response => response.json())
         .then(data => {
             modalContent.innerHTML = '';

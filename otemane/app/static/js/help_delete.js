@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const button = event.relatedTarget;
         const helpId = button.getAttribute('data-help-id');
         const form = deleteModal.querySelector('#deleteForm');
-        form.action = `/app/help_delete/${helpId}/`;
+        form.action = `/otemane/help_delete/${helpId}/`;
       });
     }
   });

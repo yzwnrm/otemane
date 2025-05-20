@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 row.appendChild(help);
 
                 // モーダル表示用
+            if (Array.isArray(record.reward)) {
                 record.reward.forEach(reward => {
                     const rewardDiv = document.createElement('div');
                     if (reward.type === 'おかね') {
@@ -50,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     rewardDiv.classList.add("me-3");
                     row.appendChild(rewardDiv);
                 });
-
+            }
 
                 const reaction = document.createElement('div');
                 reaction.textContent = record.reaction;

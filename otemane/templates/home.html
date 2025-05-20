@@ -40,14 +40,20 @@
                 {% if reward.type == "おかね" %}
                   {% with money_total=money_total|add:reward.prize %}
                   {% endwith %}
-                {% elif reward.type == "おかし" %}
-                  {% with sweets_total=sweets_total|add:"1" %}
-                  {% endwith %}
+                {% else %}
+                  {% if reward.type == "おかし" %}
+                    {% with sweets_total=sweets_total|add:"1" %}
+                    {% endwith %}
+                  {% elif reward.type == "おねがい" %}
+                    {% with detail_total=detail_total|add:"1" %}
+                    {% endwith %}
+                  {% endif %}
                 {% endif %}
               {% endfor %}
             {% endfor %}
               <h4 class="mt-3">おかね💰 {{ record_group.money_total }} えん</h4>
               <h4 class="mt-3">おかし🍩 {{ record_group.sweets_total }} こ</h4>
+              <h4 class="mt-3">おねがい🙏 {{ record_group.detail_total }} こ</h4>
           {% endwith %}
       </div>
     </div>
@@ -59,7 +65,8 @@
   {% for record in monthly_records %}
       <h3 id="moneyTotal" class="mt-3">おかね💰 0 えん</h3>
       <h3 id="sweetsTotal" class="mt-3">おかし🍩 0 こ</h3>
-      <br><br>      <!-- リアクションまとめ -->
+      <h3 id="detailTotal" class="mt-3">おねがい🙏 0 こ</h3>
+      <br><br>     
       <div class="d-flex justify-content-center align-items-center flex-wrap gap-3 mt-3">
         <h4 id="heartTotal">💗 0</h4>
         <h4 id="smileTotal">😊 0</h4>
@@ -72,21 +79,25 @@
 
 
       <!-- モーダルボタン -->
-      <button id="openModal" class="open-modal">くわしくみる</button>
-
+        {% if selected_child != "all" %}
+         <button id="openModal" class="open-modal">くわしくみる</button>
+        {% endif %}
+      
+      
       <!-- モーダル -->
       <div id="myModal" class="modal" style="display:none;">
         <div class="modal-content">
           <span id="closeModal" class="close-modal">&times;</span>
           <div id="helpRecordsContainer"></div>
           
-          {% if monthly_records %}
+          {% comment %} {% if monthly_records %}
             {% for record in monthly_records %}
               <div class="d-flex align-items-center mb-2" style="display: flex; align-items: center;">
                 <div class="me-3">{{ record.date }}</div>
                 <div class="me-3">{{ record.help }}</div>
                 <div class="me-3">
                     {% for reward in record.reward %}
+                    
                       {% if reward.type == "おかね" %}
                         {{ reward.prize }}えん
                       {% elif reward.type == "おかし" %}
@@ -101,21 +112,21 @@
               {% endfor %}
           {% else %}
             <div class="text-muted">今月の記録はありません。</div>
-          {% endif %}
+          {% endif %}  {% endcomment %}
         </div>
       </div>
 
     </div>
   </div>
 
-
+</body>
   <script>
     window.monthlyRewards = {{ monthly_rewards|safe }};
-    window.monthlyRecords = {{ monthly_records|safe }};
+    window.monthlyRecords = {{ monthly_records|json_script:"monthly-records" }};
     window.currentMonth = "{{ current_month }}";
   </script>
 
   <script src="{% static 'js/home.js' %}"></script>
   <script src="{% static 'js/home_reward.js' %}"></script>
-</body>
+
 {% endblock %}
