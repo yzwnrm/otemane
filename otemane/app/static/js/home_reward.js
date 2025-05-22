@@ -1,72 +1,70 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const records = window.monthlyRecords || [];
+    const allRecords = window.monthlyRecords || [];
+    const selectedChild = (window.selectedChild || "").split('(')[0].trim();; 
+
+    const targetGroup = allRecords.find(group => group.child === selectedChild);
+    const records = targetGroup ? targetGroup.records : [];
+
+    console.log("Selected child:", selectedChild);
+    console.log("Records for child:", records);
+
 
     function showMonthlyModal(records) {
         const container = document.getElementById('helpRecordsContainer');
         container.innerHTML = '';
+        records.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-        const grouped = {};
-        records.forEach(r => {
-            if (!grouped[r.date]) grouped[r.date] = [];
-            grouped[r.date].push(r);
-        });
+        records.forEach(record => {
+           const row = document.createElement('div');
+            row.style.display = 'flex';
+            row.style.alignItems = 'center';
+            row.style.gap = '20px';
+            row.style.marginBottom = '8px';
 
-        for (const date in grouped) {
-            const section = document.createElement('div');
-            section.style.marginBottom = '20px';
+        // 日付
+            const dateDiv = document.createElement('div');
+            dateDiv.textContent = record.date;
+            row.appendChild(dateDiv);
 
-            const dateTitle = document.createElement('h4');
-            dateTitle.textContent = `${date}日`;
-            section.appendChild(dateTitle);
+        // おてつだい内容
+        // if (!record.reward || record.reward.length === 0) {
+            const helpDiv = document.createElement('div');
+            helpDiv.textContent = record.help;
+            row.appendChild(helpDiv);
+        //    }
 
-            const recordList = document.createElement('div');
-            recordList.style.display = 'flex';
-            recordList.style.flexDirection = 'column';
-            recordList.style.gap = '10px';
-
-            grouped[date].forEach(record => {
-                const row = document.createElement('div');
-                row.style.display = 'flex';
-                row.style.alignItems = 'center';
-                row.style.gap = '20px';
-                row.style.borderBottom = '1px solid #ccc';
-                row.style.paddingBottom = '5px';
-
-                const help = document.createElement('div');
-                help.textContent = record.help;
-
-                row.appendChild(help);
-
-                // モーダル表示用
+        // 報酬
             if (Array.isArray(record.reward)) {
                 record.reward.forEach(reward => {
                     const rewardDiv = document.createElement('div');
                     if (reward.type === 'おかね') {
                         rewardDiv.textContent = `${reward.prize}えん`;
                     } else if (reward.type === 'おかし') {
-                        rewardDiv.textContent = `おかし1つ`;
+                        rewardDiv.textContent = `おかし1`;
                     } else {
                         rewardDiv.textContent = `${reward.type}：${reward.detail}`;
                     }
-                    rewardDiv.classList.add("me-3");
                     row.appendChild(rewardDiv);
                 });
-            }
-
-                const reaction = document.createElement('div');
-                reaction.textContent = record.reaction;
-
-                row.appendChild(reaction);
-
-                recordList.appendChild(row);
-            });
-
-            section.appendChild(recordList);
-            container.appendChild(section);
-        }
-
-        document.getElementById('myModal').style.display = "block";
     }
+
+        // リアクション（絵文字）
+            const reactionDiv = document.createElement('div');
+            if (Array.isArray(record.reaction)) {
+                reactionDiv.textContent = record.reaction.join(' ');
+            } else {
+                reactionDiv.textContent = record.reaction || '';
+            }
+            row.appendChild(reactionDiv);
+
+            console.log(records);
+
+            container.appendChild(row);
+        });
+        
+
+    document.getElementById('myModal').style.display = "block";
+}
 
     document.getElementById('openModal').addEventListener('click', function () {
         showMonthlyModal(records);

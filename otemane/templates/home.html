@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<body>
 <div class="d-flex align-items-center" style="gap: 10px; margin-top: 10px;">
   <div class="child-icon" style="font-size: 2rem;">
     {% if selected_child != 'all' %}{{ selected_child.icon }}{% else %}※{% endif %}
@@ -79,54 +78,64 @@
 
 
       <!-- モーダルボタン -->
-        {% if selected_child != "all" %}
+        {% comment %} {% if selected_child != "all" %} {% endcomment %}
          <button id="openModal" class="open-modal">くわしくみる</button>
-        {% endif %}
+        {% comment %} {% endif %} {% endcomment %}
       
       
-      <!-- モーダル -->
-      <div id="myModal" class="modal" style="display:none;">
-        <div class="modal-content">
-          <span id="closeModal" class="close-modal">&times;</span>
-          <div id="helpRecordsContainer"></div>
+        <!-- モーダル -->
+        <div id="myModal" class="modal" style="display:none;">
+          <div class="modal-content">
+            <span id="closeModal" class="close-modal">&times;</span>
+            <div id="helpRecordsContainer"></div>
           
-          {% comment %} {% if monthly_records %}
-            {% for record in monthly_records %}
-              <div class="d-flex align-items-center mb-2" style="display: flex; align-items: center;">
-                <div class="me-3">{{ record.date }}</div>
-                <div class="me-3">{{ record.help }}</div>
-                <div class="me-3">
-                    {% for reward in record.reward %}
+
+            {% comment %} {% if monthly_records %} {% endcomment %}
+              {% comment %} {% for record in monthly_records %}
+            
+                <div class="d-flex align-items-center mb-2" style="display: flex; align-items: center;">
+                  <div class="me-3">{{ record.date }}</div>
+                  <div class="me-3">{{ record.help }}</div>
+                  <div class="me-3">
+                      {% for reward in record.reward %}
                     
-                      {% if reward.type == "おかね" %}
-                        {{ reward.prize }}えん
-                      {% elif reward.type == "おかし" %}
-                        おかし1こ
-                      {% else %}
-                        {{ reward.type }}：{{ reward.detail }}
-                      {% endif %}
-                    {% endfor %}
+                        {% if reward.type == "おかね" %}
+                          {{ reward.prize }}えん
+                        {% elif reward.type == "おかし" %}
+                          おかし1こ
+                        {% else %}
+                          {{ reward.type }}：{{ reward.detail }}
+                        {% endif %}
+                      {% endfor %}
+                  </div>
+                  <div>{{ record.reaction }}</div>
                 </div>
-                <div>{{ record.reaction }}</div>
-              </div>
-              {% endfor %}
-          {% else %}
-            <div class="text-muted">今月の記録はありません。</div>
-          {% endif %}  {% endcomment %}
+                {% endfor %}
+            {% else %}
+              <div class="text-muted">今月の記録はありません。</div>
+              {% endcomment %}
+            {% comment %} {% endif %} {% endcomment %}
+          </div>
         </div>
-      </div>
 
     </div>
   </div>
 
-</body>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+  {% comment %} <script id="monthly-records" type="application/json"> {% endcomment %}
+  {{ monthly_records|json_script:"monthly-records" }}
+  {% comment %} </script> {% endcomment %}
+
   <script>
-    window.monthlyRewards = {{ monthly_rewards|safe }};
-    window.monthlyRecords = {{ monthly_records|json_script:"monthly-records" }};
+    window.monthlyRecords = JSON.parse(document.getElementById('monthly-records').textContent);
+    window.selectedChild = "{{ selected_child }}";
     window.currentMonth = "{{ current_month }}";
+    window.monthlyRewards = {{ monthly_rewards|safe }};
   </script>
 
   <script src="{% static 'js/home.js' %}"></script>
   <script src="{% static 'js/home_reward.js' %}"></script>
-
 {% endblock %}

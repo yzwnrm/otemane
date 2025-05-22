@@ -8,6 +8,7 @@ from django.views.generic.edit import FormView
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.core.serializers.json import DjangoJSONEncoder
 from collections import defaultdict
 from django.utils import timezone
 from django.utils.timezone import now
@@ -76,8 +77,10 @@ class HomeView(LoginRequiredMixin, View):
         monthly_records = []
         
         if selected_child == "all":
+        
             # 「全員」の場合、各子どもごとに集計
             for child in children:
+                
                 monthly_rewards[child.child_name] = {
                     "money": 0,
                     "sweets": 0,
@@ -139,13 +142,12 @@ class HomeView(LoginRequiredMixin, View):
                             ],
                             "reaction": "".join([r.get_reaction_image_display() for r in record.reactions.all()])
                         })
-                if rewards_summary:
-                    monthly_rewards[child.child_name] = dict(rewards_summary)
-                if child_records:
-                     for record_item in monthly_records:
-                        if record_item["child"] == child.child_name:
-                            record_item["records"] = sorted(child_records, key=itemgetter('date'))
-                            break
+                monthly_rewards[child.child_name] = dict(rewards_summary)
+                
+                for record_item in monthly_records:
+                    if record_item["child"] == child.child_name:
+                        record_item["records"] = sorted(child_records, key=itemgetter('date'))
+                        break
 
             for record_group in monthly_records:
                 money = 0
@@ -163,8 +165,8 @@ class HomeView(LoginRequiredMixin, View):
                 record_group['sweets_total'] = sweets
                 record_group['detail_total'] = detail
     
-        elif selected_child_id:
-            selected_child = Children.objects.filter(id=selected_child_id, family=family).first()
+        if selected_child_id and selected_child!= "all":
+            
             rewards_summary = defaultdict(int)
             child_records = []
             
@@ -202,7 +204,7 @@ class HomeView(LoginRequiredMixin, View):
                         elif reaction.reaction_image == 4:
                             monthly_rewards[record_month]["nice"] += 1
                             
-                    monthly_records.append({
+                    child_records.append({
                         "date": record.achievement_date.strftime('%Y-%m-%d'),
                         "help": help.help_name,
                         "reward": [
@@ -228,12 +230,13 @@ class HomeView(LoginRequiredMixin, View):
             'monthly_rewards': dict(monthly_rewards),
             'monthly_records': monthly_records,
             'current_month': month_str,
-            'current_month': month_str,
             'selected_child_id': selected_child_id,  
         }
 
+        
         return render(request, 'home.html', context)
 
+        
 
  
 class UserRegisterView(CreateView):
@@ -969,10 +972,12 @@ class MonthlyRewardView(TemplateView):
                 }],
                 "reaction": reaction.emoji if reaction else "",
             })
-
-        context["record_data"] = record_data
+    
+        context["monthly_records"] = record_data
         
         context["current_month"] = f"{year}-{str(month).zfill(2)}"
+        
+        monthly_records = json.dumps(monthly_records, cls=DjangoJSONEncoder)
         return context
 
 def portfolio(request):
