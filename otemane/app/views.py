@@ -15,6 +15,7 @@ from django.utils.timezone import now
 from calendar import monthrange, Calendar
 from operator import itemgetter
 from datetime import date, datetime
+from django.utils.dateparse import parse_date
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET
@@ -627,16 +628,24 @@ class HelpListsView(ListView):    #えらんだおてつだい
     
 class BulkRegisterView(View):
     def post(self, request, child_id):
-        selected_ids = request.POST.getlist('selected_helps') 
-        if not selected_ids:
+        help_ids = request.POST.getlist('help_ids') 
+        selected_date_str = request.POST.get('selected_date')
+
+        if selected_date_str:
+            selected_date = parse_date(selected_date_str)
+        else:
+            selected_date = timezone.now().date()
+
+
+        if not help_ids:
             return redirect('app:help_lists', child_id=child_id)  
 
-        for help_list_id in selected_ids:
+        for help_list_id in help_ids:
             help_list = get_object_or_404(HelpLists, id=help_list_id, child_id=child_id)
             Records.objects.create(
                 child=help_list.child,
                 help=help_list.help,
-                achievement_date=timezone.now()
+                achievement_date=selected_date
             )
 
         return redirect('app:help_lists', child_id=child_id)

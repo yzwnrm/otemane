@@ -33,10 +33,10 @@
       {% endif %}
     {% endfor %}
   </div>
-  <form method="post" action="{% url 'app:help_lists' child.id %}">
+  <form method="post" action="{% url 'app:bulk_register' child.id %}">
     {% csrf_token %}
-    <input type="hidden" name="help_id" value="{{ help.help.id }}">
-    <button class="btn btn-success">できた！</button>
+    <input type="hidden" name="selected_date" value="{{ selected_date|date:'Y-m-d' }}">
+      <button class="btn btn-success">できた！</button>
   </form>
 </div>
 {% empty %}
@@ -82,7 +82,7 @@
                 <tr>
                   <td>
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="help_ids" value="{{ help.help.id }}" id="check{{ forloop.counter }}">
+                      <input class="form-check-input" type="checkbox" name="help_ids" value="{{ help.id }}" id="check{{ forloop.counter }}">
                       <label class="form-check-label" for="check{{ forloop.counter }}">
                         {{ help.help.help_name }}
                       </label>
