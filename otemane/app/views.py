@@ -33,7 +33,7 @@ from django.contrib.auth.views import (
 )
 from django.contrib.auth import get_user_model
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from .models import Family, Children, Helps, Reactions, Records, HelpLists
 from app.models import User, Invitation, Children
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -412,15 +412,22 @@ class FamilyUpdateView(LoginRequiredMixin, UpdateView):
         self.family_id = request.GET.get("family_id")
         return super().dispatch(request, *args, **kwargs)
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
+    def get_object(self, queryset=None):
         if self.family_id:
-            member = get_object_or_404(User, id=self.family_id)
-            kwargs['instance'] = member
-        return kwargs
+            return get_object_or_404(User, id=self.family_id)
+        return super().get_object(queryset)
 
     def form_valid(self, form):
+
+        print("フォームの変更状態:", form.has_changed())
+        print("変更されたフィールド:", form.changed_data)
+
+        if not form.has_changed():
+            # フォームに変更がない場合、保存せずリダイレクト
+            messages.info(self.request, "変更されていません。")
+            return HttpResponseRedirect(self.get_success_url())  # エラーではないが、再表示
         form.save()
+        messages.success(self.request, "家族情報を更新しました。")
         return super().form_valid(form)
     
     def get_queryset(self):
@@ -441,8 +448,8 @@ class FamilyUpdateView(LoginRequiredMixin, UpdateView):
         return context
     
     def get_success_url(self):
-        family_id = self.object.family.id  # または self.request.user.family.id
-        return reverse('family_info', kwargs={'family_id': family_id})
+        family_id = self.object.family.id  
+        return reverse('app:family_info', kwargs={'family_id': family_id})
 
     
 class ChildUpdateView(LoginRequiredMixin,View):

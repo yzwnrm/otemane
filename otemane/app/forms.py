@@ -64,6 +64,11 @@ class UserRegistrationForm(UserCreationForm):
         model = User
         fields = ['user_name', 'email', 'relationship']
         
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        relationship = getattr(self.instance, 'relationship', None)
+        if 'relationship' in self.fields and relationship is not None:
+            self.initial['relationship'] = relationship
 
 class UserUpdateForm(forms.ModelForm):
     relationship = forms.ChoiceField(choices=RELATIONSHIP_CHOICES, label='続柄')
@@ -90,8 +95,9 @@ class UserUpdateForm(forms.ModelForm):
         return user
 
 class FamilyUpdateForm(forms.ModelForm):
-    relationship = forms.ChoiceField(
+    relationship = forms.TypedChoiceField(
         choices=RELATIONSHIP_CHOICES,
+        coerce=int,
         label='続柄',
         widget=forms.Select()
     )
@@ -102,6 +108,13 @@ class FamilyUpdateForm(forms.ModelForm):
             'user_name': forms.TextInput(attrs={'placeholder': '変更したい名前/ニックネーム'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        relationship = getattr(self.instance, 'relationship', None)
+        if 'relationship' in self.fields and relationship is not None:
+            self.initial['relationship'] = relationship 
+
+    
     def save(self, commit=True):
         user = super().save(commit=False)
 

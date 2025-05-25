@@ -30,12 +30,13 @@
         </select>
     </form>
 </div>
+
 <div class="container d-flex flex-column align-items-center justify-content-center">
 
 <form method="post">
     {% csrf_token %}
     <div class="mb-3">
-        {{ form.user_name }} <!-- ラベルを表示せずにフィールドのみ表示 -->
+        {{ form.user_name }} 
     </div>
 
     <!-- 続柄のフィールド（ラベルなし） -->
