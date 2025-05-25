@@ -24,8 +24,16 @@ class CustomPasswordResetForm(PasswordResetForm):
         })
 
 class UserRegistrationForm(UserCreationForm):
-    user_name = forms.CharField(label='名前/ニックネーム')
-    email = forms.EmailField(required=True, label='メールアドレス')
+    user_name = forms.CharField(
+        label='名前/ニックネーム',
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+        
+    )
+    email = forms.EmailField(
+        required=True, 
+        label='メールアドレス',
+        widget=forms.EmailInput(attrs={'class': 'form-control'})
+    )
     
     RELATIONSHIP_CHOICES = [
         (0, '母'),
@@ -36,10 +44,21 @@ class UserRegistrationForm(UserCreationForm):
         (5, '姉'),
         (6, 'その他'),
     ]
-    relationship = forms.ChoiceField(choices=RELATIONSHIP_CHOICES, required=True, label='続柄')
+    relationship = forms.ChoiceField(
+        choices=RELATIONSHIP_CHOICES, 
+        required=True, 
+        label='続柄',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
 
-    password1 = forms.CharField(label='パスワード', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='パスワード（再入力）', widget=forms.PasswordInput)
+    password1 = forms.CharField(
+        label='パスワード',
+        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+    )
+    password2 = forms.CharField(
+        label='パスワード（再入力）',
+        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+    )
 
     class Meta:
         model = User

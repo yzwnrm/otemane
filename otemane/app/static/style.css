@@ -1,11 +1,31 @@
 @charset "UTF-8";
 
+h2 {
+  margin: 30px;
+}
+
+h3 {
+  margin: 30px;
+}
+
+input, textarea, select {
+    border: 2px solid #b8b8b8 !important;  
+    border-radius: 4px;
+    padding: 8px;
+    color: #000;
+}
+
+.custom-bg  {
+  background:  #ddddddb6;
+}
+
 .custom-navbar {
   background-color: #fce775; 
 }
 
 .custom-navbar .navbar-brand {
   color: rgb(61, 61, 61);
+  margin-right: 40px; 
 }
 
 .custom-navbar .navbar-brand:hover {
@@ -15,32 +35,38 @@
 .brand-main {
   font-size: 1.2rem; 
   font-weight: bold;
+  margin-left: 20px;
 }
 
 .brand-sub {
   font-size: 0.9rem; 
 }
 
-    
+
+.has-navbar {
+    padding-top: 56px;
+}
+
+
 body {
     font-family: Arial, sans-serif;
-    margin: 0;
     padding: 0;
-    background-color: #ffffff
+    margin: 0;
+    background-color: #ffffff;
 }
 
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 30px;
+  padding: 13px 20px;
   background-color: #f0f0f0;
   margin-bottom: 20px;
 }
 .header-link {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: bold;
-  margin-left: 20px;
+  margin-left: 5px;
   text-decoration: none;
   color: #333;
 }
@@ -57,7 +83,6 @@ header {
 }
 
 .container {
-    
   max-width: 600px;
   margin: 0 auto;
   background-color: white;
@@ -92,7 +117,7 @@ header {
   margin: 20px auto;
   padding: 10px;
   font-size: 1.1rem;
-  background-color: #717c88;
+  background-color: #525a63;
   color: white;
   border: none;
   border-radius: 5px;
@@ -175,10 +200,23 @@ button#nextMonth {
     height: 50px; 
     font-size: 16px; 
     color: #000; 
+    background-color: rgba(252, 176, 125, 0.87);
     border-radius: 14px; 
     cursor: pointer; 
   }
   
+.open-modal-2 {
+    top: 50%; 
+    left: 50%; 
+    width: 220px; 
+    height: 50px; 
+    font-size: 16px; 
+    color: #000; 
+    background-color: rgba(204, 234, 253, 0.692);
+    border-radius: 14px; 
+    cursor: pointer; 
+  }
+
   /* モーダルウィンドウの基本スタイル */
 .modal {
     display: none; /* デフォルトでは非表示に設定 */
@@ -196,10 +234,10 @@ button#nextMonth {
     left: 50%; 
     transform: translate(-50%, -50%); /* 完全に中央に配置するための補正 */
     padding: 10px; /* モーダル内の余白を設定 */
-    width: 440px; /* モーダルの幅 */
-    height: 580px; /* モーダルの高さ */
+    width: 400px; /* モーダルの幅 */
+    height: 480px; /* モーダルの高さ */
     background-color: #fefefe; 
-    border: 1px solid #888; 
+    border: 1px solid #7c7c7c; 
     border-radius: 10px; 
   }
   

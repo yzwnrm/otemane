@@ -20,44 +20,56 @@
         <form method="POST" class="w-100" style="max-width: 400px;">
             {% csrf_token %}
 
-            <div class="mb-3">
-            {{ form.user_name.label_tag }} 
-            {{ form.user_name }}
-            </div>
-            
-            <div class="mb-3">
-            {{ form.relationship.label_tag }}
-            {{ form.relationship }}
+            <div class="mb-3 row align-items-center">
+              <label class="col-sm-5 col-form-label">{{ form.user_name.label }}</label>
+              <div class="col-sm-7">
+                {{ form.user_name }}
+              </div>
             </div>
 
-            <div class="mb-3">
-            {{ form.email.label_tag }}
-            {{ form.email }}
+            
+            <div class="mb-3 row align-items-center">
+              <label class="col-sm-5 col-form-label">{{ form.relationship.label }}</label>
+              <div class="col-sm-7">
+                {{ form.relationship }}
+              </div>
+            </div>
+
+            <div class="mb-3 row align-items-center">
+              <label class="col-sm-5 col-form-label">{{ form.email.label }}</label>
+              <div class="col-sm-7">
+                {{ form.email }}
+              </div>
             </div>
 
               <!-- パスワード1 -->
-            <div class="mb-3 position-relative">
-                {{ form.password1.label_tag }}
+            <div class="mb-3 row align-items-center">
+              <label class="col-sm-5 col-form-label">{{ form.password1.label }}</label>
+              <div class="col-sm-7">
                 <div class="d-flex align-items-center">
-                    {{ form.password1 }}
-                    <button type="button" 
-                      class="help-icon ms-2" 
-                      data-bs-toggle="popover" 
-                      data-bs-trigger="click"
-                      title="パスワードルール"
-                      data-bs-content="・最低１０文字以上必要です
-                      ・アルファベットの大文字、小文字、数字を組み合わせてください
-                      ・記号（例：!,@,#,$,%,&）を含めてください
-                      ・連続した数字や文字は使用できません
-                      ・意味のない文字列にしてください">
-                      ?
-                    </button>
+                  {{ form.password1 }}
+                  <button type="button" 
+                    class="help-icon ms-2" 
+                    data-bs-toggle="popover" 
+                    data-bs-trigger="click"
+                    title="パスワードルール"
+                    data-bs-content="・最低１０文字以上必要です
+                  ・アルファベットの大文字、小文字、数字を組み合わせてください
+                  ・記号（例：!,@,#,$,%,&）を含めてください
+                  ・連続した数字や文字は使用できません
+                  ・意味のない文字列にしてください"> 
+                    ?
+                  </button>
                 </div>
+              </div>
             </div>
           
-            <div class="mb-3">
-                {{ form.password2.label_tag }}
+            
+            <div class="mb-3 row align-items-center">
+              <label class="col-sm-5 col-form-label">{{ form.password2.label }}</label>
+              <div class="col-sm-7">
                 {{ form.password2 }}
+              </div>
             </div>
           
             <!-- エラーメッセージ -->
@@ -68,13 +80,12 @@
             {% endif %}
           
             
-              <input type="submit" class="btn btn-primary  w-100" value="登録">
+            <input type="submit" class="btn btn-primary  w-100" value="登録">
         </form>
     </div>
 
-
+{% endblock %}
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="{% static 'js/popover-init.js' %}"></script>
 
-  </body>
-{% endblock %}
+

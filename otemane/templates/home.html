@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<div class="d-flex align-items-center" style="gap: 10px; margin-top: 10px;">
+<div class="d-flex align-items-center m-3 p-2" style="gap: 10px;">
   <div class="child-icon" style="font-size: 2rem;">
     {% if selected_child != 'all' %}{{ selected_child.icon }}{% else %}※{% endif %}
   </div>

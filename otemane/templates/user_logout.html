@@ -2,7 +2,7 @@
 {% block content %}
 <form method="POST">
     {% csrf_token %}
-    <p class="text-center">ログアウトしますか？</p>
+    <p class="text-center" style="margin-top: 30px;">ログアウトしますか？</p>
     <input type="submit" value="ログアウト" class="btn btn-danger d-block mx-auto mt-3">
 </form>
 {% endblock %}
