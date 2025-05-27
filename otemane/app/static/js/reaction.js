@@ -29,8 +29,14 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    console.log("リアクション送信成功");
-                } else {
+                      const messageBox = document.getElementById('reaction-message');
+                      messageBox.textContent = data.message || 'ありがとうを送りました！';
+                      messageBox.classList.remove('d-none');
+
+                      setTimeout(() => {
+                          messageBox.classList.add('d-none');
+                      }, 3000);
+                } else {      
                     console.error("送信失敗:", data.error);
                 }
             })

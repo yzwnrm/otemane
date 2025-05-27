@@ -707,8 +707,8 @@ class AddReactionAjaxView(View):
                 reaction.reaction_image = reaction_image
                 reaction.save()
 
-            return JsonResponse({'success': True})
-        
+            return JsonResponse({'success': True, 'message': 'ありがとうを送りました。'})
+
         except json.JSONDecodeError:
             return JsonResponse({'success': False, 'error': '無効なJSONです。'}, status=400)
             
