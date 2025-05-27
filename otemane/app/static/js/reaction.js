@@ -10,10 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const recordId = target.getAttribute('data-record-id');
             const reaction = target.getAttribute('data-reaction');
 
-            console.log("Record ID:", recordId);  // デバッグ
-            console.log("Reaction:", reaction);  // デバッグ
-
-            // 取得できているか確認
+           
             if (!recordId || !reaction) {
                 console.error("Record ID または Reaction が存在しません。");
                 return;

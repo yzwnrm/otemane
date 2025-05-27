@@ -418,10 +418,6 @@ class FamilyUpdateView(LoginRequiredMixin, UpdateView):
         return super().get_object(queryset)
 
     def form_valid(self, form):
-
-        print("フォームの変更状態:", form.has_changed())
-        print("変更されたフィールド:", form.changed_data)
-
         if not form.has_changed():
             # フォームに変更がない場合、保存せずリダイレクト
             messages.info(self.request, "変更されていません。")
@@ -631,6 +627,8 @@ class HelpListsView(ListView):    #えらんだおてつだい
                 'error_message': "おてつだいのIDが指定されていません。"
             })
         
+        messages.success(request, '記録ができました。')
+        
         return redirect('app:help_lists', child_id=child_id)
     
 class BulkRegisterView(View):
@@ -654,7 +652,9 @@ class BulkRegisterView(View):
                 help=help_list.help,
                 achievement_date=selected_date
             )
-
+        
+        messages.success(request, '記録ができました。')
+        
         return redirect('app:help_lists', child_id=child_id)
     
 class ReactionListView(LoginRequiredMixin, TemplateView):

@@ -5,13 +5,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const targetGroup = allRecords.find(group => group.child === selectedChild);
     const records = targetGroup ? targetGroup.records : [];
 
-    console.log("Selected child:", selectedChild);
-    console.log("Records for child:", records);
-
-
     function showMonthlyModal(records) {
         const container = document.getElementById('helpRecordsContainer');
         container.innerHTML = '';
+
+        if (!Array.isArray(records)) {
+            container.textContent = '報酬の記録データがありません。';
+            document.getElementById('myModal').style.display = "block";
+            return;
+        }
+
         records.sort((a, b) => new Date(a.date) - new Date(b.date));
 
         records.forEach(record => {
@@ -56,8 +59,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 reactionDiv.textContent = record.reaction || '';
             }
             row.appendChild(reactionDiv);
-
-            console.log(records);
 
             container.appendChild(row);
         });
