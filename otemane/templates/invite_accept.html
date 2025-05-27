@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset='utf-8'>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <title>おてまね</title>
+        <link rel="stylesheet" href="{% static 'style.css' %}">
+    </head>
+   <body>
+      <div class="container text-center">
+        <h2 class="mb-5">おてまね</h2>  
+
+        <h3>招待が届いています！</h3>
+            <p>参加しておてつだいを盛り上げましょう！</p>
+
+            <form method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary">参加する</button>
+            </form>
+            
+      </div>
+
+  </body>
+</html>

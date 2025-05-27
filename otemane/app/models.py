@@ -120,7 +120,7 @@ class Invitation(models.Model):
         super().save(*args, **kwargs)
 
     def get_invite_url(self):
-        return f'/invite/accept/{self.invitation_URL}/'
+        return f'/otemane/invite/accept/{self.invitation_URL}/'
 
 class HelpLists(models.Model):
     child = models.ForeignKey(Children, on_delete=models.CASCADE)

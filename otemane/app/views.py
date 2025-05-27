@@ -34,7 +34,7 @@ from django.contrib.auth.views import (
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponseRedirect
-from .models import Family, Children, Helps, Reactions, Records, HelpLists
+from .models import Family, Children, Helps, Reactions, Records, HelpLists, Invitation
 from app.models import User, Invitation, Children
 from django.contrib.auth.mixins import LoginRequiredMixin
 from collections import defaultdict
@@ -337,6 +337,28 @@ class ChildCreateView(LoginRequiredMixin, CreateView):
 class InvitePageView(TemplateView):
     template_name = 'invite.html'
 
+@method_decorator(login_required, name='dispatch')
+class InviteAcceptView(TemplateView):
+    template_name = 'invite_accept.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        invitation_url = self.kwargs.get('invitation_url')
+        invitation = get_object_or_404(Invitation, invitation_URL=invitation_url, status=0)  # 保留のみ許可
+        context['invitation'] = invitation
+        return context
+
+    def post(self, request, *args, **kwargs):
+        invitation_url = self.kwargs.get('invitation_url')
+        invitation = get_object_or_404(Invitation, invitation_URL=invitation_url, status=0)
+        
+        # 参加ボタン押したら承認にする処理
+        invitation.status = 1  # 承認
+        invitation.save()
+        
+        messages.success(request, '招待を承認しました。ようこそ！')
+        return redirect('app:home')  
+    
 class AjaxCreateInviteView(View):
     def post(self, request, *args, **kwargs):
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
