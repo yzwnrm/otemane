@@ -28,6 +28,8 @@
     {% endfor %}
   </div>
 {% endif %}
+<div id="message-container"></div>
+
 
 
 <div class="container-fluid">
@@ -51,6 +53,7 @@
             </td>
             <td>
               <a href="{% url 'app:family_update' user.id %}" class="btn btn-secondary btn-sm">編集</a>
+              {% if user != request.user %}
               <form method="POST" action="{% url 'app:user_delete' user.id %}" style="display:inline;">
                 {% csrf_token %}
                 <button
@@ -62,6 +65,7 @@
                   削除
                 </button>
               </form>
+              {% endif %}
             </td>
           </tr>
           {% endfor %}

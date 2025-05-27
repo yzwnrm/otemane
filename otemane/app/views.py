@@ -64,7 +64,10 @@ class HomeView(LoginRequiredMixin, View):
             selected_child = "all"
         else:
             selected_child = Children.objects.filter(id=selected_child_id, family=family).first()
-
+        if selected_child is None:
+            messages.warning(request, '指定された子どもが存在しません。')
+            return redirect('app:home')
+        
         monthly_rewards = defaultdict(lambda: {
             "money": 0,
             "sweets": 0,
@@ -498,39 +501,58 @@ class ChildUpdateView(LoginRequiredMixin,View):
 
         if child_form.is_valid():
            child_form.save()
+           messages.success(request, 'お手伝いメンバー情報を更新しました。')  
            return redirect('app:family_info', family_id=child.family.id)
-
+        
+        context = self.get_context_data(child)
+        context['child_form'] = child_form  # バリデーションエラーも含める
+        return render(request, self.template_name, context)
 
 
 class ChildDeleteView(LoginRequiredMixin, DeleteView):
     model = Children
     template_name = 'child_delete.html'
-    success_url = reverse_lazy('app:family_info')
 
     def get_queryset(self):
         return Children.objects.filter(family=self.request.user.family)
-
+    
+    def get_success_url(self):
+        family_id = self.request.user.family.id
+        return reverse_lazy('app:family_info', kwargs={'family_id': family_id})
+    
+    def post(self, request, *args, **kwargs):
+        return self.delete(request, *args, **kwargs)
+    
     def delete(self, request, *args, **kwargs):
-        if request.is_ajax():
-            self.object = self.get_object()
-            self.object.delete()
-            return JsonResponse({'success': True})
-        return super().delete(request, *args, **kwargs)
+        self.object = self.get_object()
+        self.object.delete()
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': True, 'message': '削除しました。'})
+
+        messages.success(request, '削除しました。')
+        return redirect(self.get_success_url())
 
 class UserDeleteView(LoginRequiredMixin, DeleteView):
     model = User
     template_name = 'user_delete.html'
-    success_url = reverse_lazy('app:family_info')
-
+    
     def get_queryset(self):
         return User.objects.filter(family=self.request.user.family)
+    
+    def get_success_url(self):
+        family_id = self.request.user.family.id
+        return reverse_lazy('app:family_info', kwargs={'family_id': family_id})
 
     def delete(self, request, *args, **kwargs):
-        if request.is_ajax():
-            self.object = self.get_object()
-            self.object.delete()
-            return JsonResponse({'success': True})
-        return super().delete(request, *args, **kwargs)
+        self.object = self.get_object()
+        self.object.delete()
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': True, 'message': '削除しました。'})
+
+        messages.success(request, '削除しました。')
+        return redirect(self.get_success_url())
 
 class HelpMakeView(FormView):    # おてつだいをつくる
     form_class = HelpsForm
