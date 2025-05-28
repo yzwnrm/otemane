@@ -3,10 +3,11 @@
 {% block content %}
 <h3>えらんだおてつだい</h3>
 <div class="d-flex justify-content-start align-items-center mt-2 ms-2">
-  <label for="dateSelect" class="me-2 mb-0 small fw-bold"></label>
-  <input type="date" id="dateSelect" name="selected_date" class="form-control form-control-sm"
-         style="width: 150px;" value="{{ selected_date|date:'Y-m-d' }}"
-         onchange="this.form.submit();">
+  <form method="get" action="{% url 'app:help_lists' child.id %}" class="d-flex justify-content-start align-items-center mt-2 ms-2">
+    <label for="dateSelect" class="me-2 mb-0 small fw-bold"></label>
+    <input type="date" id="dateSelect" name="selected_date" class="form-control form-control-sm" style="width: 150px;" value="{{ selected_date|date:'Y-m-d' }}" onchange="this.form.submit();">
+  </form>
+
 </div>
 
 {% if messages %}
@@ -44,6 +45,7 @@
   <form method="post" action="{% url 'app:help_lists' child.id %}">
     {% csrf_token %}
     <input type="hidden" name="help_id" value="{{ help.help.id }}">
+    <input type="hidden" name="selected_date" value="{{ selected_date|date:'Y-m-d' }}">
     <button class="btn btn-success">できた！</button>
   </form>
 
@@ -76,6 +78,7 @@
 
       <form method="post" action="{% url 'app:bulk_register' child.id %}">
         {% csrf_token %}
+        <input type="hidden" name="selected_date" value="{{ selected_date|date:'Y-m-d' }}">
         <div class="modal-body px-3 py-2">
 
           <div class="table-responsive">
@@ -135,11 +138,13 @@
     this.form.submit();
   });
 </script>
+<script>
+  const modal = document.getElementById('bulkRegisterModal');
+  modal.addEventListener('show.bs.modal', function () {
+    const selectedDate = document.getElementById('dateSelect').value;
+    document.getElementById('modalSelectedDate').value = selectedDate;
+  });
+</script>
 
-
-{% comment %} <script>
-    window.selectedChildId = "{{ selected_child_id|default:'' }}";
-    window.homeUrl = "{% url 'app:home' %}";
-</script> {% endcomment %}
 
 

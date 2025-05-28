@@ -650,12 +650,18 @@ class HelpListsView(RequireChildSelectedMixin, ListView):    #えらんだおて
         help_ids = request.POST.getlist("help_ids")
         help_id = request.POST.get("help_id") 
         
+        selected_date_str = request.POST.get("selected_date")
+        try:
+            selected_date = datetime.strptime(selected_date_str, "%Y-%m-%d").date() if selected_date_str else timezone.now().date()
+        except ValueError:
+            selected_date = timezone.now().date()
+
         if help_id:
         # 単発「できた」
             Records.objects.create(
                 child_id=child_id,
                 help_id=help_id,
-                achievement_date=timezone.now()
+                achievement_date=selected_date
             )
         elif help_ids:
         # モーダルで一括「できた」
@@ -663,7 +669,7 @@ class HelpListsView(RequireChildSelectedMixin, ListView):    #えらんだおて
                 Records.objects.create(
                     child_id=child_id,
                     help_id=hid,
-                    achievement_date=timezone.now()
+                    achievement_date=selected_date
             )
         else:
         # どちらも指定されていない
