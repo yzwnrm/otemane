@@ -18,8 +18,8 @@
     <div class="container d-flex flex-column align-items-center justify-content-center min-vh-100">
         <h2 class="mb-4 text-center">おうちのひと登録</h2>
         <form method="POST" class="w-100" style="max-width: 400px;">
-            {% csrf_token %}
-
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.GET.next }}">
             <div class="mb-3 row align-items-center">
               <label class="col-sm-5 col-form-label">{{ form.user_name.label }}</label>
               <div class="col-sm-7">

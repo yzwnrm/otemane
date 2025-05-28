@@ -6,7 +6,7 @@ from .views import (
     PasswordChange, GuideView, UserLogoutDone,
     FamilyInfoView, ChildCreateView, InvitePageView, AjaxCreateInviteView, 
     CustomPasswordResetView, CustomPasswordResetDoneView, CustomPasswordResetConfirmView, CustomPasswordResetCompleteView,
-    ReactionListView, AddReactionAjaxView,  InviteAcceptView,
+    ReactionListView, AddReactionAjaxView,  InviteAcceptView, InviteRegistsView,
     HelpMakeView, HelpChoseView, HelpListsView, HelpEditDeleteView,
     SetChildView, MonthlyRewardView,FamilyUpdateView,
     CalendarView, ChildUpdateView, ChildDeleteView, UserDeleteView, UserUpdateView
@@ -33,6 +33,7 @@ urlpatterns = [
     path('family_info/<int:family_id>/', FamilyInfoView.as_view(), name='family_info'),
     path('child_regist/', ChildCreateView.as_view(), name='child_regist'),
     path('invite/', InvitePageView.as_view(), name='invite'),
+    path('invite_regist', InviteRegistsView.as_view(), name='invite_regist'),
     path('invite/ajax/create/', AjaxCreateInviteView.as_view(), name='ajax_create_invite'),
     path('invite/accept/<str:invitation_url>/', InviteAcceptView.as_view(), name='invite_accept'),
     path('reactions/', ReactionListView.as_view(), name='reactions'),

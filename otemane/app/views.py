@@ -17,6 +17,8 @@ from operator import itemgetter
 from datetime import date, datetime
 from django.utils.dateparse import parse_date
 from django.utils.decorators import method_decorator
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
@@ -247,20 +249,41 @@ class HomeView(LoginRequiredMixin, View):
 class UserRegisterView(CreateView):
     form_class = UserRegistrationForm
     template_name = 'regist.html'
-    success_url = reverse_lazy('app:regist_done') 
 
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={self.request.get_host()}):
+            return next_url
+        return reverse_lazy('app:child_regist')
+    
     def form_valid(self, form):
         user = form.save(commit=False) 
         relationship = form.cleaned_data['relationship']
         
-        family = Family.objects.create()
-        user.family = family
+        invited_family_id = self.request.session.get('invited_family_id')
+        invitation_id = self.request.session.get('invitation_id')
+
+        if invited_family_id:
+            user.family_id = invited_family_id
+            if invitation_id:
+                Invitation.objects.filter(id=invitation_id).update(status=1)
+        else:
+            family = Family.objects.create()
+            user.family = family
+
         user.relationship = relationship
         user.save()
 
         login(self.request, user)
 
-        return redirect('app:child_regist')
+        self.request.session.pop('invited_family_id', None)
+        self.request.session.pop('invitation_id', None)
+
+        next_url = self.request.GET.get('next') or self.request.POST.get('next')
+        if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={self.request.get_host()}):
+            return redirect(next_url)
+        else:
+            return redirect('app:child_regist')
 
 class UserLoginView(FormView):
     template_name = 'user_login.html'
@@ -341,7 +364,6 @@ class ChildCreateView(LoginRequiredMixin, CreateView):
 class InvitePageView(TemplateView):
     template_name = 'invite.html'
 
-@method_decorator(login_required, name='dispatch')
 class InviteAcceptView(TemplateView):
     template_name = 'invite_accept.html'
 
@@ -356,13 +378,14 @@ class InviteAcceptView(TemplateView):
         invitation_url = self.kwargs.get('invitation_url')
         invitation = get_object_or_404(Invitation, invitation_URL=invitation_url, status=0)
         
-        # 参加ボタン押したら承認にする処理
-        invitation.status = 1  # 承認
-        invitation.save()
+        request.session['invited_family_id'] = invitation.family.id
+        request.session['invitation_id'] = invitation.id
         
-        messages.success(request, '招待を承認しました。ようこそ！')
-        return redirect('app:home')  
-    
+        return redirect('app:regist')  
+
+class InviteRegistsView(TemplateView):
+    template_name = 'invite_regist.html'
+
 class AjaxCreateInviteView(View):
     def post(self, request, *args, **kwargs):
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
