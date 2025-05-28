@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
 <body class="has-navbar">
-    <nav class="navbar navbar-expand-lg custom-navbar fixed-top">
+    {% comment %} <nav class="navbar navbar-expand-lg custom-navbar fixed-top">
         <a class="navbar-brand brand-main" href="{% url 'app:home'%}">おてまね</a>
         {% if user.is_authenticated %}
             {% if selected_child_id and selected_child_id != "all" %}
@@ -26,7 +26,40 @@
         <a class="navbar-brand brand-sub" href="{% url 'app:regist' %}">ユーザー登録</a>
         {% endif %}
         <a class="navbar-brand brand-sub" href="{% url 'app:user' %}">おうちのひと（マイページ）</a>
-    </nav>
+    </nav> {% endcomment %}
+  <nav class="navbar navbar-expand-lg custom-navbar fixed-top">
+    <a class="navbar-brand brand-main" href="{% url 'app:home'%}">おてまね</a>
+    {% if user.is_authenticated %}
+        {% if selected_child_id and selected_child_id != "all" %}
+            <a id="nav-help-chose" class="navbar-brand brand-sub"
+               href="{% url 'app:help_chose' selected_child_id %}">
+               おてつだいをえらぶ
+            </a>
+            <a id="nav-help-lists" class="navbar-brand brand-sub"
+               href="{% url 'app:help_lists' selected_child_id %}">
+               えらんだおてつだい
+            </a>
+        {% else %}
+            <a id="nav-help-chose" class="navbar-brand brand-sub disabled"
+               href="javascript:void(0);" style="pointer-events: none; opacity: 0.5;"
+               title="子どもを選んでください">
+               おてつだいをえらぶ
+            </a>
+            <a id="nav-help-lists" class="navbar-brand brand-sub disabled"
+               href="javascript:void(0);" style="pointer-events: none; opacity: 0.5;"
+               title="子どもを選んでください">
+               えらんだおてつだい
+            </a>
+        {% endif %}
+        <a class="navbar-brand brand-sub" href="{% url 'app:calendar' user.id %}">カレンダー</a>
+        <a class="navbar-brand brand-sub" href="{% url 'app:help_make' %}">おてつだいをつくる</a>
+    {% else %}
+        <a class="navbar-brand brand-sub" href="{% url 'app:user_login' %}">ログイン</a>
+        <a class="navbar-brand brand-sub" href="{% url 'app:regist' %}">ユーザー登録</a>
+    {% endif %}
+    <a class="navbar-brand brand-sub" href="{% url 'app:user' %}">おうちのひと（マイページ）</a>
+  </nav>
+
     {% block content %}
     {% endblock %}
     

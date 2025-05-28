@@ -66,6 +66,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'app.context_processors.selected_child',
             ],
         },
     },
@@ -134,4 +135,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/otemane/user_login/'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-

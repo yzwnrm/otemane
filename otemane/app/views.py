@@ -38,6 +38,7 @@ from .models import Family, Children, Helps, Reactions, Records, HelpLists, Invi
 from app.models import User, Invitation, Children
 from django.contrib.auth.mixins import LoginRequiredMixin
 from collections import defaultdict
+from .mixins import RequireChildSelectedMixin
 
 import uuid, json, logging
 logger = logging.getLogger(__name__)
@@ -554,7 +555,7 @@ class UserDeleteView(LoginRequiredMixin, DeleteView):
         messages.success(request, '削除しました。')
         return redirect(self.get_success_url())
 
-class HelpMakeView(FormView):    # おてつだいをつくる
+class HelpMakeView(RequireChildSelectedMixin, FormView):    # おてつだいをつくる
     form_class = HelpsForm
     template_name = 'help_make.html'
     success_url = reverse_lazy('app:help_chose')
@@ -603,7 +604,7 @@ class HelpMakeView(FormView):    # おてつだいをつくる
             'rewards_form': rewards_form
         })
 
-class HelpListsView(ListView):    #えらんだおてつだい
+class HelpListsView(RequireChildSelectedMixin, ListView):    #えらんだおてつだい
     template_name = 'help_lists.html'
     context_object_name = 'helps'
 
@@ -756,7 +757,7 @@ class AddReactionAjaxView(View):
         except json.JSONDecodeError:
             return JsonResponse({'success': False, 'error': '無効なJSONです。'}, status=400)
             
-class HelpChoseView(TemplateView):   #おてつだいをえらぶ
+class HelpChoseView(RequireChildSelectedMixin, TemplateView):   #おてつだいをえらぶ
     template_name = 'help_chose.html'
 
     def get(self, request, child_id):
@@ -909,10 +910,7 @@ class SetChildView(View):
 
         return redirect('app:home')
 
-
-
-
-class CalendarView(TemplateView):
+class CalendarView(RequireChildSelectedMixin, TemplateView):
     template_name = 'calendar.html'
 
     def get_context_data(self, **kwargs):
