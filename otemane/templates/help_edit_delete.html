@@ -9,6 +9,7 @@
     </div>
   {% endfor %}
 {% endif %}
+
 <table class="table">
   <tbody>
     {% for help in helps %}
@@ -17,15 +18,16 @@
       <td>
         {% for reward in help.rewards.all %}
         
-        {% if reward.reward_type == 1 %}
-          {{ reward.reward_prize }}えん
-        {% elif reward.reward_type == 0 %}
-          おかし１つ
-        {% elif reward.reward_type == 2 %}
-          {{ reward.reward_detail }}
-        {% endif %}
+          {% if reward.reward_type == 1 %}
+            {{ reward.reward_prize }}えん
+          {% elif reward.reward_type == 0 %}
+            おかし１つ
+          {% elif reward.reward_type == 2 %}
+            {{ reward.reward_detail }}
+          {% endif %}
         {% endfor %}
       </td>
+      <td>{{ help.child.child_name }} </td>
       <td>
         <a class="btn btn-secondary" href="{% url 'app:help_update' help.pk %}">修正</a>
         <button class="btn btn-danger"

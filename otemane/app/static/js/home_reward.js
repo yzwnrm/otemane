@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     const allRecords = window.monthlyRecords || [];
     const selectedChild = (window.selectedChild || "").split('(')[0].trim();; 
-
+    
     const targetGroup = allRecords.find(group => group.child === selectedChild);
     const records = targetGroup ? targetGroup.records : [];
 

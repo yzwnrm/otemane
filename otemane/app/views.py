@@ -772,7 +772,7 @@ class HelpChoseView(TemplateView):   #おてつだいをえらぶ
 
         original_helps = Helps.objects.filter(
             is_default=False,
-            child__family=family
+            child__id=child_id
         ).exclude(
             help_name__in=default_helps.values_list('help_name', flat=True)
         )
@@ -830,10 +830,16 @@ class HelpChoseView(TemplateView):   #おてつだいをえらぶ
             HelpLists.objects.get_or_create(child_id=child_id, help_id=new_help.id)
 
         else:
+            if original_help.child_id != int(child_id):
+                messages.error(request, "このお手伝いは選択できません。")
+                return redirect('app:help_chose', child_id=child_id)
+
             if HelpLists.objects.filter(child_id=child_id, help=original_help).exists():
                 messages.info(request, "すでに選ばれています。")
             else:
                 HelpLists.objects.create(child_id=child_id, help=original_help)
+        
+        messages.success(request, 'おてつだいをえらびました。')
 
         return redirect('app:help_chose', child_id=child_id)
     
@@ -841,6 +847,12 @@ class HelpEditDeleteView(ListView):
     model = Helps
     template_name = 'help_edit_delete.html'
     context_object_name = 'helps'
+
+    def get_queryset(self):
+        user = self.request.user
+        family = user.family 
+        children_ids = Children.objects.filter(family=family).values_list('id', flat=True)
+        return Helps.objects.filter(child_id__in=children_ids, is_default=False)
 
 def help_update(request, pk):
     help_instance = Helps.objects.get(pk=pk)
