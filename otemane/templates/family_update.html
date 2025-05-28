@@ -17,19 +17,6 @@
 {% block content %}
 <body>
     <h3>家族情報編集・削除</h3>
-<div style="display: flex; align-items: center;">
-    <form method="get">
-        <label>家族を選ぶ:</label>
-        <select name="family_id" onchange="this.form.submit()">
-            <option value="" disabled selected>選択してください</option>
-            {% for user in family_user %}
-                <option value="{{ user.id }}" {% if selected_user and user.id == selected_user.id %}selected{% endif %}>
-                    {{ user.user_name }}
-                </option>
-            {% endfor %}
-        </select>
-    </form>
-</div>
 
 <div class="container d-flex flex-column align-items-center justify-content-center">
 
