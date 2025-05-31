@@ -45,7 +45,7 @@
         </thead>
         <tbody>
           {% for user in user %}
-          <tr data-user-id="{{ user.id }}">
+          <tr data-row-id="user-{{ user.id }}">
             <td>名前/ニックネーム</td>
             <td>
               {{ user.user_name }}
@@ -61,7 +61,8 @@
                   class="btn btn-danger btn-sm"
                   data-bs-toggle="modal"
                   data-bs-target="#deleteModal"
-                  data-delete-url="{% url 'app:user_delete' user.id %}">
+                  data-delete-url="{% url 'app:user_delete' user.id %}"
+                  data-row-id="user-{{ user.id }}">
                   削除
                 </button>
               </form>
@@ -84,7 +85,7 @@
         </thead>
         <tbody>
           {% for child in child %}
-          <tr data-child-id="{{ child.id }}">
+          <tr data-row-id="child-{{ child.id }}">
             <td>名前/ニックネーム</td>
             <td>{{ child.child_name }}</td>
             <td>
@@ -96,7 +97,8 @@
                   class="btn btn-danger btn-sm"
                   data-bs-toggle="modal"
                   data-bs-target="#deleteModal"
-                  data-delete-url="{% url 'app:child_delete' child.id %}">
+                  data-delete-url="{% url 'app:child_delete' child.id %}"
+                  data-row-id="child-{{ child.id }}">
                   削除
                 </button>
               </form>

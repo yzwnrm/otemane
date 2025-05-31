@@ -1,13 +1,15 @@
 document.addEventListener('DOMContentLoaded', function () {
   const deleteModal = document.getElementById('deleteModal');
   const deleteForm = document.getElementById('deleteForm');
+  let rowId = null;
 
-  // モーダル表示時に action を設定
   deleteModal.addEventListener('show.bs.modal', function (event) {
     const button = event.relatedTarget;
     const deleteUrl = button.getAttribute('data-delete-url');
+    rowId = button.getAttribute('data-row-id');
     deleteForm.setAttribute('action', deleteUrl);
   });
+
 
   // 削除フォーム送信時の非同期リクエスト処理
   deleteForm.addEventListener('submit', function (e) {
@@ -15,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const deleteUrl = deleteForm.getAttribute('action');    
     const formData = new FormData(deleteForm);
-    
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
     fetch(deleteUrl, {
@@ -29,10 +30,16 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        // 行の削除（削除対象の行に data-child-id または data-user-id を指定しておく必要がある）
-        const id = deleteUrl.split('/').filter(Boolean).pop(); // URLの末尾のIDを取得
-        const row = document.querySelector(`[data-user-id="${id}"], [data-child-id="${id}"]`);
+        //const id = deleteUrl.split('/').filter(Boolean).pop(); 
+        //const row = document.querySelector(`[data-user-id="${id}"], [data-child-id="${id}"]`);
+        //if (row) row.remove();
+
+        const row = document.querySelector(`[data-row-id="${rowId}"]`);
         if (row) row.remove();
+
+        const modalInstance = bootstrap.Modal.getInstance(deleteModal);
+        if (modalInstance) modalInstance.hide();
+
 
         const messageContainer = document.getElementById('message-container');
         if (messageContainer && data.message) {
