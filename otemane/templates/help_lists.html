@@ -20,46 +20,47 @@
 
 
 <div class="text-end my-2">
-  <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#bulkRegisterModal">
+  <button class="btn btn-outline-primary me-5" data-bs-toggle="modal" data-bs-target="#bulkRegisterModal">
       選択して一括登録をする
   </button>
 </div>
 
-<p>かぞくといっしょにできたボタンをおそう！</p>
+<p class="ms-5">かぞくといっしょにできたボタンをおそう！</p>
 
-{% for help in selected_helps %}
-<div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
-  <div>
-    <strong>・{{ help.help.help_name }}</strong>
-    {% for reward in help.help.rewards.all %}
-      —
-      {% if reward.reward_type == 1 %}
-        {{ reward.reward_prize }}えん
-      {% elif reward.reward_type == 0 %}
-        おかし１つ
-      {% elif reward.reward_type == 2 %}
-        {{ reward.reward_detail }}
-      {% endif %}
-    {% endfor %}
+<div class="container">
+    {% for help in selected_helps %}
+    <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
+      <div>
+        <strong>・{{ help.help.help_name }}</strong>
+        {% for reward in help.help.rewards.all %}
+          —
+          {% if reward.reward_type == 1 %}
+            {{ reward.reward_prize }}えん
+          {% elif reward.reward_type == 0 %}
+            おかし１つ
+          {% elif reward.reward_type == 2 %}
+            {{ reward.reward_detail }}
+          {% endif %}
+        {% endfor %}
+      </div>
+      <form method="post" action="{% url 'app:help_lists' child.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="help_id" value="{{ help.help.id }}">
+        <input type="hidden" name="selected_date" value="{{ selected_date|date:'Y-m-d' }}">
+        <button class="btn btn-success">できた！</button>
+      </form>
+    </div>
+
+  {% empty %}
+  <p>まだおてつだいがありません。</p>
+  {% endfor %}
+
+  <!-- 「おてつだいをえらぶ」 -->
+  <div class="mt-4 mb-4">
+    <a href="{% url 'app:help_chose' child.id %}" class="btn btn-outline-secondary w-100">＋ おてつだいをえらぶ</a>
   </div>
-  <form method="post" action="{% url 'app:help_lists' child.id %}">
-    {% csrf_token %}
-    <input type="hidden" name="help_id" value="{{ help.help.id }}">
-    <input type="hidden" name="selected_date" value="{{ selected_date|date:'Y-m-d' }}">
-    <button class="btn btn-success">できた！</button>
-  </form>
-
 </div>
-{% empty %}
-<p>まだおてつだいがありません。</p>
-{% endfor %}
-
-<!-- 「おてつだいをえらぶ」 -->
-<div class="mt-4">
-<a href="{% url 'app:help_chose' child.id %}" class="btn btn-outline-secondary w-100">＋ おてつだいをえらぶ</a>
-</div>
-
-<!-- エラーメッセージ -->
+  <!-- エラーメッセージ -->
 {% if error_message %}
 <div class="alert alert-warning mt-3">
   {{ error_message }}

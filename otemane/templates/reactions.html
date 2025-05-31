@@ -3,21 +3,24 @@
 
 {% block content %}
 
-<div class="d-flex align-items-center" style="gap: 10px; margin-top: 10px;">
-  <div class="child-icon" style="font-size: 2rem;">{{ selected_child.icon }}</div>
+<div class="ms-3 mt-3">
+  <div class="d-flex align-items-center p-2" style="gap: 10px;">
+    <div class="child-icon" style="font-size: 2rem;">{{ selected_child.icon }}</div>
 
-  <form method="GET" action="{% url 'app:reactions' %}">
-    <select name="child_id" onchange="this.form.submit()">
-      {% for child in children %}
-        <option value="{{ child.id }}" {% if child.id == selected_child.id %}selected{% endif %}>
-          {{ child.child_name }}
-        </option>
-      {% endfor %}
-    </select>
-  </form>
+    <form method="GET" action="{% url 'app:reactions' %}">
+      <select name="child_id" onchange="this.form.submit()">
+        {% for child in children %}
+          <option value="{{ child.id }}" {% if child.id == selected_child.id %}selected{% endif %}>
+            {{ child.child_name }}
+          </option>
+        {% endfor %}
+      </select>
+    </form>
+    </div>
+    <p class="mt-0 ms-3">の達成されたお手伝い</p>
+  </div>
 </div>
-    <p>の達成されたお手伝い</p>
-    
+
 <div id="reaction-message" class="alert alert-success d-none mt-2" role="alert"></div>
 
 <div class="container d-flex flex-column align-items-center justify-content-center">

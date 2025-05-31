@@ -65,6 +65,7 @@ class HomeView(LoginRequiredMixin, View):
 
         if selected_child_id == "all":
             selected_child = "all"
+            messages.warning(request, 'おてつだいページ利用の際は子どもを選択してください。')
         else:
             selected_child = Children.objects.filter(id=selected_child_id, family=family).first()
         if selected_child is None:
@@ -240,12 +241,8 @@ class HomeView(LoginRequiredMixin, View):
             'selected_child_id': selected_child_id,  
         }
 
-        
         return render(request, 'home.html', context)
 
-        
-
- 
 class UserRegisterView(CreateView):
     form_class = UserRegistrationForm
     template_name = 'regist.html'

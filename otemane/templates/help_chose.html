@@ -49,27 +49,23 @@
       <p>お手伝いがありません。</p>
     {% endfor %}
   </div>
+
+
+
+  <div class="pagination mt-4 d-flex justify-content-center">
+      <span class="step-links">
+          {% if page_obj.has_previous %}
+              <a href="?page={{ page_obj.previous_page_number }}">前</a>
+          {% endif %}
+          <span class="current">
+              ページ {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+          </span>
+          {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}">次</a>
+          {% endif %}
+      </span>
+  </div>
 </div>
 
 
-<div class="pagination mt-4">
-    <span class="step-links">
-        {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}">前</a>
-        {% endif %}
-        <span class="current">
-            ページ {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-        </span>
-        {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">次</a>
-        {% endif %}
-    </span>
-</div>
-
-
-{% endblock  %}
-
-{% comment %} <script>
-    window.selectedChildId = "{{ selected_child_id|default:'' }}";
-    window.homeUrl = "{% url 'app:home' %}";
-</script>  {% endcomment %}
+{% endblock %}

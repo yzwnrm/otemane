@@ -219,23 +219,26 @@ button#nextMonth {
 
   /* モーダルウィンドウの基本スタイル */
 .modal {
-    display: none; /* デフォルトでは非表示に設定 */
+    display: none; 
     position: fixed; /* モーダルがページ全体に固定されるように設定 */
     top: 0; /* ページの最上部からスタート */
     left: 0; /* ページの最左端からスタート */
     width: 100%; /* モーダルが画面全体の幅を占める */
     height: 100%; /* モーダルが画面全体の高さを占める */
     background-color: rgba(0, 0, 0, 0.4); /* 背景を半透明の黒に設定（モーダルの背後が見えるように） */
-  }
+    
+}
   
 .modal-content {
     position: fixed; /* モーダル内容が画面上に固定されるように設定 */
     top: 50%;
     left: 50%; 
     transform: translate(-50%, -50%); /* 完全に中央に配置するための補正 */
-    padding: 10px; /* モーダル内の余白を設定 */
-    width: 400px; /* モーダルの幅 */
-    height: 480px; /* モーダルの高さ */
+    padding: 20px; /* モーダル内の余白を設定 */
+    max-width: 90%;         /* モバイルでも崩れにくく */
+    width: 400px;           /* 可能ならこれで固定幅 */
+    max-height: 80vh;       /* ビューポートの80%までの高さ */
+    overflow-y: auto;       /* 高さが超えた場合スクロール */
     background-color: #fefefe; 
     border: 1px solid #7c7c7c; 
     border-radius: 10px; 
@@ -255,8 +258,8 @@ button#nextMonth {
     color: #000; 
     width: 40px; /* ボタンの幅 */
     height: 40px; /* ボタンの高さ */
-    background-color: #fff; 
-    border: #fff; /* ボタンの境界線を背景と同じ色に設定 */
+    background-color: #ffffff00; 
+    border: #ffffff00; /* ボタンの境界線 */
     border-radius: 50%; /* ボタンを丸くするための半径 */
   }
 
@@ -426,4 +429,24 @@ button#nextMonth {
 .btn:active {
   transform: scale(0.97);
   box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+th, td {
+    border-bottom: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f9f9f9;
+    font-weight: bold;
 }

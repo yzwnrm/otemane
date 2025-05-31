@@ -110,6 +110,7 @@
   <script>
     window.monthlyRecords = JSON.parse(document.getElementById('monthly-records').textContent);
     window.selectedChild = "{{ selected_child }}";
+    window.selectedChildId = {{ selected_child.id|default:"null" }};
     window.currentMonth = "{{ current_month }}";
     window.monthlyRewards = {{ monthly_rewards|safe }};
   </script>
