@@ -15,20 +15,22 @@
         </div>
     </header>
     <h3>家族を招待する</h3>
-    <div class="instruction-box">
+    <div class="d-flex align-items-center m-3 p-2" style="gap: 10px;">
+      <div class="instruction-box">
         <h4>利用方法</h4>
         <p>利用するをクリックし、リンク先URLを表示
         <br>招待したい家族にリンク先を共有しアカウントを登録してもらう</br>
         ※発行されたURLは一度利用すると失効します。</p>
+      </div>
     </div>
-
-    <div class="centered-content">
-        <meta name="csrf-token" content="{{ csrf_token }}">
-        <button id="generate-btn">家族招待URLを発行</button>
-        <div id="result" style="margin-top: 20px; font-weight: bold;"></div>
-        <input type="text" id="invite-url" class="form-control mt-2" readonly>
+    
+      <div class="centered-content">
+          <meta name="csrf-token" content="{{ csrf_token }}">
+          <button id="generate-btn" >家族招待URLを発行</button>
+          <div id="result" style="margin-top: 20px; font-weight: bold;"></div>
+          <input type="text" id="invite-url" class="form-control mt-2 w-75 mx-auto d-block" readonly>
+      </div>
     </div>
-
     <script src="{% static 'js/invite.js' %}"></script>
   </body>
 </html>

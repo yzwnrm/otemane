@@ -549,7 +549,7 @@ class ChildDeleteView(LoginRequiredMixin, DeleteView):
         self.object.delete()
 
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'success': True, 'message': '削除しました。'})
+            return JsonResponse({'success': True, 'message': 'お手伝いメンバーを削除しました。'})
 
         messages.success(request, '削除しました。')
         return redirect(self.get_success_url())
@@ -564,13 +564,16 @@ class UserDeleteView(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         family_id = self.request.user.family.id
         return reverse_lazy('app:family_info', kwargs={'family_id': family_id})
-
+    
+    def post(self, request, *args, **kwargs):
+        return self.delete(request, *args, **kwargs)
+    
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         self.object.delete()
 
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'success': True, 'message': '削除しました。'})
+            return JsonResponse({'success': True, 'message': '家族情報を削除しました。'})
 
         messages.success(request, '削除しました。')
         return redirect(self.get_success_url())
