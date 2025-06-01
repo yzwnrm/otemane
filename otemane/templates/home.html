@@ -29,7 +29,7 @@
     <div class="text-center">
       <div class="d-flex justify-content-center align-items-center">
         <button id="prevMonth" >◁ 前月</button>
-        <h2 id="monthTitle" class="mb-0"></h2>
+        <h2 id="monthTitle" class="mb-3"></h2>
         <button id="nextMonth">翌月 ▷</button>
       </div>
       
@@ -72,15 +72,14 @@
   {% for record in monthly_records %}
       <h3 id="moneyTotal" class="mt-3">おかね💰 0 えん</h3>
       <h3 id="sweetsTotal" class="mt-3">おかし🍩 0 こ</h3>
-      <h3 id="detailTotal" class="mt-3">おねがい🙏 0 こ</h3>
-      <br><br>     
-      <div class="d-flex justify-content-center align-items-center flex-wrap gap-3 mt-3">
+      <h3 id="detailTotal" class="mt-3">おねがい🙏 0 こ</h3>    
+      <div class="d-flex justify-content-center align-items-center flex-wrap gap-3 mt-5 mb-3">
         <h4 id="heartTotal">💗 0</h4>
         <h4 id="smileTotal">😊 0</h4>
         <h4 id="goodTotal">👍 0</h4>
         <h4 id="flowerTotal">🌸 0</h4>
         <h4 id="niceTotal">😎 0</h4>
-    </div>
+      </div>
   {% endfor %}
 {% endif %}
 

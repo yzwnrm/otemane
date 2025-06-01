@@ -4,30 +4,32 @@
 <h3>マイページ</h3>
 
 <div class="row row-cols-1 row-cols-md-3 g-3">
-    <div class="col">
-        <a class="btn btn-light w-100 custom-bg" href="{% url 'app:reactions' %}" role="button">ありがとうを送る</a>
+    <div class="col d-flex justify-content-center">
+        <a class="btn btn-light custom-bg w-100" style="max-width: 250px;" href="{% url 'app:reactions' %}" role="button">ありがとうを送る</a>
     </div>
-    <div class="col">
-        <a class="btn btn-light w-100 custom-bg" href="{% url 'app:help_edit_delete' %}" role="button">お手伝いの修正・削除</a>
+    <div class="col d-flex justify-content-center">
+        <a class="btn btn-light custom-bg w-100" style="max-width: 250px;" href="{% url 'app:help_edit_delete' %}" role="button">お手伝いの修正・削除</a>
     </div>
-    <div class="col">
-        <a class="btn btn-light w-100 custom-bg" href="{% url 'app:child_regist' %}" role="button">お手伝いメンバー登録</a>
+    <div class="col d-flex justify-content-center">
+        <a class="btn btn-light custom-bg w-100" style="max-width: 250px;" href="{% url 'app:child_regist' %}" role="button">お手伝いメンバー登録</a>
     </div>
-    <div class="col">
-        <a class="btn btn-light w-100 custom-bg" href="{% url 'app:guide' %}" role="button">使い方ガイド</a>
+    <div class="col d-flex justify-content-center">
+        <a class="btn btn-light custom-bg w-100" style="max-width: 250px;" href="{% url 'app:guide' %}" role="button">使い方ガイド</a>
     </div>
-    <div class="col">
-        <a class="btn btn-light w-100 custom-bg" href="{% url 'app:invite' %}" role="button">家族を招待する</a>
+    <div class="col d-flex justify-content-center">
+        <a class="btn btn-light custom-bg w-100" style="max-width: 250px;" href="{% url 'app:invite' %}" role="button">家族を招待する</a>
     </div>
-    <div class="col">
-        <a class="btn btn-light w-100 custom-bg" href="{% url 'app:family_info' family.id %}" role="button">家族情報管理</a>
+    <div class="col d-flex justify-content-center">
+        <a class="btn btn-light custom-bg w-100" style="max-width: 250px;" href="{% url 'app:family_info' family.id %}" role="button">家族情報管理</a>
     </div>
-    <div class="col">
-        <a class="btn btn-light w-100 custom-bg" href="{% url 'app:user_update' user.id %}" role="button">アカウント編集</a>
+    <div class="col d-flex justify-content-center">
+        <a class="btn btn-light custom-bg w-100" style="max-width: 250px;" href="{% url 'app:user_update' user.id %}" role="button">アカウント編集</a>
     </div>
-    <div class="col">
-        <a class="btn btn-light w-100 custom-bg" href="{% url 'app:user_logout' %}" role="button">ログアウト</a>
+    <div class="col d-flex justify-content-center">
+        <a class="btn btn-light custom-bg w-100" style="max-width: 250px;" href="{% url 'app:user_logout' %}" role="button">ログアウト</a>
     </div>
 </div>
+
+
 
 {% endblock %}

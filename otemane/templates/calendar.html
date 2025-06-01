@@ -4,12 +4,12 @@
 {% block content %}
 
 <h2>カレンダー</h2>
-  <div style="text-align: right;">
-  <p>ひとつでもおてつだいができたら✅マークがつくよ！</p>
+  <div style="text-align: right; margin-right: 40px;">
+    <p>ひとつでもおてつだいができたら✅マークがつくよ！</p>
   </div>
 
 <form method="get" id="monthSelectorForm" class="date-select-form" >
-  <div style="position: absolute; left: 0; display: flex; align-items: center;">
+  <div style="position: absolute; left:40px; display: flex; align-items: center;">
     <select name="year" id="year" style="margin-right: 5px;">
       {% for y in year_range %}
         <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
