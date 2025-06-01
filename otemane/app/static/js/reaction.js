@@ -29,9 +29,14 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                      const messageBox = document.getElementById('reaction-message');
-                      messageBox.textContent = data.message || 'ありがとうを送りました！';
-                      messageBox.classList.remove('d-none');
+                    const messageBox = document.getElementById('reaction-message');
+                    messageBox.textContent = data.message || 'ありがとうを送りました！';
+                    messageBox.classList.remove('d-none');
+
+                    const recordElement = document.getElementById(`record-${recordId}`);
+                    if (recordElement) {
+                        recordElement.remove();
+                    }
 
                       setTimeout(() => {
                           messageBox.classList.add('d-none');
