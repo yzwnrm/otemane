@@ -15,6 +15,14 @@ input, textarea, select {
     color: #000;
 }
 
+input[type="submit"]{
+    border: none !important;
+    outline: none; /* フォーカス時の青い線も消したい場合 */
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
 .custom-bg  {
   background:  #ddddddb6;
 }
@@ -22,10 +30,9 @@ input, textarea, select {
 .custom-bg-logout  {
   background:  #fdb1b1b6;
   color: black; /* 必要に応じて文字色も設定 */
-  border-color: transparent; /* 枠線が不要なら */
+  border-color: transparent; /* 枠線なし*/
 }
 
-/* ホバー時 */
 .custom-bg-logout:hover {
     background-color: #fd9898b6;
     color: black;
