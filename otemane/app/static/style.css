@@ -19,6 +19,19 @@ input, textarea, select {
   background:  #ddddddb6;
 }
 
+.custom-bg-logout  {
+  background:  #fdb1b1b6;
+  color: black; /* 必要に応じて文字色も設定 */
+  border-color: transparent; /* 枠線が不要なら */
+}
+
+/* ホバー時 */
+.custom-bg-logout:hover {
+    background-color: #fd9898b6;
+    color: black;
+    border-color: #ff7070
+}
+
 .custom-navbar {
   background-color: #fce775; 
 }
