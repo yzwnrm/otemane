@@ -25,7 +25,7 @@
   </button>
 </div>
 
-<p class="ms-5">かぞくといっしょにできたボタンをおそう！</p>
+<p class="ms-5">💬かぞくといっしょにできたボタンをおそう！</p>
 
 <div class="container">
     {% for help in selected_helps %}
@@ -43,12 +43,22 @@
           {% endif %}
         {% endfor %}
       </div>
-      <form method="post" action="{% url 'app:help_lists' child.id %}">
-        {% csrf_token %}
-        <input type="hidden" name="help_id" value="{{ help.help.id }}">
-        <input type="hidden" name="selected_date" value="{{ selected_date|date:'Y-m-d' }}">
-        <button class="btn btn-success">できた！</button>
-      </form>
+      <div class="d-flex align-items-center gap-2">
+        <form method="post" action="{% url 'app:help_lists' child.id %}">
+          {% csrf_token %}
+          <input type="hidden" name="help_id" value="{{ help.help.id }}">
+          <button name="remove" class="btn btn-outline-danger" 
+                  style="color:rgba(253, 70, 89, 0.86); border-color:rgba(248, 183, 190, 0.81); background-color: transparent;">
+                  やめる
+          </button>
+        </form>
+        <form method="post" action="{% url 'app:help_lists' child.id %}">
+          {% csrf_token %}
+          <input type="hidden" name="help_id" value="{{ help.help.id }}">
+          <input type="hidden" name="selected_date" value="{{ selected_date|date:'Y-m-d' }}">
+          <button name="done" class="btn btn-success">できた！</button>
+        </form>
+      </div>
     </div>
 
   {% empty %}
@@ -126,7 +136,7 @@
         </div>
 
         <div class="modal-footer justify-content-center">
-          <button type="submit" class="btn btn-secondary">まとめてとうろく</button>
+          <button type="submit" class="btn btn-success">まとめてとうろく</button>
         </div>
 
       </form>

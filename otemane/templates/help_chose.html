@@ -12,6 +12,8 @@
   </div>
 {% endif %}
 
+<p class="ms-5">💬おてつだいは１０こまでえらべるよ</p>
+
 <div class="container">
   <div class="row row-cols-1 row-cols-md-2 g-3">
     {% for help in page_obj %}
@@ -27,7 +29,7 @@
                   {% elif reward.reward_type == 0 %}
                     🍩 おかし 1こ<br>
                   {% elif reward.reward_type == 2 %}
-                    🙏 おねがい<br>
+                    🙏 {{ reward.reward_detail }}<br>
                   {% endif %}
                 {% empty %}
                   — 報酬なし

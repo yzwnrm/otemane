@@ -679,14 +679,21 @@ class HelpListsView(RequireChildSelectedMixin, ListView):    #えらんだおて
         except ValueError:
             selected_date = timezone.now().date()
 
-        if help_id:
+        if 'remove' in request.POST and help_id:
+            HelpLists.objects.filter(child_id=child_id, help_id=help_id).delete()
+            messages.success(request, 'おてつだいをやめました。')
+
+        elif 'done' in request.POST and help_id:
         # 単発「できた」
             Records.objects.create(
                 child_id=child_id,
                 help_id=help_id,
                 achievement_date=selected_date
             )
+            messages.success(request, '記録ができました。')
+
         elif help_ids:
+
         # モーダルで一括「できた」
             for hid in help_ids:
                 Records.objects.create(
@@ -694,6 +701,8 @@ class HelpListsView(RequireChildSelectedMixin, ListView):    #えらんだおて
                     help_id=hid,
                     achievement_date=selected_date
             )
+            messages.success(request, '一括記録ができました。')
+
         else:
         # どちらも指定されていない
             return self.render_to_response({
@@ -701,8 +710,7 @@ class HelpListsView(RequireChildSelectedMixin, ListView):    #えらんだおて
                 'error_message': "おてつだいのIDが指定されていません。"
             })
         
-        messages.success(request, '記録ができました。')
-        
+
         return redirect('app:help_lists', child_id=child_id)
     
 class BulkRegisterView(View):
@@ -832,7 +840,7 @@ class HelpChoseView(RequireChildSelectedMixin, TemplateView):   #おてつだい
         current_count = HelpLists.objects.filter(child_id=child_id).count()
         
         if current_count >= 10:
-            messages.error(request, "10件までしか選べません")
+            messages.error(request, "10件までしか選べません。「えらんだおてつだい」リストで調整してください。")
             return redirect('app:help_chose', child_id=child_id)            
         
         original_help = get_object_or_404(Helps, id=help_id)
@@ -858,19 +866,15 @@ class HelpChoseView(RequireChildSelectedMixin, TemplateView):   #おてつだい
                 reward.save()
 
             HelpLists.objects.get_or_create(child_id=child_id, help_id=new_help.id)
-
-        else:
-            if original_help.child_id != int(child_id):
-                messages.error(request, "このお手伝いは選択できません。")
-                return redirect('app:help_chose', child_id=child_id)
-
-            if HelpLists.objects.filter(child_id=child_id, help=original_help).exists():
-                messages.info(request, "すでに選ばれています。")
-            else:
-                HelpLists.objects.create(child_id=child_id, help=original_help)
+            messages.success(request, 'おてつだいをえらびました。')
+            return redirect('app:help_chose', child_id=child_id)
         
-        messages.success(request, 'おてつだいをえらびました。')
+        if HelpLists.objects.filter(child_id=child_id, help=original_help).exists():
+            messages.info(request, "すでに選ばれています。")
+            return redirect('app:help_chose', child_id=child_id)
 
+        HelpLists.objects.create(child_id=child_id, help=original_help)
+        messages.success(request, 'おてつだいをえらびました。')
         return redirect('app:help_chose', child_id=child_id)
     
 class HelpEditDeleteView(ListView):   
