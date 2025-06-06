@@ -41,8 +41,16 @@
                 {{ form.email }}
               </div>
             </div>
+            
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                  <p>{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
 
-              <!-- パスワード1 -->
+            <!-- パスワード1 -->
             <div class="mb-3 row align-items-center">
               <label class="col-sm-5 col-form-label">{{ form.password1.label }}</label>
               <div class="col-sm-7">
@@ -61,26 +69,33 @@
                     ?
                   </button>
                 </div>
+                {% if form.password1.errors %}
+                  <div class="text-danger small mt-1">
+                    {% for error in form.password1.errors %}
+                      <p>{{ error }}</p>
+                    {% endfor %}
+                  </div>
+                {% endif %}
               </div>
             </div>
           
             
-            <div class="mb-3 row align-items-center">
+            <div class="mb-3 row align-items-start">
               <label class="col-sm-5 col-form-label">{{ form.password2.label }}</label>
               <div class="col-sm-7">
                 {{ form.password2 }}
+                {% if form.password2.errors %}
+                  <div class="text-danger small mt-1">
+                    {% for error in form.password2.errors %}
+                      <p>{{ error }}</p>
+                    {% endfor %}
+                  </div>
+                {% endif %}
               </div>
             </div>
-          
-            <!-- エラーメッセージ -->
-            {% if form.errors %}
-              <div class="alert alert-danger">
-                入力に誤りがあります。もう一度ご確認ください。
-              </div>
-            {% endif %}
-          
-            
-            <input type="submit" class="btn btn-primary  w-100" value="登録">
+            <div class="text-center">
+              <input type="submit" class="btn btn-primary  w-75 mt-5" value="登録">
+            </div>
         </form>
     </div>
 
