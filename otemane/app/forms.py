@@ -4,9 +4,8 @@ from app.models import User, Helps
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
-# from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
-from .models import Children, User, Rewards, RELATIONSHIP_CHOICES, HelpLists, Reactions
+from .models import Children, User, Rewards, RELATIONSHIP_CHOICES
 
 User = get_user_model()
 
@@ -63,7 +62,13 @@ class UserRegistrationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['user_name', 'email', 'relationship']
-        
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("このメールアドレスは既に登録されています。")
+        return email
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         relationship = getattr(self.instance, 'relationship', None)
