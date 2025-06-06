@@ -81,20 +81,28 @@ class UserUpdateForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['user_name', 'relationship', 'email' ]
+        fields = ['user_name', 'relationship', 'email']
         labels = {
             'user_name': '名前/ニックネーム',
             'relationship': '続柄',
-            'email': 'メールアドレス'
+            'email': '現在のメールアドレス',
         }
+        widgets = {
+            'email': forms.EmailInput(attrs={'readonly': 'readonly'})  # or 'disabled': 'disabled'
+        }
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        new_email = cleaned_data.get('new_email')
+        if new_email and User.objects.exclude(pk=self.instance.pk).filter(email=new_email).exists():
+            self.add_error('new_email', 'このメールアドレスは既に使用されています。')
+        return cleaned_data
 
     def save(self, commit=True):
         user = super().save(commit=False)
         new_email = self.cleaned_data.get('new_email')
-
         if new_email:
-            user.email = new_email  
-
+            user.email = new_email
         if commit:
             user.save()
         return user
