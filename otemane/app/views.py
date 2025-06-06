@@ -444,6 +444,7 @@ class UserUpdateView(LoginRequiredMixin, View):
         user_form = UserUpdateForm(request.POST, instance=user)
         if user_form.is_valid():
             user_form.save()
+            messages.success(request, 'アカウント情報を変更しました') 
             family_id = user.family.id
             return redirect('app:family_info', family_id=family_id) 
         return render(request, self.template_name, {'user_form': user_form})

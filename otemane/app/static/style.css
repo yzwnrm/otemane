@@ -52,6 +52,38 @@ input[type="submit"]{
   color: #f5981e; 
 }
 
+
+
+
+@media (max-width: 991px) {
+  .navbar .navbar-brand.brand-main {
+    margin-right: 8px; 
+  }
+
+  .navbar .navbar-brand.brand-sub {
+    white-space: normal ;
+    word-break: keep-all; 
+    display: inline-block;
+    max-width: 80px;
+    font-size: 0.8rem;
+    text-align: center;
+    line-height: 1.2;
+    margin: 0 20px; 
+  }
+}
+
+/* 小画面（スマホサイズ）ではさらにフォント小さく */
+@media (max-width: 687px) {
+  .navbar .navbar-brand.brand-sub {
+    font-size: 0.70rem;
+    max-width: 65px;
+    padding: 0 0.3rem;
+    margin: 0 20px; 
+  }
+}
+
+
+
 .brand-main {
   font-size: 1.2rem; 
   font-weight: bold;
