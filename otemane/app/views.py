@@ -426,7 +426,7 @@ class FamilyInfoView(LoginRequiredMixin, TemplateView):
         family = get_object_or_404(Family, id=family_id)
 
         context['family'] = family
-        context['user'] = User.objects.filter(family=family)
+        context['all_users'] = User.objects.filter(family=family)
         context['child'] = Children.objects.filter(family=family)
 
         return context

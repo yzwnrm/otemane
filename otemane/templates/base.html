@@ -50,14 +50,16 @@
             </a>
         {% endif %}
         
-    {% else %}
-        <a class="navbar-brand brand-sub" href="{% url 'app:user_login' %}">ログイン</a>
-        <a class="navbar-brand brand-sub" href="{% url 'app:regist' %}">ユーザー登録</a>
-    {% endif %}
         <a id="nav-help-chose" class="navbar-brand brand-sub disabled"
               href="{% url 'app:user' %}">
               おうちのひと<wbr>(マイページ)
         </a>
+        
+    {% else %}
+        <a class="navbar-brand brand-sub" href="{% url 'app:user_login' %}">ログイン</a>
+        <a class="navbar-brand brand-sub" href="{% url 'app:regist' %}">ユーザー登録</a>
+    {% endif %}
+        
   </nav>
 
     {% block content %}
