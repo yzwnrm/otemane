@@ -47,10 +47,7 @@
         <form method="post" action="{% url 'app:help_lists' child.id %}">
           {% csrf_token %}
           <input type="hidden" name="help_id" value="{{ help.help.id }}">
-          <button name="remove" class="btn btn-outline-danger" 
-                  style="color:rgba(253, 70, 89, 0.86); border-color:rgba(248, 183, 190, 0.81); background-color: transparent;">
-                  やめる
-          </button>
+          <button name="remove" class="btn custom-remove-btn">やめる</button>
         </form>
         <form method="post" action="{% url 'app:help_lists' child.id %}">
           {% csrf_token %}

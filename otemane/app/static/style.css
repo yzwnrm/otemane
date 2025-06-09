@@ -52,7 +52,17 @@ input[type="submit"]{
   color: #f5981e; 
 }
 
+.custom-remove-btn {
+  color: rgba(253, 70, 89, 0.86);
+  border: 1px solid rgba(248, 183, 190, 0.81);
+  background-color: rgba(255, 254, 254, 0.81);
+}
 
+.custom-remove-btn:hover {
+  color: white;
+  background-color: rgba(253, 70, 89, 0.86);
+  border-color: rgba(253, 70, 89, 0.86);
+}
 
 
 @media (max-width: 991px) {
