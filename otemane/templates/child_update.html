@@ -1,23 +1,7 @@
 {% extends "base.html" %}
 {% load static%}
 {% block content %}
-<body>
-    <h2>メンバー編集・削除</h2>
-    <div class="d-flex align-items-center" style="gap: 10px; margin-top: 10px;">
-        <div class="child-icon" style="font-size: 2rem;">{{ selected_child.icon }}</div>
-      
-        <form method="GET" action="">         
-            <select name="child_id" onchange="this.form.submit()">
-            {% for child in children %}
-              <option value="{{ child.id }}" {% if child.id == selected_child.id %}selected{% endif %}>
-                {{ child.child_name }}
-              </option>
-            {% endfor %}
-          </select>
-        </form>
-      </div>
-    </div>
-<body>
+<h2>メンバー編集・削除</h2>
     <div class="container d-flex flex-column align-items-center justify-content-center">
         <form method="POST">
             {% csrf_token %}
