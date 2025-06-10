@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const button = event.relatedTarget;
     const deleteUrl = button.getAttribute('data-delete-url');
     rowId = button.getAttribute('data-row-id');
+    console.log('deleteUrl:', deleteUrl);
+
     deleteForm.setAttribute('action', deleteUrl);
   });
 
