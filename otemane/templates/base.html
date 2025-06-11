@@ -62,16 +62,16 @@
         
   </nav>
 
-    {% block content %}
-    {% endblock %}x
+{% block content %}
+{% endblock %}
     
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-     <script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
       window.selectedChildId = "{{ selected_child.id|default:'' }}";
       window.homeUrl = "{% url 'app:home' %}";
-    </script>
-    <script src="{% static 'js/popover-init.js' %}"></script>
-    {% block scripts %}{% endblock %}
+  </script>
+  <script src="{% static 'js/popover-init.js' %}"></script>
+{% block scripts %}{% endblock %}
  
   </body>
 </html>

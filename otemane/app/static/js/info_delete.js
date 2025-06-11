@@ -12,6 +12,13 @@ document.addEventListener('DOMContentLoaded', function () {
     deleteForm.setAttribute('action', deleteUrl);
   });
 
+  deleteModal.addEventListener('hidden.bs.modal', function () {
+    const backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) backdrop.remove();
+
+    document.body.classList.remove('modal-open');
+    document.body.style.removeProperty('padding-right');
+  });
 
   // 削除フォーム送信時の非同期リクエスト処理
   deleteForm.addEventListener('submit', function (e) {
@@ -39,9 +46,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const row = document.querySelector(`[data-row-id="${rowId}"]`);
         if (row) row.remove();
 
-        const modalInstance = bootstrap.Modal.getInstance(deleteModal);
-        if (modalInstance) modalInstance.hide();
-
+        const modalInstance = bootstrap.Modal.getOrCreateInstance(deleteModal);
+        modalInstance.hide();
 
         const messageContainer = document.getElementById('message-container');
         if (messageContainer && data.message) {
@@ -53,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
           setTimeout(() => {
             messageContainer.innerHTML = '';
-          }, 3000);
+          }, 5000);
         }
         
       } else {
