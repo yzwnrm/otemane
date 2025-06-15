@@ -905,6 +905,8 @@ def help_update(request, pk):
             messages.success(request, 'お手伝いを1件修正しました。')
             return redirect('app:help_edit_delete')
     else:
+        if reward_instance and reward_instance.reward_type != 2:
+            reward_instance.reward_detail = ''
         help_form = HelpsForm(instance=help_instance)
         reward_form = RewardsForm(instance=reward_instance)
 
