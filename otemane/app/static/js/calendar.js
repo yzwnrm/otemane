@@ -14,11 +14,49 @@ document.addEventListener('DOMContentLoaded', () => {
             modalContent.innerHTML = '';
             if (data.records && data.records.length > 0) {
                 modalContent.innerHTML = '';
+
+                const table = document.createElement('table');
+                table.style.width = '100%';
+                table.style.borderCollapse = 'collapse';
+                table.style.marginTop = '10px';
+
+                // テーブルヘッダー
+                const thead = document.createElement('thead');
+                thead.innerHTML = `
+                  <tr>
+                    <th style="border-bottom: 1px solid #ccc; padding: 8px; text-align: center;">だれの？</th>
+                    <th style="border-bottom: 1px solid #ccc; padding: 8px; text-align: center;">おてつだい</th>
+                  </tr>
+                  `;
+                table.appendChild(thead);
+
+// テーブル本文
+                const tbody = document.createElement('tbody');
                 data.records.forEach(record => {
-                  const item = document.createElement('p');
-                  item.textContent = `${record.child_name}：${record.help_name}`;
-                  modalContent.appendChild(item);
+                const row = document.createElement('tr');
+
+                const childTd = document.createElement('td'); 
+                childTd.textContent = record.child_name;
+                childTd.style.padding = '8px';
+                row.appendChild(childTd);
+
+                const helpTd = document.createElement('td');
+                helpTd.textContent = record.help_name;
+                helpTd.style.padding = '8px';
+                row.appendChild(helpTd);
+
+                tbody.appendChild(row);
                 });
+
+                table.appendChild(tbody);
+                modalContent.appendChild(table);
+
+                //modalContent.innerHTML = '';
+                //data.records.forEach(record => {
+                //  const item = document.createElement('p');
+                //  item.textContent = `${record.child_name}：${record.help_name}`;
+                //  modalContent.appendChild(item);
+                //});
             } else {
                 modalContent.textContent = 'この日に達成されたおてつだいはありません。';
             }

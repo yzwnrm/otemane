@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
     const targetGroup = allRecords.find(group => group.child === selectedChild);
     const records = targetGroup ? targetGroup.records : [];
+    const modal = document.getElementById('myModal');
 
     function showMonthlyModal(records) {
         const container = document.getElementById('helpRecordsContainer');
@@ -94,5 +95,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById('closeModal').addEventListener('click', function () {
         document.getElementById('myModal').style.display = "none";
+    });
+
+    window.addEventListener('click', function (event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
     });
 });
